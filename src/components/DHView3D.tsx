@@ -31,7 +31,15 @@ export function DHView3D({ frames }: Props) {
     const sp = Math.sin(cam.pitch);
     const scale = (Math.min(w, h) / 480) * cam.zoom;
 
-    const project = (p: Vec3) => {
+    const pts = frames.map(originOf);
+    const ctr = {
+      x: pts.reduce((a, b) => a + b.x, 0) / pts.length,
+      y: pts.reduce((a, b) => a + b.y, 0) / pts.length,
+      z: 0,
+    };
+
+    const project = (p0: Vec3) => {
+      const p = { x: p0.x - ctr.x, y: p0.y - ctr.y, z: p0.z };
       const x1 = p.x * cy - p.y * sy;
       const y1 = p.x * sy + p.y * cy;
       const z1 = p.z;
@@ -41,7 +49,7 @@ export function DHView3D({ frames }: Props) {
       const persp = depth / (depth + y2 * 0.6);
       return {
         x: w / 2 + x1 * scale * persp,
-        y: h / 2 + 110 - z2 * scale * persp,
+        y: h / 2 + 100 - z2 * scale * persp,
         d: y2,
       };
     };
@@ -63,8 +71,8 @@ export function DHView3D({ frames }: Props) {
     const step = 60;
     ctx.globalAlpha = 0.5;
     for (let i = -G; i <= G; i += step) {
-      line({ x: i, y: -G, z: 0 }, { x: i, y: G, z: 0 }, "#cbd5e1", 1);
-      line({ x: -G, y: i, z: 0 }, { x: G, y: i, z: 0 }, "#cbd5e1", 1);
+      line({ x: i + ctr.x, y: -G + ctr.y, z: 0 }, { x: i + ctr.x, y: G + ctr.y, z: 0 }, "#cbd5e1", 1);
+      line({ x: -G + ctr.x, y: i + ctr.y, z: 0 }, { x: G + ctr.x, y: i + ctr.y, z: 0 }, "#cbd5e1", 1);
     }
     ctx.globalAlpha = 1;
 
