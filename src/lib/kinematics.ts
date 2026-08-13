@@ -10,8 +10,9 @@ export function fk2d(lengths: number[], anglesDeg: number[]): Vec2[] {
   let acc = 0;
   for (let i = 0; i < lengths.length; i++) {
     acc += deg2rad(anglesDeg[i] ?? 0);
-    const prev = pts[pts.length - 1];
-    pts.push({ x: prev.x + lengths[i] * Math.cos(acc), y: prev.y + lengths[i] * Math.sin(acc) });
+    const prev = pts[pts.length - 1] as Vec2;
+    const len = lengths[i] ?? 0;
+    pts.push({ x: prev.x + len * Math.cos(acc), y: prev.y + len * Math.sin(acc) });
   }
   return pts;
 }
@@ -25,7 +26,8 @@ export function ik2d(
   elbowUp: boolean,
   thirdAngle = 0,
 ): IKResult {
-  const [l1, l2] = lengths;
+  const l1 = lengths[0] ?? 1;
+  const l2 = lengths[1] ?? 1;
   const d = Math.hypot(target.x, target.y);
   const min = Math.abs(l1 - l2);
   const max = l1 + l2;
@@ -42,23 +44,25 @@ export function ik2d(
   if (lengths.length > 2) angles.push(thirdAngle);
 
   const pts = fk2d(lengths, angles);
-  const end = pts[pts.length - 1];
-  const tip = lengths.length > 2 ? pts[2] : end;
+  const tip = (lengths.length > 2 ? pts[2] : pts[pts.length - 1]) as Vec2;
   const error = Math.hypot(tip.x - target.x, tip.y - target.y);
   return { angles, reachable, error };
 }
 
 /* ---------- 3D / Denavit-Hartenberg ---------- */
 
-export type Mat4 = number[]; // column-major-free 16 length, row-major
+export type Mat4 = number[]; // row-major 4x4
 
 export const identity = (): Mat4 => [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 
 export function mul(a: Mat4, b: Mat4): Mat4 {
-  const o = new Array(16).fill(0);
+  const o: number[] = new Array(16).fill(0);
   for (let r = 0; r < 4; r++)
-    for (let c = 0; c < 4; c++)
-      for (let k = 0; k < 4; k++) o[r * 4 + c] += a[r * 4 + k] * b[k * 4 + c];
+    for (let c = 0; c < 4; c++) {
+      let s = 0;
+      for (let k = 0; k < 4; k++) s += (a[r * 4 + k] ?? 0) * (b[k * 4 + c] ?? 0);
+      o[r * 4 + c] = s;
+    }
   return o;
 }
 
@@ -88,10 +92,12 @@ export function dhChain(rows: DHRow[]): Mat4[] {
   return frames;
 }
 
-export const originOf = (m: Mat4) => ({ x: m[3], y: m[7], z: m[11] });
+export type Vec3 = { x: number; y: number; z: number };
 
-export const axisOf = (m: Mat4, i: 0 | 1 | 2) => ({
-  x: m[i],
-  y: m[4 + i],
-  z: m[8 + i],
+export const originOf = (m: Mat4): Vec3 => ({ x: m[3] ?? 0, y: m[7] ?? 0, z: m[11] ?? 0 });
+
+export const axisOf = (m: Mat4, i: 0 | 1 | 2): Vec3 => ({
+  x: m[i] ?? 0,
+  y: m[4 + i] ?? 0,
+  z: m[8 + i] ?? 0,
 });
