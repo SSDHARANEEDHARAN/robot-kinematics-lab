@@ -7,8 +7,8 @@ type Props = {
   points: Vec2[];
   lengths: number[];
   showZone: boolean;
-  target?: Vec2 | null;
-  onTargetChange?: (p: Vec2) => void;
+  target?: Vec2 | null | undefined;
+  onTargetChange?: ((p: Vec2) => void) | undefined;
 };
 
 const W = 760;
