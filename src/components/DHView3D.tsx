@@ -29,7 +29,7 @@ export function DHView3D({ frames }: Props) {
     const sy = Math.sin(cam.yaw);
     const cp = Math.cos(cam.pitch);
     const sp = Math.sin(cam.pitch);
-    const scale = (Math.min(w, h) / 620) * cam.zoom;
+    const scale = (Math.min(w, h) / 480) * cam.zoom;
 
     const project = (p: Vec3) => {
       const x1 = p.x * cy - p.y * sy;
@@ -41,7 +41,7 @@ export function DHView3D({ frames }: Props) {
       const persp = depth / (depth + y2 * 0.6);
       return {
         x: w / 2 + x1 * scale * persp,
-        y: h / 2 + 90 - z2 * scale * persp,
+        y: h / 2 + 110 - z2 * scale * persp,
         d: y2,
       };
     };

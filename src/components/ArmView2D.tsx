@@ -11,6 +11,8 @@ type Props = {
   onTargetChange?: ((p: Vec2) => void) | undefined;
 };
 
+const r1 = (n: number) => Math.round(n * 1000) / 1000;
+
 const W = 760;
 const H = 560;
 
@@ -107,10 +109,10 @@ export function ArmView2D({ points, lengths, showZone, target, onTargetChange }:
           return (
             <line
               key={i}
-              x1={p.x}
-              y1={p.y}
-              x2={q.x}
-              y2={q.y}
+              x1={r1(p.x)}
+              y1={r1(p.y)}
+              x2={r1(q.x)}
+              y2={r1(q.y)}
               className={LINK_CLASSES[i % 3]}
               strokeWidth={11}
               strokeLinecap="round"
@@ -122,15 +124,15 @@ export function ArmView2D({ points, lengths, showZone, target, onTargetChange }:
         {points.map((p, i) => (
           <circle
             key={i}
-            cx={p.x}
-            cy={p.y}
+            cx={r1(p.x)}
+            cy={r1(p.y)}
             r={i === 0 ? 8 : 7}
             className={i === 0 ? "fill-foreground stroke-foreground" : "fill-card stroke-foreground"}
             strokeWidth={2.5}
           />
         ))}
 
-        <circle cx={end.x} cy={end.y} r={6} className="fill-primary" />
+        <circle cx={r1(end.x)} cy={r1(end.y)} r={6} className="fill-primary" />
       </g>
     </svg>
   );
