@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { ArmView2D } from "@/components/ArmView2D";
 import { DHView3D } from "@/components/DHView3D";
 import {
@@ -170,8 +170,8 @@ function KinematicsLab() {
                     </span>
                   ))}
                   {dhRows.map((r, i) => (
-                    <>
-                      <span key={`n${i}`} className="self-center text-xs font-bold text-primary">
+                    <Fragment key={i}>
+                      <span className="self-center text-xs font-bold text-primary">
                         {i + 1}
                       </span>
                       {(["theta", "d", "a", "alpha"] as const).map((k) => (
@@ -183,7 +183,7 @@ function KinematicsLab() {
                           className={`lab-input px-1 text-center text-sm ${k === "theta" ? "text-primary" : ""}`}
                         />
                       ))}
-                    </>
+                    </Fragment>
                   ))}
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">
