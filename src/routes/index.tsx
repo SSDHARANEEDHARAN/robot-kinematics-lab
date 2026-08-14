@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { ArmView2D } from "@/components/ArmView2D";
 import { DHView3D } from "@/components/DHView3D";
+import { DHFormula, FKFormula, IKFormula } from "@/components/FormulaPanel";
 import {
   GhostButton,
   NumberField,
@@ -10,22 +11,34 @@ import {
   SliderRow,
   Stat,
 } from "@/components/LabControls";
-import { dhChain, fk2d, ik2d, originOf, type DHRow, type Mat4 } from "@/lib/kinematics";
+import { LESSONS, LessonPanel, type Lesson } from "@/components/LessonPanel";
+import { QuizPanel } from "@/components/QuizPanel";
+import { TeachPanel } from "@/components/TeachPanel";
+import { dhChain, fk2d, ik2d, originOf, type DHRow, type Mat4, type Vec2 } from "@/lib/kinematics";
+import {
+  fmtAngle,
+  readPresetFromLocation,
+  samplePose,
+  shareUrlFor,
+  uid,
+  type Preset,
+  type Waypoint,
+} from "@/lib/lab";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Robot Arm Simulator | Kinematics Lab" },
+      { title: "Robot Kinematics Virtual Lab | Live FK, IK & DH" },
       {
         name: "description",
         content:
-          "Interactive robot arm simulator for learning forward kinematics, analytic inverse kinematics and Denavit-Hartenberg chains in 2D and 3D.",
+          "Interactive robot kinematics lab: live FK/IK formulas with real numbers, teach-pendant jogging, MOVJ/MOVL trajectories, quizzes, guided lessons and 3D DH chains.",
       },
-      { property: "og:title", content: "Robot Arm Simulator | Kinematics Lab" },
+      { property: "og:title", content: "Robot Kinematics Virtual Lab" },
       {
         property: "og:description",
         content:
-          "Learn robot kinematics by simulation: FK sliders, analytic IK targeting and a live 6-joint DH chain in 3D.",
+          "Learn robot kinematics by simulation: live formula engine, position teaching, trajectory playback, quizzes and guided lessons.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -35,6 +48,7 @@ export const Route = createFileRoute("/")({
 });
 
 type Mode = "IK" | "FK" | "DH";
+type Tab = "math" | "teach" | "quiz" | "lessons";
 
 const DEFAULT_DH: DHRow[] = [
   { theta: 0, d: 80, a: 0, alpha: -90 },
@@ -43,6 +57,13 @@ const DEFAULT_DH: DHRow[] = [
   { theta: 0, d: 80, a: 0, alpha: -90 },
   { theta: 0, d: 0, a: 60, alpha: 90 },
   { theta: 0, d: 40, a: 0, alpha: 0 },
+];
+
+const TABS: { value: Tab; label: string }[] = [
+  { value: "math", label: "Live math" },
+  { value: "teach", label: "Teach" },
+  { value: "quiz", label: "Quiz" },
+  { value: "lessons", label: "Lessons" },
 ];
 
 function KinematicsLab() {
@@ -56,10 +77,68 @@ function KinematicsLab() {
   const [dh, setDh] = useState<DHRow[]>(DEFAULT_DH);
   const [jointCount, setJointCount] = useState(6);
 
+  const [unit, setUnit] = useState<"deg" | "rad">("deg");
+  const [tab, setTab] = useState<Tab>("math");
+  const [dhStep, setDhStep] = useState(0);
+  const [waypoints, setWaypoints] = useState<Waypoint[]>([]);
+  const [playing, setPlaying] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const [pathMode, setPathMode] = useState(false);
+  const [trace, setTrace] = useState<Vec2[]>([]);
+  const [showTrace, setShowTrace] = useState(true);
+  const [showGhost, setShowGhost] = useState(true);
+  const [shareMsg, setShareMsg] = useState("");
+  const [lessonId, setLessonId] = useState(LESSONS[0]!.id);
+  const [completed, setCompleted] = useState<Record<string, boolean>>({});
+
   const activeLengths = lengths.slice(0, linkCount);
 
+  /* ---------- shared preset link ---------- */
+  useEffect(() => {
+    const p = readPresetFromLocation();
+    if (!p) return;
+    if (p.mode) setMode(p.mode as Mode);
+    if (p.linkCount) setLinkCount(p.linkCount);
+    if (p.lengths) setLengths(p.lengths);
+    if (p.angles) setAngles(p.angles);
+    if (p.target) setTarget(p.target);
+    if (typeof p.elbowUp === "boolean") setElbowUp(p.elbowUp);
+    if (p.dh) setDh(p.dh);
+    if (p.jointCount) setJointCount(p.jointCount);
+    if (p.waypoints) setWaypoints(p.waypoints);
+  }, []);
+
+  const preset: Preset = {
+    mode,
+    linkCount,
+    lengths,
+    angles,
+    target,
+    elbowUp,
+    dh,
+    jointCount,
+    waypoints,
+  };
+
+  const share = async () => {
+    const url = shareUrlFor(preset);
+    window.history.replaceState(null, "", url);
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareMsg("Link copied");
+    } catch {
+      setShareMsg("Link in address bar");
+    }
+    setTimeout(() => setShareMsg(""), 2500);
+  };
+
+  /* ---------- kinematics ---------- */
   const ik = useMemo(
     () => ik2d(activeLengths, target, elbowUp, angles[2] ?? 0),
+    [activeLengths.join(), target.x, target.y, elbowUp, angles[2]],
+  );
+  const ikGhost = useMemo(
+    () => ik2d(activeLengths, target, !elbowUp, angles[2] ?? 0),
     [activeLengths.join(), target.x, target.y, elbowUp, angles[2]],
   );
 
@@ -67,6 +146,10 @@ function KinematicsLab() {
   const points = useMemo(
     () => fk2d(activeLengths, planarAngles),
     [activeLengths.join(), planarAngles.join()],
+  );
+  const ghostPoints = useMemo(
+    () => fk2d(activeLengths, ikGhost.angles),
+    [activeLengths.join(), ikGhost.angles.join()],
   );
 
   const dhRows = dh.slice(0, jointCount);
@@ -81,15 +164,120 @@ function KinematicsLab() {
   const outputAngles =
     mode === "DH" ? dhRows.map((r) => r.theta) : planarAngles.concat(linkCount < 3 ? [0] : []);
 
-  const setLength = (i: number, v: number) =>
-    setLengths((l) => l.map((x, k) => (k === i ? v : x)));
+  const setLength = (i: number, v: number) => setLengths((l) => l.map((x, k) => (k === i ? v : x)));
   const setAngle = (i: number, v: number) => setAngles((a) => a.map((x, k) => (k === i ? v : x)));
   const setDhCell = (i: number, key: keyof DHRow, v: number) =>
     setDh((rows) => rows.map((r, k) => (k === i ? { ...r, [key]: v } : r)));
 
+  /* ---------- trace ---------- */
+  useEffect(() => {
+    if (mode === "DH" || !showTrace) return;
+    setTrace((t) => [...t.slice(-260), { x: end.x, y: end.y }]);
+  }, [end.x, end.y, mode, showTrace]);
+
+  /* ---------- teach pendant ---------- */
+  const teach = () => {
+    const pose = mode === "IK" ? ik.angles : planarAngles;
+    const tip = fk2d(activeLengths, pose);
+    const last = tip[tip.length - 1] ?? { x: 0, y: 0 };
+    setWaypoints((w) => [
+      ...w,
+      {
+        id: uid(),
+        name: `P${w.length + 1}`,
+        angles: pose.slice(),
+        target: { x: Math.round(last.x * 10) / 10, y: Math.round(last.y * 10) / 10 },
+        move: "MOVJ",
+        spd: 50,
+      },
+    ]);
+  };
+
+  const gotoWaypoint = (id: string) => {
+    const w = waypoints.find((x) => x.id === id);
+    if (!w) return;
+    setAngles((a) => a.map((v, i) => w.angles[i] ?? v));
+    setTarget(w.target);
+  };
+
+  const playRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (!playing || waypoints.length === 0) return;
+    let idx = 0;
+    let t = 0;
+    let from = { angles: planarAngles.slice(), target };
+    setActiveIndex(0);
+    setTrace([]);
+    const tick = () => {
+      const wp = waypoints[idx];
+      if (!wp) {
+        setPlaying(false);
+        setActiveIndex(-1);
+        return;
+      }
+      t += 0.004 * (wp.spd / 50) * 4;
+      const pose = samplePose(from, wp, Math.min(1, t), activeLengths, elbowUp);
+      setAngles((a) => a.map((v, i) => pose.angles[i] ?? v));
+      setTarget(pose.target);
+      if (t >= 1) {
+        from = { angles: wp.angles.slice(), target: wp.target };
+        idx += 1;
+        t = 0;
+        setActiveIndex(idx);
+        if (idx >= waypoints.length) {
+          setPlaying(false);
+          setActiveIndex(-1);
+          return;
+        }
+      }
+      playRef.current = requestAnimationFrame(tick);
+    };
+    playRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (playRef.current) cancelAnimationFrame(playRef.current);
+    };
+  }, [playing]);
+
+  const jogJoint = (i: number, delta: number) => {
+    if (mode === "IK") setMode("FK");
+    setAngles((a) => a.map((v, k) => (k === i ? Math.max(-180, Math.min(180, v + delta)) : v)));
+  };
+  const jogCart = (axis: "x" | "y", delta: number) => {
+    if (mode === "FK") {
+      setMode("IK");
+      setTarget({ x: end.x + (axis === "x" ? delta : 0), y: end.y + (axis === "y" ? delta : 0) });
+      return;
+    }
+    setTarget((t) => ({ ...t, [axis]: Math.round((t[axis] + delta) * 10) / 10 }));
+  };
+
+  /* ---------- lessons ---------- */
+  const lessonState = {
+    mode,
+    lengths: activeLengths,
+    angles: planarAngles,
+    target,
+    ikError: ik.error,
+    reachable: ik.reachable,
+    elbowUp,
+    waypointCount: waypoints.length,
+    jointCount,
+  };
+  const activeLesson = LESSONS.find((l) => l.id === lessonId) ?? LESSONS[0]!;
+  useEffect(() => {
+    if (activeLesson.check(lessonState))
+      setCompleted((c) => (c[activeLesson.id] ? c : { ...c, [activeLesson.id]: true }));
+  }, [JSON.stringify(lessonState), lessonId]);
+
+  const selectLesson = (l: Lesson) => {
+    setLessonId(l.id);
+    if (l.setup?.mode) setMode(l.setup.mode as Mode);
+    if (l.setup?.linkCount) setLinkCount(l.setup.linkCount);
+  };
+
   const headline =
     mode === "IK"
-      ? { title: "Inverse Kinematics", sub: "Analytic 2-link" }
+      ? { title: "Inverse Kinematics", sub: "Analytic 2-link — drag the target" }
       : mode === "FK"
         ? { title: "Forward Kinematics", sub: "Joint angle solve" }
         : {
@@ -112,18 +300,34 @@ function KinematicsLab() {
             Kinematics Lab
           </p>
           <h1 className="mt-1 text-4xl font-extrabold tracking-tight text-foreground md:text-5xl">
-            Robot Arm Simulator
+            Robot Kinematics Virtual Lab
           </h1>
         </div>
-        <div className="lab-card flex items-center gap-2 px-4 py-3">
-          <span className="h-2.5 w-2.5 rounded-full bg-link-3" />
-          <span className="text-sm font-semibold text-foreground">
-            {mode === "IK" && !ik.reachable ? "Out of reach" : "Ready"}
-          </span>
+        <div className="flex flex-wrap items-center gap-2">
+          <SegButton
+            options={[
+              { value: "deg", label: "deg" },
+              { value: "rad", label: "rad" },
+            ]}
+            value={unit}
+            onChange={(v) => setUnit(v as "deg" | "rad")}
+          />
+          <button
+            onClick={share}
+            className="rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground"
+          >
+            {shareMsg || "Share preset"}
+          </button>
+          <div className="lab-card flex items-center gap-2 px-4 py-3">
+            <span className="h-2.5 w-2.5 rounded-full bg-link-3" />
+            <span className="text-sm font-semibold text-foreground">
+              {mode === "IK" && !ik.reachable ? "Out of reach" : playing ? "Running" : "Ready"}
+            </span>
+          </div>
         </div>
       </header>
 
-      <div className="grid gap-5 xl:grid-cols-[320px_minmax(0,1fr)_290px]">
+      <div className="grid gap-5 xl:grid-cols-[320px_minmax(0,1fr)_340px]">
         {/* ---------- Left: controls ---------- */}
         <aside className="lab-card h-fit">
           <Section title="Mode">
@@ -171,9 +375,7 @@ function KinematicsLab() {
                   ))}
                   {dhRows.map((r, i) => (
                     <Fragment key={i}>
-                      <span className="self-center text-xs font-bold text-primary">
-                        {i + 1}
-                      </span>
+                      <span className="self-center text-xs font-bold text-primary">{i + 1}</span>
                       {(["theta", "d", "a", "alpha"] as const).map((k) => (
                         <input
                           key={`${i}-${k}`}
@@ -250,11 +452,7 @@ function KinematicsLab() {
                   <NumberField label="L1" value={lengths[0] ?? 0} onChange={(v) => setLength(0, v)} />
                   <NumberField label="L2" value={lengths[1] ?? 0} onChange={(v) => setLength(1, v)} />
                   {linkCount > 2 && (
-                    <NumberField
-                      label="L3"
-                      value={lengths[2] ?? 0}
-                      onChange={(v) => setLength(2, v)}
-                    />
+                    <NumberField label="L3" value={lengths[2] ?? 0} onChange={(v) => setLength(2, v)} />
                   )}
                 </div>
               </Section>
@@ -287,8 +485,16 @@ function KinematicsLab() {
                   }
                 >
                   <div className="grid grid-cols-2 gap-3">
-                    <NumberField label="X" value={target.x} onChange={(v) => setTarget((t) => ({ ...t, x: v }))} />
-                    <NumberField label="Y" value={target.y} onChange={(v) => setTarget((t) => ({ ...t, y: v }))} />
+                    <NumberField
+                      label="X"
+                      value={target.x}
+                      onChange={(v) => setTarget((t) => ({ ...t, x: v }))}
+                    />
+                    <NumberField
+                      label="Y"
+                      value={target.y}
+                      onChange={(v) => setTarget((t) => ({ ...t, y: v }))}
+                    />
                   </div>
                   <div className="mt-3">
                     <SegButton
@@ -346,7 +552,7 @@ function KinematicsLab() {
 
         {/* ---------- Center: viewport ---------- */}
         <section className="lab-card overflow-hidden">
-          <div className="flex items-start justify-between gap-4 px-5 py-4">
+          <div className="flex flex-wrap items-start justify-between gap-4 px-5 py-4">
             <div>
               <h2 className="text-lg font-extrabold tracking-tight text-foreground">
                 {headline.title}
@@ -354,15 +560,49 @@ function KinematicsLab() {
               <p className="text-sm text-muted-foreground">{headline.sub}</p>
             </div>
             {mode !== "DH" && (
-              <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <input
-                  type="checkbox"
-                  checked={showZone}
-                  onChange={(e) => setShowZone(e.target.checked)}
-                  className="h-4 w-4 accent-[var(--color-primary)]"
-                />
-                Reach zone
-              </label>
+              <div className="flex flex-wrap items-center gap-4">
+                <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                  <input
+                    type="checkbox"
+                    checked={showZone}
+                    onChange={(e) => setShowZone(e.target.checked)}
+                    className="h-4 w-4 accent-[var(--color-primary)]"
+                  />
+                  Reach zone
+                </label>
+                <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                  <input
+                    type="checkbox"
+                    checked={showTrace}
+                    onChange={(e) => {
+                      setShowTrace(e.target.checked);
+                      if (!e.target.checked) setTrace([]);
+                    }}
+                    className="h-4 w-4 accent-[var(--color-primary)]"
+                  />
+                  Trace
+                </label>
+                {mode === "IK" && (
+                  <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <input
+                      type="checkbox"
+                      checked={showGhost}
+                      onChange={(e) => setShowGhost(e.target.checked)}
+                      className="h-4 w-4 accent-[var(--color-primary)]"
+                    />
+                    Other solution
+                  </label>
+                )}
+                <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                  <input
+                    type="checkbox"
+                    checked={pathMode}
+                    onChange={(e) => setPathMode(e.target.checked)}
+                    className="h-4 w-4 accent-[var(--color-primary)]"
+                  />
+                  Draw path
+                </label>
+              </div>
             )}
           </div>
           <div className="h-[560px] border-t border-border bg-panel">
@@ -374,13 +614,65 @@ function KinematicsLab() {
                 lengths={activeLengths}
                 showZone={showZone}
                 target={mode === "IK" ? target : null}
-                onTargetChange={mode === "IK" ? setTarget : undefined}
+                onTargetChange={mode === "IK" && !pathMode && !playing ? setTarget : undefined}
+                ghostPoints={mode === "IK" && showGhost ? ghostPoints : undefined}
+                trace={showTrace ? trace : undefined}
+                path={waypoints.map((w) => w.target)}
+                onPathPoint={
+                  pathMode && !playing
+                    ? (p) =>
+                        setWaypoints((w) => {
+                          const last = w[w.length - 1];
+                          if (last && Math.hypot(last.target.x - p.x, last.target.y - p.y) < 25)
+                            return w;
+                          const sol = ik2d(activeLengths, p, elbowUp, angles[2] ?? 0);
+                          return [
+                            ...w,
+                            {
+                              id: uid(),
+                              name: `P${w.length + 1}`,
+                              angles: sol.angles,
+                              target: p,
+                              move: "MOVL" as const,
+                              spd: 50,
+                            },
+                          ];
+                        })
+                    : undefined
+                }
               />
             )}
           </div>
+          {mode !== "DH" && (
+            <div className="flex flex-wrap items-center gap-2 border-t border-border px-5 py-3">
+              <button
+                className="rounded-lg bg-primary px-3 py-2 text-sm font-bold text-primary-foreground disabled:opacity-40"
+                disabled={waypoints.length === 0}
+                onClick={() => setPlaying((p) => !p)}
+              >
+                {playing ? "Stop" : "Play trajectory"}
+              </button>
+              <button
+                className="rounded-lg border border-border px-3 py-2 text-sm font-semibold"
+                onClick={() => setWaypoints([])}
+              >
+                Clear path
+              </button>
+              <button
+                className="rounded-lg border border-border px-3 py-2 text-sm font-semibold"
+                onClick={() => setTrace([])}
+              >
+                Clear trace
+              </button>
+              <span className="text-xs text-muted-foreground">
+                {waypoints.length} point{waypoints.length === 1 ? "" : "s"} · MOVJ curves, MOVL runs
+                straight
+              </span>
+            </div>
+          )}
         </section>
 
-        {/* ---------- Right: readouts ---------- */}
+        {/* ---------- Right: readouts + tools ---------- */}
         <aside className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <Stat label="End X" value={(mode === "DH" ? dhEnd.x : end.x).toFixed(1)} />
@@ -389,8 +681,96 @@ function KinematicsLab() {
             <Stat label="Error" value={(mode === "IK" ? ik.error : 0).toFixed(1)} />
             <Stat
               label="Reach"
-              value={mode === "DH" ? `0-${dhReach}` : `${Math.round(minReach)}-${Math.round(maxReach)}`}
+              value={
+                mode === "DH" ? `0-${dhReach}` : `${Math.round(minReach)}-${Math.round(maxReach)}`
+              }
             />
+          </div>
+
+          <div className="lab-card overflow-hidden">
+            <div className="border-b border-border px-3 py-3">
+              <SegButton
+                options={TABS.map((t) => ({ value: t.value, label: t.label }))}
+                value={tab}
+                onChange={(v) => setTab(v as Tab)}
+              />
+            </div>
+            <div className="px-4 py-4">
+              {tab === "math" && (
+                <div className="space-y-3">
+                  <h3 className="text-base font-extrabold text-foreground">
+                    {mode === "IK"
+                      ? "IK solve, step by step"
+                      : mode === "FK"
+                        ? "FK equations, live"
+                        : "DH matrix chain"}
+                  </h3>
+                  {mode === "FK" && (
+                    <FKFormula
+                      lengths={activeLengths}
+                      angles={planarAngles}
+                      unit={unit}
+                      end={end}
+                    />
+                  )}
+                  {mode === "IK" && (
+                    <IKFormula
+                      lengths={activeLengths}
+                      target={target}
+                      angles={ik.angles}
+                      unit={unit}
+                      reachable={ik.reachable}
+                    />
+                  )}
+                  {mode === "DH" && (
+                    <DHFormula frames={frames} step={dhStep} onStep={setDhStep} />
+                  )}
+                </div>
+              )}
+
+              {tab === "teach" && (
+                <TeachPanel
+                  waypoints={waypoints}
+                  playing={playing}
+                  activeIndex={activeIndex}
+                  jointCount={linkCount}
+                  onTeach={teach}
+                  onDelete={(id) => setWaypoints((w) => w.filter((x) => x.id !== id))}
+                  onSetMove={(id, m) =>
+                    setWaypoints((w) => w.map((x) => (x.id === id ? { ...x, move: m } : x)))
+                  }
+                  onSetSpeed={(id, s) =>
+                    setWaypoints((w) => w.map((x) => (x.id === id ? { ...x, spd: s } : x)))
+                  }
+                  onGoto={gotoWaypoint}
+                  onPlay={() => setPlaying(true)}
+                  onStop={() => setPlaying(false)}
+                  onClear={() => setWaypoints([])}
+                  onJogJoint={jogJoint}
+                  onJogCart={jogCart}
+                />
+              )}
+
+              {tab === "quiz" && (
+                <QuizPanel
+                  lengths={activeLengths}
+                  angles={planarAngles}
+                  onSetTarget={(t) => {
+                    setMode("IK");
+                    setTarget(t);
+                  }}
+                />
+              )}
+
+              {tab === "lessons" && (
+                <LessonPanel
+                  state={lessonState}
+                  activeId={lessonId}
+                  onSelect={selectLesson}
+                  completed={completed}
+                />
+              )}
+            </div>
           </div>
 
           <div className="lab-card px-4 py-3">
@@ -399,7 +779,7 @@ function KinematicsLab() {
               {outputAngles.map((a, i) => (
                 <div key={i} className="flex items-center justify-between py-2">
                   <dt className="text-sm text-muted-foreground">theta {i + 1}</dt>
-                  <dd className="text-sm font-bold text-foreground">{a.toFixed(1)} deg</dd>
+                  <dd className="text-sm font-bold text-foreground">{fmtAngle(a, unit)}</dd>
                 </div>
               ))}
             </dl>
