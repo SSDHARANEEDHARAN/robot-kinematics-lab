@@ -9,6 +9,10 @@ type Props = {
   showZone: boolean;
   target?: Vec2 | null | undefined;
   onTargetChange?: ((p: Vec2) => void) | undefined;
+  ghostPoints?: Vec2[] | undefined;
+  trace?: Vec2[] | undefined;
+  path?: Vec2[] | undefined;
+  onPathPoint?: ((p: Vec2) => void) | undefined;
 };
 
 const r1 = (n: number) => Math.round(n * 1000) / 1000;
@@ -16,7 +20,17 @@ const r1 = (n: number) => Math.round(n * 1000) / 1000;
 const W = 760;
 const H = 560;
 
-export function ArmView2D({ points, lengths, showZone, target, onTargetChange }: Props) {
+export function ArmView2D({
+  points,
+  lengths,
+  showZone,
+  target,
+  onTargetChange,
+  ghostPoints,
+  trace,
+  path,
+  onPathPoint,
+}: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
   const dragging = useRef(false);
 
@@ -33,9 +47,11 @@ export function ArmView2D({ points, lengths, showZone, target, onTargetChange }:
   };
 
   const handlePointer = (e: React.PointerEvent) => {
-    if (!onTargetChange) return;
     const p = toWorld(e.clientX, e.clientY);
-    if (p) onTargetChange({ x: Math.round(p.x * 10) / 10, y: Math.round(p.y * 10) / 10 });
+    if (!p) return;
+    const snapped = { x: Math.round(p.x * 10) / 10, y: Math.round(p.y * 10) / 10 };
+    if (onPathPoint) onPathPoint(snapped);
+    else if (onTargetChange) onTargetChange(snapped);
   };
 
   const grid: number[] = [];
@@ -44,13 +60,14 @@ export function ArmView2D({ points, lengths, showZone, target, onTargetChange }:
   for (let g = -H / 2; g <= H / 2; g += 40) gridY.push(g);
 
   const end = points[points.length - 1] ?? { x: 0, y: 0 };
+  const interactive = Boolean(onTargetChange || onPathPoint);
 
   return (
     <svg
       ref={svgRef}
       viewBox={`${-W / 2} ${-H / 2} ${W} ${H}`}
       className="h-full w-full touch-none select-none"
-      style={{ cursor: onTargetChange ? "crosshair" : "default" }}
+      style={{ cursor: interactive ? "crosshair" : "default" }}
       onPointerDown={(e) => {
         dragging.current = true;
         (e.target as Element).setPointerCapture?.(e.pointerId);
@@ -92,6 +109,61 @@ export function ArmView2D({ points, lengths, showZone, target, onTargetChange }:
                 strokeDasharray="5 5"
               />
             )}
+          </g>
+        )}
+
+        {/* end-effector trace */}
+        {trace && trace.length > 1 && (
+          <polyline
+            points={trace.map((p) => `${r1(p.x)},${r1(p.y)}`).join(" ")}
+            className="stroke-primary/40"
+            strokeWidth={2}
+            fill="none"
+          />
+        )}
+
+        {/* taught path */}
+        {path && path.length > 0 && (
+          <g>
+            <polyline
+              points={path.map((p) => `${r1(p.x)},${r1(p.y)}`).join(" ")}
+              className="stroke-brand"
+              strokeWidth={2}
+              strokeDasharray="7 6"
+              fill="none"
+            />
+            {path.map((p, i) => (
+              <g key={i}>
+                <circle cx={r1(p.x)} cy={r1(p.y)} r={6} className="fill-brand" />
+                <g transform={`translate(${r1(p.x) + 10}, ${r1(p.y)}) scale(1,-1)`}>
+                  <text className="fill-foreground" fontSize={13} fontWeight={700}>
+                    P{i + 1}
+                  </text>
+                </g>
+              </g>
+            ))}
+          </g>
+        )}
+
+        {/* ghost (other IK branch) */}
+        {ghostPoints && ghostPoints.length > 1 && (
+          <g opacity={0.35}>
+            {ghostPoints.slice(0, -1).map((p, i) => {
+              const q = ghostPoints[i + 1] as Vec2;
+              return (
+                <line
+                  key={`g${i}`}
+                  x1={r1(p.x)}
+                  y1={r1(p.y)}
+                  x2={r1(q.x)}
+                  y2={r1(q.y)}
+                  className="stroke-muted-foreground"
+                  strokeWidth={8}
+                  strokeLinecap="round"
+                  strokeDasharray="10 8"
+                />
+              );
+            })}
           </g>
         )}
 
