@@ -762,12 +762,12 @@ function KinematicsLab() {
                     <Section title="Environment" collapsible defaultOpen={false}>
                       <div className="flex flex-col gap-3">
                         <label className="flex items-center gap-2">
-                          <input type="checkbox" checked={showAxes} onChange={e => setShowAxes(e.target.checked)} />
-                          <span className="text-xs">Show Joint Axes</span>
+                          <input type="checkbox" className="accent-foreground" checked={showAxes} onChange={e => setShowAxes(e.target.checked)} />
+                          <span className="text-xs font-bold uppercase tracking-widest">Show Joint Axes</span>
                         </label>
                         <label className="flex items-center gap-2">
-                          <input type="checkbox" checked={showHeatmap} onChange={e => setShowHeatmap(e.target.checked)} />
-                          <span className="text-xs">Show Heatmap</span>
+                          <input type="checkbox" className="accent-foreground" checked={showHeatmap} onChange={e => setShowHeatmap(e.target.checked)} />
+                          <span className="text-xs font-bold uppercase tracking-widest">Show Heatmap</span>
                         </label>
                         <GhostButton onClick={() => setAngles([0,0,0])}>Reset Pose</GhostButton>
                         <GhostButton onClick={() => exportPresetReport(preset, ikFkConsistency)}>
