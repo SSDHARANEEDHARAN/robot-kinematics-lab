@@ -534,30 +534,33 @@ function KinematicsLab() {
 
   return (
     <main className="min-h-screen px-4 pb-8 pt-0 md:px-8 max-w-[1920px] mx-auto select-none flex flex-col bg-background text-foreground">
-      <header className="py-6 mb-6 flex items-center justify-between border-b-4 border-foreground">
-        <div className="flex flex-col gap-0.5">
-          <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+      <header className="mb-8 flex items-center justify-between border-b border-border/50 py-6">
+        <div className="flex flex-col gap-0.5 group cursor-default">
+          <p className="text-[9px] font-black uppercase tracking-[0.4em] text-primary transition-all group-hover:tracking-[0.6em]">
             Industrial Kinematics
           </p>
           <p className="text-xl font-black uppercase tracking-tighter text-foreground">
-            Factory Precision V3
+            Precision Lab V3
           </p>
         </div>
 
-        
         <div className="flex items-center gap-4">
-          <SegButton
-            options={[
-              { value: "deg", label: "deg" },
-              { value: "rad", label: "rad" },
-            ]}
-            value={unit}
-            onChange={(v) => setUnit(v as "deg" | "rad")}
-          />
-          <div className="flex items-center gap-2 border-2 border-foreground bg-background px-3 py-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
-            <span className={`h-2 w-2 rounded-full ${mode === "IK" && !ik.reachable ? "bg-foreground animate-pulse" : "bg-foreground"}`} />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">
-              {mode === "IK" && !ik.reachable ? "Out of reach" : playing ? "Running" : "System Ready"}
+          <div className="hidden lg:flex items-center gap-4 mr-4">
+            <SegButton
+              options={[
+                { value: "IK", label: "Inverse" },
+                { value: "FK", label: "Forward" },
+                { value: "DH", label: "DH-Param" },
+              ]}
+              value={mode}
+              onChange={(v) => setMode(v as Mode)}
+            />
+          </div>
+
+          <div className="flex items-center gap-2 rounded-full border border-border/50 bg-secondary/50 px-4 py-2 backdrop-blur-md transition-all hover:border-primary/50 shadow-lg shadow-black/5">
+            <span className={`h-2 w-2 rounded-full shadow-[0_0_8px] ${mode === "IK" && !ik.reachable ? "bg-destructive shadow-destructive/50 animate-pulse" : "bg-primary shadow-primary/50"}`} />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/80">
+              {mode === "IK" && !ik.reachable ? "Out of reach" : playing ? "Executing" : "Active"}
             </span>
           </div>
         </div>
