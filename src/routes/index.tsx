@@ -533,7 +533,7 @@ function KinematicsLab() {
           };
 
   return (
-    <main className="min-h-screen px-4 pb-8 pt-0 md:px-8 max-w-[1920px] mx-auto select-none flex flex-col">
+    <main className="min-h-screen px-4 pb-8 pt-0 md:px-8 max-w-[1920px] mx-auto select-none flex flex-col bg-background text-foreground">
       <header className="py-6 mb-6 flex items-center justify-between border-b-4 border-foreground">
         <div className="flex flex-col gap-0.5">
           <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">
