@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 const n = (v: number, d = 2) => v.toFixed(d);
-import { deg2rad, rad2deg, solveIK } from "@/lib/kinematics";
+import { deg2rad, rad2deg, ik2d as solveIK } from "@/lib/kinematics";
 import type { Vec2 } from "@/lib/kinematics";
 import { Play, Pause, ChevronRight, ChevronLeft } from "lucide-react";
 
