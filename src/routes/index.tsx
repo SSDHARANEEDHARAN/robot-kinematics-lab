@@ -394,7 +394,7 @@ function KinematicsLab() {
         let targetPos = { x: 0, y: 0 };
         if (mode === "DH") {
            const f = dhChain(dhRows.map((r, k) => ({ ...r, theta: p[k] ?? 0 })));
-           const o = originOf(f[f.length - 1]);
+           const o = originOf(f[f.length - 1] as Mat4);
            targetPos = { x: o.x, y: o.y };
         } else {
            const pts = fk2d(activeLengths, p);
