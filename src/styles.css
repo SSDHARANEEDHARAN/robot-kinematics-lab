@@ -145,6 +145,7 @@
     color: var(--color-foreground);
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
 
   .dark body {
