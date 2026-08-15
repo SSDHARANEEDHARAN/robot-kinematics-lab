@@ -13,7 +13,7 @@ type Props = {
 };
 
 
-// Colors based on the uploaded reference image
+// Colors based on schematic request: Dark Blue and Vibrant Red
 const LINK_COLORS = [
   "#1A2B3C", // J1: Deep Dark Blue
   "#E74C3C", // J2: Vibrant Red
@@ -34,12 +34,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
   const effectiveFrames = useMemo(() => {
     if (mode === "DH" || !planarPoints || planarPoints.length === 0) return frames || [];
     
-    // Create Mat4 frames from 2D points
-    // In planar mode, J1 is at (0,0), J2 is at planarPoints[1], etc.
-    // We treat 2D (x,y) as 3D (x,z) to make the robot stand up
     return planarPoints.map((p, i) => {
-      // Create a transformation matrix for each joint in the planar arm
-      // We map 2D (x, y) to 3D (x, 0, z) and handle link rotation for J2 and J3
       const pPrev = planarPoints[i - 1];
       const angle = i > 0 && pPrev ? Math.atan2(p.y - pPrev.y, p.x - pPrev.x) : 0;
       const c = Math.cos(angle);
@@ -74,9 +69,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
     const cp = Math.cos(cam.pitch);
     const sp = Math.sin(cam.pitch);
     
-    // Base scale adjusted by viewport size and user zoom
     const currentBaseScale = Math.min(w, h) / 480;
-    // We update state inside useEffect, but we need the local value for this render cycle's drawing
     const drawScale = currentBaseScale * cam.zoom;
     
     if (baseScale !== currentBaseScale) {
@@ -98,7 +91,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       return {
         x: w / 2 + x1 * drawScale * persp,
         y: h / 2 + 120 - z2 * drawScale * persp,
-        z2: z2, // for sorting if needed
+        z2: z2,
         y2: y2
       };
     };
@@ -123,7 +116,6 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
         ctx.lineTo(to.x, to.y); 
         ctx.stroke();
 
-        // Arrow head
         const angle = Math.atan2(to.y - from.y, to.x - from.x);
         ctx.beginPath();
         ctx.moveTo(to.x, to.y);
@@ -141,28 +133,23 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
         drawArrow(p, py, "#1DB954"); // Y - Green arrow
         drawArrow(p, pz, "#1436D6"); // Z - Blue arrow
       }
-
     };
 
-    // Realistic Floor/Base Grid - matching the reference
-    ctx.strokeStyle = "rgba(0,0,0,0.05)";
+    // Light grey perspective grid floor
+    ctx.strokeStyle = "rgba(0,0,0,0.06)";
     ctx.lineWidth = 1;
     for(let i = -10; i <= 10; i++) {
-        const p1 = project({x: i*40, y: -400, z: 0});
-        const p2 = project({x: i*40, y: 400, z: 0});
+        const p1 = project({x: i*50, y: -500, z: 0});
+        const p2 = project({x: i*50, y: 500, z: 0});
         ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
-        const p3 = project({x: -400, y: i*40, z: 0});
-        const p4 = project({x: 400, y: i*40, z: 0});
+        const p3 = project({x: -500, y: i*50, z: 0});
+        const p4 = project({x: 500, y: i*50, z: 0});
         ctx.beginPath(); ctx.moveTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y); ctx.stroke();
     }
 
-    // Draw origin axes at base with arrows - matching reference
     if (showAxes) {
-      drawAxes({x: 0, y: 0, z: 0}, [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1], 60, true);
+      drawAxes({x: 0, y: 0, z: 0}, [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1], 70, true);
     }
-
-    // Pre-calculate projections for depth sorting
-    const projectFrame = (frame: Mat4) => project(originOf(frame));
 
     // Links and Joints
     for (let i = 0; i < effectiveFrames.length - 1; i++) {
@@ -172,12 +159,10 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       const pb = project(b);
 
       const isHighlighted = activeStep !== undefined && i < activeStep;
-      const r = (13 - i * 1.2) * currentBaseScale;
+      const r = (12 - i * 1.0) * currentBaseScale;
 
-      // --- Link body: realistic cylinders based on reference image ---
+      // --- Link body: Technical schematic cylinders ---
       const ang = Math.atan2(pb.y - pa.y, pb.x - pa.x);
-      const dist = Math.sqrt((pb.x - pa.x) ** 2 + (pb.y - pa.y) ** 2);
-      
       const nx = Math.cos(ang + Math.PI / 2);
       const ny = Math.sin(ang + Math.PI / 2);
       const lw = r * 2.2;
@@ -185,95 +170,81 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       const linkColor = LINK_COLORS[i % LINK_COLORS.length] || "#7F8C8D";
 
       ctx.save();
-      // Drop shadow for 3D depth
-      ctx.shadowColor = "rgba(0,0,0,0.35)";
-      ctx.shadowBlur = 10;
-      ctx.shadowOffsetY = 6;
+      ctx.shadowColor = "rgba(0,0,0,0.15)";
+      ctx.shadowBlur = 8;
+      ctx.shadowOffsetY = 4;
       
-      // Simple cylindrical shading (darker on bottom)
       const cylinderGrad = ctx.createLinearGradient(
         pa.x + nx * lw * 0.5, pa.y + ny * lw * 0.5,
         pa.x - nx * lw * 0.5, pa.y - ny * lw * 0.5
       );
       cylinderGrad.addColorStop(0, linkColor);
-      cylinderGrad.addColorStop(0.5, linkColor);
-      cylinderGrad.addColorStop(1, "rgba(0,0,0,0.4)"); 
+      cylinderGrad.addColorStop(0.3, linkColor);
+      cylinderGrad.addColorStop(0.7, "rgba(0,0,0,0.3)");
+      cylinderGrad.addColorStop(1, "rgba(0,0,0,0.5)");
       
       ctx.strokeStyle = cylinderGrad;
       ctx.lineWidth = lw;
-      ctx.lineCap = "butt"; // Use butt for links so they don't overlap joint center visually too much
+      ctx.lineCap = "butt";
       ctx.beginPath();
       ctx.moveTo(pa.x, pa.y);
       ctx.lineTo(pb.x, pb.y);
       ctx.stroke();
       
-      drawComplexJoint(pa.x, pa.y, jointAngle, i);
+      // Specular Highlight
+      ctx.strokeStyle = "rgba(255,255,255,0.25)";
+      ctx.lineWidth = lw * 0.12;
+      ctx.beginPath();
+      ctx.moveTo(pa.x + nx * lw * 0.25, pa.y + ny * lw * 0.25);
+      ctx.lineTo(pb.x + nx * lw * 0.25, pb.y + ny * lw * 0.25);
+      ctx.stroke();
+      ctx.restore();
 
       // --- Joint: Semi-transparent mechanical housing ---
-      const hr = r * 2.5;  
-      const hw = r * 2.0;  
+      const hr = r * 2.6;  
+      const hw = r * 1.8;  
       
-      const drawSchematicJoint = (cx: number, cyy: number, angle: number) => {
-        ctx.save();
-        ctx.translate(cx, cyy);
-        ctx.rotate(angle);
-        
-        // Semi-transparent housing
-        ctx.fillStyle = "rgba(220, 220, 230, 0.6)";
-        ctx.strokeStyle = "rgba(100, 100, 120, 0.4)";
-        ctx.lineWidth = 1;
-        
-        ctx.beginPath();
-        ctx.roundRect(-hw/2, -hr, hw, hr * 2, hr * 0.2);
-        ctx.fill();
-        ctx.stroke();
-
-        // Internal "axle" detail
-        ctx.fillStyle = "rgba(44, 62, 80, 0.8)";
-        ctx.fillRect(-hw * 0.1, -hr * 0.8, hw * 0.2, hr * 1.6);
-        
-        ctx.restore();
-      };
-      
-      // We already have drawComplexJoint defined above in the previous edit, 
-      // but let's replace the actual drawing call to match the "schematic" request.
-      // I'll update the loop to use this new style for DH 4-6.
-      
-      // Note: The user asked for this specifically for DH 4, 5, 6.
-      // We'll apply this logic inside the loop.
-      
-      ctx.save();
-      ctx.restore(); // Clearing previous link/joint logic for schematic replacement if needed
-      // Actually, I'll just refine the existing drawComplexJoint call.
-
-      
-      // Draw joint at start of link
-      // Use the Z-axis of the frame to orient the joint cylinder
       const frameA = effectiveFrames[i] as Mat4;
       const zAxis = axisOf(frameA, 2);
       const projZ = project({x: a.x + zAxis.x, y: a.y + zAxis.y, z: a.z + zAxis.z});
       const jointAngle = Math.atan2(projZ.y - pa.y, projZ.x - pa.x);
       
-      drawComplexJoint(pa.x, pa.y, jointAngle, i);
+      ctx.save();
+      ctx.translate(pa.x, pa.y);
+      ctx.rotate(jointAngle);
+      
+      // Housing
+      ctx.fillStyle = "rgba(245, 246, 250, 0.75)";
+      ctx.strokeStyle = "rgba(189, 195, 199, 0.6)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(-hw/2, -hr, hw, hr * 2, hr * 0.25);
+      ctx.fill();
+      ctx.stroke();
+
+      // Mechanical core
+      ctx.fillStyle = "rgba(52, 73, 94, 0.55)";
+      ctx.fillRect(-hw * 0.18, -hr * 0.88, hw * 0.36, hr * 1.76);
+      
+      ctx.restore();
 
       if (isHighlighted) {
         ctx.save();
-        ctx.strokeStyle = "#3498DB";
+        ctx.strokeStyle = "#E74C3C";
         ctx.lineWidth = 2;
-        ctx.setLineDash([5, 5]);
+        ctx.setLineDash([4, 4]);
         ctx.beginPath();
-        ctx.arc(pa.x, pa.y, hr * 1.4, 0, Math.PI * 2);
+        ctx.arc(pa.x, pa.y, hr * 1.35, 0, Math.PI * 2);
         ctx.stroke();
         ctx.restore();
       }
 
-      // Frame axes at each joint
       if (showAxes && effectiveFrames[i]) {
-        drawAxes(a, effectiveFrames[i] as Mat4, 34);
+        drawAxes(a, effectiveFrames[i] as Mat4, 42);
       }
     }
 
-    // End Effector (Gripper Base/Tool)
+    // End Effector
     const eeFrame = effectiveFrames[effectiveFrames.length - 1];
     if (eeFrame) {
       const eePos = originOf(eeFrame as Mat4);
@@ -286,34 +257,22 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       ctx.translate(pee.x, pee.y);
       ctx.rotate(eeAngle);
       
-      const eer = 12 * currentBaseScale;
-      
-      // Industrial End-Cap Tool Holder
-      const eeGrad = ctx.createLinearGradient(0, -eer, 0, eer);
-      eeGrad.addColorStop(0, "#3498DB");
-      eeGrad.addColorStop(1, "#2980B9");
-      
-      ctx.fillStyle = eeGrad;
+      const eer = 14 * currentBaseScale;
+      ctx.fillStyle = "rgba(52, 152, 219, 0.85)";
       ctx.beginPath();
       ctx.roundRect(-eer, -eer, eer * 2, eer * 2, eer * 0.3);
       ctx.fill();
-      ctx.strokeStyle = "rgba(0,0,0,0.3)";
+      ctx.strokeStyle = "rgba(0,0,0,0.25)";
       ctx.stroke();
-      
-      // Gripper fingers (Simple aesthetic representation)
-      ctx.fillStyle = "#2C3E50";
-      ctx.fillRect(eer * 0.5, -eer * 0.8, eer * 0.8, eer * 0.3);
-      ctx.fillRect(eer * 0.5, eer * 0.5, eer * 0.8, eer * 0.3);
       
       ctx.restore();
 
       if (showAxes) {
-        drawAxes(eePos, eeFrame as Mat4, 40);
+        drawAxes(eePos, eeFrame as Mat4, 50);
       }
     }
 
-
-  }, [effectiveFrames, cam, activeStep]);
+  }, [effectiveFrames, cam, activeStep, showAxes, baseScale]);
 
   return (
     <div className="relative h-full w-full">
@@ -348,7 +307,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
         </GhostButton>
       </div>
       <div className="absolute top-4 right-4 rounded-xl border border-border bg-card/80 p-3 text-[10px] font-bold shadow-xl backdrop-blur-md">
-        <div className="text-primary uppercase tracking-[0.2em] mb-2 font-black">Industrial Kinematics</div>
+        <div className="text-primary uppercase tracking-[0.2em] mb-2 font-black">Technical Schematic</div>
         <div className="text-foreground/70 space-y-1">
           {effectiveFrames.length > 0 && (
             <>
