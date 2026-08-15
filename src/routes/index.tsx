@@ -888,12 +888,90 @@ function KinematicsLab() {
             />
           </div>
 
-            <Stat
-              label="Reach"
-              value={
-                mode === "DH" ? `0-${dhReach}` : `${Math.round(minReach)}-${Math.round(maxReach)}`
-              }
-            />
+          <div className="lab-card overflow-hidden">
+            <div className="border-b border-border px-3 py-3">
+              <SegButton
+                options={TABS.map((t) => ({ value: t.value, label: t.label }))}
+                value={tab}
+                onChange={(v) => setTab(v as Tab)}
+              />
+            </div>
+            <div className="px-4 py-4">
+              {tab === "math" && (
+                <div className="space-y-3">
+                  <h3 className="text-base font-extrabold text-foreground">
+                    {mode === "IK"
+                      ? "IK solve, step by step"
+                      : mode === "FK"
+                        ? "FK equations, live"
+                        : "DH matrix chain"}
+                  </h3>
+                  {mode === "FK" && (
+                    <FKFormula
+                      lengths={activeLengths}
+                      angles={planarAngles}
+                      unit={unit}
+                      end={end}
+                    />
+                  )}
+                  {mode === "IK" && (
+                    <IKFormula
+                      lengths={activeLengths}
+                      target={target}
+                      angles={ik.angles}
+                      unit={unit}
+                      reachable={ik.reachable}
+                    />
+                  )}
+                  {mode === "DH" && (
+                    <DHFormula frames={frames} step={dhStep} onStep={setDhStep} />
+                  )}
+                </div>
+              )}
+
+              {tab === "teach" && (
+                <TeachPanel
+                  waypoints={waypoints}
+                  playing={playing}
+                  activeIndex={activeIndex}
+                  jointCount={linkCount}
+                  onTeach={teach}
+                  onDelete={(id) => setWaypoints((w) => w.filter((x) => x.id !== id))}
+                  onSetMove={(id, m) =>
+                    setWaypoints((w) => w.map((x) => (x.id === id ? { ...x, move: m } : x)))
+                  }
+                  onSetSpeed={(id, s) =>
+                    setWaypoints((w) => w.map((x) => (x.id === id ? { ...x, spd: s } : x)))
+                  }
+                  onGoto={gotoWaypoint}
+                  onPlay={() => setPlaying(true)}
+                  onStop={() => setPlaying(false)}
+                  onClear={() => setWaypoints([])}
+                  onJogJoint={jogJoint}
+                  onJogCart={jogCart}
+                />
+              )}
+
+              {tab === "quiz" && (
+                <QuizPanel
+                  lengths={activeLengths}
+                  angles={planarAngles}
+                  onSetTarget={(t) => {
+                    setMode("IK");
+                    setTarget(t);
+                  }}
+                />
+              )}
+
+              {tab === "lessons" && (
+                <LessonPanel
+                  state={lessonState}
+                  activeId={lessonId}
+                  onSelect={selectLesson}
+                  completed={completed}
+                />
+              )}
+            </div>
           </div>
 
           <div className="lab-card px-4 py-3">
