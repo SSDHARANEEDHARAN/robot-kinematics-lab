@@ -79,6 +79,7 @@ const TABS: { value: Tab; label: string }[] = [
   { value: "quiz", label: "Quiz" },
   { value: "ai", label: "AI Tutor" },
   { value: "lessons", label: "Lessons" },
+  { value: "industrial", label: "Industrial" },
   { value: "progress", label: "Stats" },
 ];
 
