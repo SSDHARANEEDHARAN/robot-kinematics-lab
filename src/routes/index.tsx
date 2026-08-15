@@ -407,11 +407,28 @@ function KinematicsLab() {
                     onChange={(v) => setMode(v as Mode)}
                   />
                 </Section>
-                {/* ... existing mode-specific settings ... */}
-
-          {mode === "DH" ? (
-            <>
-              <Section title="Joints">
+                {mode === "DH" ? (
+                  <>
+                    <Section title="Joints">
+                      <div className="flex items-center justify-center gap-0 rounded-lg border border-border">
+                        <button
+                          className="px-4 py-2 text-lg font-bold text-primary"
+                          onClick={() => setJointCount((c) => Math.max(2, c - 1))}
+                        >
+                          -
+                        </button>
+                        <span className="min-w-12 border-x border-border px-4 py-2 text-center text-lg font-extrabold">
+                          {jointCount}
+                        </span>
+                        <button
+                          className="px-4 py-2 text-lg font-bold text-primary"
+                          onClick={() => setJointCount((c) => Math.min(6, c + 1))}
+                        >
+                          +
+                        </button>
+                      </div>
+                      <p className="mt-2 text-sm text-muted-foreground">Add joints from 2 to 6</p>
+                    </Section>
                 <div className="flex items-center justify-center gap-0 rounded-lg border border-border">
                   <button
                     className="px-4 py-2 text-lg font-bold text-primary"
@@ -638,7 +655,10 @@ function KinematicsLab() {
                 </div>
               </Section>
             </>
-          )}
+                </div>
+              </div>
+            </div>
+          </div>
         </aside>
 
         {/* ---------- Center: viewport ---------- */}
