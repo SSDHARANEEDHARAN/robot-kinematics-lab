@@ -17,6 +17,7 @@ import {
 import { LESSONS, LessonPanel, type Lesson } from "@/components/LessonPanel";
 import { QuizPanel } from "@/components/QuizPanel";
 import { TeachPanel } from "@/components/TeachPanel";
+import { IKWalkthrough } from "@/components/IKWalkthrough";
 import {
   det2x2,
   dhChain,
