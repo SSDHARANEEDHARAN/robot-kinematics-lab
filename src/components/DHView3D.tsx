@@ -83,8 +83,8 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       const depth = 1200;
       const persp = depth / (depth + y2 * 0.8);
       return {
-        x: w / 2 + x1 * scale * persp,
-        y: h / 2 + 120 - z2 * scale * persp,
+        x: w / 2 + x1 * drawScale * persp,
+        y: h / 2 + 120 - z2 * drawScale * persp,
         z2: z2, // for sorting if needed
         y2: y2
       };
