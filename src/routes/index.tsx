@@ -676,6 +676,8 @@ function KinematicsLab() {
                           { value: "2", label: "2 Links" },
                           { value: "3", label: "3 Links" },
                           { value: "4", label: "4 Links" },
+                          { value: "5", label: "5 Links" },
+                          { value: "6", label: "6 Links" },
                         ]}
                         value={String(linkCount)}
                         onChange={(v) => setLinkCount(Number(v))}
