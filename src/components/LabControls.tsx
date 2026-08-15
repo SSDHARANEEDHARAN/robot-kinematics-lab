@@ -61,6 +61,7 @@ export function SegButton({
           key={o.value}
           type="button"
           onClick={() => onChange(o.value)}
+          aria-pressed={value === o.value}
           className={`relative z-10 rounded-md px-3 py-2 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 ${
             value === o.value
               ? "text-primary-foreground"
@@ -114,10 +115,13 @@ export function SliderRow({
   min: number;
   max: number;
   onChange: (v: number) => void;
+  ariaLabel?: string;
 }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="w-14 shrink-0 text-xs font-bold text-muted-foreground uppercase tracking-wider">{label}</span>
+      <span className="w-14 shrink-0 text-xs font-bold text-muted-foreground uppercase tracking-wider" id={`slider-label-${label}`}>
+        {label}
+      </span>
       <input
         type="range"
         min={min}
@@ -125,12 +129,15 @@ export function SliderRow({
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         className="min-w-0 flex-1"
+        aria-labelledby={`slider-label-${label}`}
+        aria-label={ariaLabel}
       />
       <input
         type="number"
         value={Math.round(value)}
         onChange={(e) => onChange(Number(e.target.value))}
         className="lab-input w-20 shrink-0 text-center text-xs"
+        aria-label={`${label} numeric value`}
       />
     </div>
   );

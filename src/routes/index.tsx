@@ -83,11 +83,11 @@ const DEFAULT_DH: DHRow[] = [
 
 const TABS: { value: Tab; label: string }[] = [
   { value: "math", label: "Math" },
-  { value: "walkthrough", label: "Step-by-Step" },
+  { value: "walkthrough", label: "Solver Steps" },
+  { value: "lessons", label: "Learning" },
   { value: "teach", label: "Teach" },
   { value: "quiz", label: "Quiz" },
   { value: "ai", label: "AI Tutor" },
-  { value: "lessons", label: "Lessons" },
   { value: "industrial", label: "Industrial" },
   { value: "progress", label: "Stats" },
 ];

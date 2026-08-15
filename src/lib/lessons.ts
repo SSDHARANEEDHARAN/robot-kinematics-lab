@@ -69,4 +69,21 @@ export const LESSONS: Lesson[] = [
     setup: { mode: "IK", linkCount: 2 },
     check: (s) => Math.hypot(s.target.x, s.target.y) > 195,
   },
+  {
+    id: "ik-walkthrough-2link",
+    title: "5. Guided IK Walkthrough",
+    goal: "Solve IK for (120, 80) and follow the solver logic",
+    body: [
+      "In this lesson, we'll walk through the mathematical steps to solve Inverse Kinematics for a 2-link arm.",
+      "First, set the links to length 120 and 100.",
+      "Then move the target to X: 120, Y: 80.",
+      "Open the 'Solver Steps' tab to see the law of cosines in action.",
+    ],
+    setup: { mode: "IK", linkCount: 2 },
+    check: (s) => 
+      s.mode === "IK" && 
+      Math.abs(s.target.x - 120) < 5 && 
+      Math.abs(s.target.y - 80) < 5 &&
+      Math.abs(s.lengths[0] - 120) < 5,
+  },
 ];
