@@ -216,85 +216,71 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       ctx.restore();
 
 
-      // specular streak along the rod
-      ctx.save();
-      ctx.globalAlpha = 0.5;
-      ctx.strokeStyle = "#fff6ea";
-      ctx.lineWidth = Math.max(1.5, r * 0.28);
-      ctx.beginPath();
-      ctx.moveTo(pa.x + nx * r * 0.45, pa.y + ny * r * 0.45);
-      ctx.lineTo(pb.x + nx * r * 0.45, pb.y + ny * r * 0.45);
-      ctx.stroke();
-      ctx.restore();
+      // --- Joint: Sleek cylindrical joints (frosted gray) ---
+      const hr = r * 1.8;  // joint radius
+      const hw = r * 1.5;  // joint width
+      
+      const drawJoint = (cx: number, cyy: number, angle: number) => {
+        const jnx = Math.cos(angle + Math.PI / 2);
+        const jny = Math.sin(angle + Math.PI / 2);
+        
+        const hGrad = ctx.createLinearGradient(
+          cx + jnx * hr, cyy + jny * hr,
+          cx - jnx * hr, cyy - jny * hr
+        );
+        hGrad.addColorStop(0, "#D5DBDB");
+        hGrad.addColorStop(0.5, "#BDC3C7");
+        hGrad.addColorStop(1, "#95A5A6");
 
-      // --- Joint: frosted gray cylindrical housing over the rod ---
-      const hw = r * 2.2;   // housing half-length along the link axis
-      const hr = r * 1.6;  // housing radius
-      const dx = Math.cos(ang);
-      const dy = Math.sin(ang);
-      const c1 = { x: pa.x - dx * hw * 0.35, y: pa.y - dy * hw * 0.35 };
-      const c2 = { x: pa.x + dx * hw * 0.75, y: pa.y + dy * hw * 0.75 };
-
-      const hGrad = ctx.createLinearGradient(
-        pa.x + nx * hr, pa.y + ny * hr,
-        pa.x - nx * hr, pa.y - ny * hr,
-      );
-      hGrad.addColorStop(0, "rgba(80,85,90,0.85)");
-      hGrad.addColorStop(0.3, "rgba(160,165,170,0.85)");
-      hGrad.addColorStop(0.5, "rgba(220,225,230,0.85)");
-      hGrad.addColorStop(0.75, "rgba(150,155,160,0.85)");
-      hGrad.addColorStop(1, "rgba(85,90,95,0.85)");
-
-      ctx.save();
-      ctx.shadowColor = "rgba(0,0,0,0.22)";
-      ctx.shadowBlur = 10;
-      ctx.shadowOffsetY = 4;
-      ctx.strokeStyle = hGrad;
-      ctx.lineWidth = hr * 2;
-      ctx.lineCap = "butt";
-      ctx.beginPath();
-      ctx.moveTo(c1.x, c1.y);
-      ctx.lineTo(c2.x, c2.y);
-      ctx.stroke();
-      ctx.restore();
-
-      // housing end caps (elliptical rims)
-      const capRim = (cx: number, cyy: number) => {
         ctx.save();
         ctx.translate(cx, cyy);
-        ctx.rotate(ang);
+        ctx.rotate(angle);
+        
+        // Main joint body (cylinder side view)
+        ctx.fillStyle = hGrad;
         ctx.beginPath();
-        ctx.ellipse(0, 0, hr * 0.45, hr, 0, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(60,65,70,0.9)";
+        ctx.rect(-hw/2, -hr, hw, hr * 2);
         ctx.fill();
-        ctx.strokeStyle = "rgba(90,96,102,0.5)";
-        ctx.lineWidth = 1.2;
+        ctx.strokeStyle = "rgba(0,0,0,0.2)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(-hw/2, -hr, hw, hr * 2);
+        
+        // Joint end caps
+        ctx.beginPath();
+        ctx.ellipse(-hw/2, 0, hr * 0.3, hr, 0, 0, Math.PI * 2);
+        ctx.fillStyle = "#7F8C8D";
+        ctx.fill();
         ctx.stroke();
+
+        ctx.beginPath();
+        ctx.ellipse(hw/2, 0, hr * 0.3, hr, 0, 0, Math.PI * 2);
+        ctx.fillStyle = "#BDC3C7";
+        ctx.fill();
+        ctx.stroke();
+        
+        // Highlight band
+        ctx.strokeStyle = "rgba(255,255,255,0.4)";
+        ctx.lineWidth = hr * 0.2;
+        ctx.beginPath();
+        ctx.moveTo(-hw/2, -hr * 0.5);
+        ctx.lineTo(hw/2, -hr * 0.5);
+        ctx.stroke();
+        
         ctx.restore();
       };
-      capRim(c1.x, c1.y);
-      capRim(c2.x, c2.y);
-
-      // frosted highlight band
-      ctx.save();
-      ctx.globalAlpha = 0.55;
-      ctx.strokeStyle = "#ffffff";
-      ctx.lineWidth = hr * 0.35;
-      ctx.beginPath();
-      ctx.moveTo(c1.x + nx * hr * 0.5, c1.y + ny * hr * 0.5);
-      ctx.lineTo(c2.x + nx * hr * 0.5, c2.y + ny * hr * 0.5);
-      ctx.stroke();
-      ctx.restore();
+      
+      drawJoint(pa.x, pa.y, ang + Math.PI/2);
 
       if (isHighlighted) {
         ctx.save();
-        ctx.strokeStyle = "rgba(20,20,20,0.85)";
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = "rgba(46, 204, 113, 0.8)"; // Green highlight for active
+        ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.arc(pa.x, pa.y, hr + 4, 0, Math.PI * 2);
+        ctx.arc(pa.x, pa.y, hr + 5, 0, Math.PI * 2);
         ctx.stroke();
         ctx.restore();
       }
+
 
       // Frame axes at each joint
       if (showAxes) {
