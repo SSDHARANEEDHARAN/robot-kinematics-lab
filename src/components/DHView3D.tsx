@@ -109,8 +109,9 @@ export function DHView3D({ frames, activeStep }: Props) {
       const pa = project(a);
       const pb = project(b);
       
+      // Fixed link color from reference: dark navy/black
+      const color = "#1A252F"; 
       const isHighlighted = activeStep !== undefined && i < activeStep;
-      const color = isHighlighted ? "oklch(0.55 0.15 200)" : (LINK_COLORS[i % LINK_COLORS.length] || "#475569");
       
       // Joint Housing (Transparent Cylinder-like) - matching user-uploads://file-6
       const r = (12 - i * 1);
