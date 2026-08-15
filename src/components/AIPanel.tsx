@@ -69,10 +69,10 @@ export function AIPanel({ state }: Props) {
         {messages.map((m, i) => (
           <div
             key={i}
-            className={`rounded-2xl px-4 py-3 text-sm ${
+            className={`border-2 p-4 text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] ${
               m.role === "user"
-                ? "ml-8 bg-primary text-primary-foreground"
-                : "mr-8 bg-secondary text-secondary-foreground"
+                ? "ml-8 bg-foreground text-background border-foreground"
+                : "mr-8 bg-background text-foreground border-foreground"
             }`}
           >
             <span className="mb-1 block text-[10px] font-bold uppercase tracking-widest opacity-60">
@@ -82,7 +82,7 @@ export function AIPanel({ state }: Props) {
           </div>
         ))}
         {loading && (
-          <div className="mr-8 animate-pulse rounded-2xl bg-secondary px-4 py-3 text-sm text-muted-foreground">
+          <div className="mr-8 animate-pulse border-2 border-foreground bg-background p-4 text-sm text-muted-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
             Thinking...
           </div>
         )}
@@ -100,7 +100,7 @@ export function AIPanel({ state }: Props) {
         <button
           onClick={() => ask()}
           disabled={loading}
-          className="rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow-sm hover:opacity-90 disabled:opacity-50"
+          className="border-2 border-foreground bg-foreground px-4 py-2 text-sm font-black uppercase tracking-widest text-background shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:opacity-90 disabled:opacity-50"
         >
           Send
         </button>

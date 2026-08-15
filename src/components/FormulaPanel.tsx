@@ -15,10 +15,10 @@ function Line({
   return (
     <div
       className={`rounded-md px-2 py-1.5 font-mono text-xs leading-relaxed transition-colors ${
-        hot ? "bg-primary/10 text-foreground" : "text-secondary-foreground"
+        hot ? "bg-foreground text-background" : "text-foreground"
       }`}
     >
-      {label && <span className="mr-2 font-sans text-[11px] font-bold text-primary">{label}</span>}
+      {label && <span className="mr-2 font-sans text-[11px] font-black uppercase tracking-widest text-foreground opacity-50">{label}</span>}
       {children}
     </div>
   );

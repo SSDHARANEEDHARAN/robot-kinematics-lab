@@ -13,12 +13,12 @@ type Props = {
 
 // Colors based on a premium industrial design: Slate and Bright Orange
 const LINK_COLORS = [
-  "#CBD5E1", // Aluminum (Slate 300)
-  "#FACC15", // Safety Yellow (Yellow 400)
-  "#94A3B8", // Brushed Steel (Slate 400)
-  "#EAB308", // Industrial Gold (Yellow 500)
-  "#64748B", // Dark Aluminum (Slate 500)
-  "#CA8A04", // Warning Amber (Yellow 600)
+  "#FFFFFF", // White
+  "#000000", // Black
+  "#CCCCCC", // Light Grey
+  "#333333", // Dark Grey
+  "#999999", // Grey
+  "#666666", // Medium Grey
 ];
 
 export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = [], linkCount = 2, showAxes = true }: Props) {
@@ -116,7 +116,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
     };
 
     // Grid Floor: Dark Factory Floor Grid
-    ctx.strokeStyle = "rgba(0,0,0,0.1)";
+    ctx.strokeStyle = "var(--grid)";
     ctx.lineWidth = 1;
     for(let i = -10; i <= 10; i++) {
         const p1 = project({x: i*60, y: -600, z: 0});
@@ -151,10 +151,10 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
         pa.x + nx * lw, pa.y + ny * lw,
         pa.x - nx * lw, pa.y - ny * lw
       );
-      grad.addColorStop(0, "#cbd5e1"); // Brushed Aluminum highlight
+      grad.addColorStop(0, "white");
       grad.addColorStop(0.3, linkColor);
       grad.addColorStop(0.7, linkColor);
-      grad.addColorStop(1, "#1e293b"); // Heavy shadow
+      grad.addColorStop(1, "black");
       
       ctx.strokeStyle = grad;
       ctx.lineWidth = lw;
@@ -187,9 +187,9 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       
       // Joint Housing: Brushed Aluminum "Hub" with Warning Stripes
       const hGrad = ctx.createLinearGradient(0, -hr, 0, hr);
-      hGrad.addColorStop(0, "#f1f5f9"); // Bright aluminum
-      hGrad.addColorStop(0.5, "#94a3b8"); // Brushed mid
-      hGrad.addColorStop(1, "#475569"); // Dark base
+      hGrad.addColorStop(0, "white");
+      hGrad.addColorStop(0.5, "#999999");
+      hGrad.addColorStop(1, "black");
       
       ctx.fillStyle = hGrad;
       
@@ -203,7 +203,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       // Safety Warning Stripes (Yellow/Black)
       ctx.save();
       ctx.clip();
-      ctx.fillStyle = "#FACC15"; // Safety Yellow
+      ctx.fillStyle = "white";
       for (let j = -hr; j < hr; j += 8) {
         if (Math.floor(j / 8) % 2 === 0) {
           ctx.fillRect(-hw/2, j, hw, 4);
@@ -216,13 +216,13 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       ctx.stroke();
 
       // Accented central actuator hub
-      ctx.fillStyle = "#1e293b"; // Dark steel
+      ctx.fillStyle = "black";
       ctx.beginPath();
       ctx.ellipse(0, 0, hw * 0.4, hr * 0.8, 0, 0, Math.PI * 2);
       ctx.fill();
       
       // Aluminum bolt detail
-      ctx.fillStyle = "#cbd5e1";
+      ctx.fillStyle = "white";
       ctx.beginPath();
       ctx.arc(0, 0, hw * 0.15, 0, Math.PI * 2);
       ctx.fill();
@@ -266,7 +266,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
   }, [effectiveFrames, cam, activeStep, showAxes, baseScale]);
 
   return (
-    <div className="relative h-full w-full bg-slate-100">
+    <div className="relative h-full w-full bg-background">
       <canvas
         ref={canvasRef}
         className="h-full w-full cursor-grab touch-none active:cursor-grabbing"

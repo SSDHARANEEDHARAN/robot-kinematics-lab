@@ -17,7 +17,7 @@ export function Section({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="border-b border-border last:border-b-0">
+    <div className="border-b-2 border-foreground last:border-b-0">
       <div 
         className={`flex items-center justify-between px-5 py-4 ${collapsible ? 'cursor-pointer hover:bg-muted/30' : ''}`}
         onClick={() => collapsible && setIsOpen(!isOpen)}
@@ -54,21 +54,21 @@ export function SegButton({
 }) {
   return (
     <div
-      className={`gap-1 rounded-lg bg-secondary p-1 ${stacked ? "grid grid-cols-1" : "grid grid-flow-col auto-cols-fr"}`}
+      className={`gap-1 rounded-none border-2 border-foreground bg-background p-1 ${stacked ? "grid grid-cols-1" : "grid grid-flow-col auto-cols-fr"}`}
     >
       {options.map((o) => (
         <button
           key={o.value}
           type="button"
           onClick={() => onChange(o.value)}
-          className={`relative z-10 rounded-md px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+          className={`relative z-10 rounded-none px-3 py-2 text-xs font-black uppercase tracking-wider transition-all duration-300 ${
             value === o.value
-              ? "text-primary-foreground"
-              : "text-muted-foreground hover:text-foreground"
+              ? "text-background"
+              : "text-foreground hover:bg-muted/30"
           }`}
         >
           {value === o.value && (
-            <div className="absolute inset-0 -z-10 rounded-md bg-primary shadow-sm animate-in fade-in zoom-in-95 duration-300" />
+            <div className="absolute inset-0 -z-10 bg-foreground animate-in fade-in zoom-in-95 duration-300" />
           )}
           {o.label}
         </button>
@@ -141,7 +141,7 @@ export function GhostButton({ children, onClick }: { children: ReactNode; onClic
     <button
       type="button"
       onClick={onClick}
-      className="rounded-lg border-2 border-slate-900 bg-secondary px-3 py-2 text-xs font-bold uppercase tracking-wider text-foreground transition-all hover:bg-yellow-400 hover:text-slate-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+      className="rounded-none border-2 border-foreground bg-background px-3 py-2 text-xs font-bold uppercase tracking-wider text-foreground transition-all hover:bg-foreground hover:text-background shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
     >
       {children}
     </button>
@@ -150,19 +150,19 @@ export function GhostButton({ children, onClick }: { children: ReactNode; onClic
 
 export function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="lab-card px-4 py-3 border-l-4 border-l-yellow-400">
+    <div className="lab-card px-4 py-3 border-l-8 border-l-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
       <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">{label}</div>
-      <div className="mt-1 text-2xl font-black tabular-nums tracking-tight text-primary drop-shadow-none">{value}</div>
+      <div className="mt-1 text-2xl font-black tabular-nums tracking-tight text-foreground drop-shadow-none">{value}</div>
     </div>
   );
 }
 
 export function Card({ title, children }: { title?: string; children: ReactNode }) {
   return (
-    <div className="lab-card overflow-hidden border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+    <div className="lab-card overflow-hidden border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
       {title && (
-        <div className="border-b-2 border-slate-900 bg-yellow-400 px-5 py-3">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">{title}</h3>
+        <div className="border-b-2 border-foreground bg-foreground px-5 py-3">
+          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-background">{title}</h3>
         </div>
       )}
       <div className="p-5">{children}</div>
@@ -172,13 +172,13 @@ export function Card({ title, children }: { title?: string; children: ReactNode 
 
 export function Badge({ children, variant = "default" }: { children: ReactNode; variant?: "default" | "success" | "warning" | "danger" }) {
   const styles = {
-    default: "bg-secondary text-secondary-foreground",
-    success: "bg-link-3/20 text-link-3",
-    warning: "bg-link-2/20 text-link-2",
-    danger: "bg-destructive/20 text-destructive",
+    default: "bg-foreground text-background",
+    success: "border-2 border-foreground bg-background text-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]",
+    warning: "bg-foreground text-background border-2 border-foreground",
+    danger: "bg-foreground text-background border-2 border-foreground animate-pulse",
   };
   return (
-    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${styles[variant]}`}>
+    <span className={`px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${styles[variant]}`}>
       {children}
     </span>
   );

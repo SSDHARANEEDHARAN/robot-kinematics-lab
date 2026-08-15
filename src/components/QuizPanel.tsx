@@ -74,35 +74,36 @@ export function QuizPanel({
             </p>
             <div className="flex gap-2">
               <button
-                className="rounded-lg bg-primary px-3 py-2 text-sm font-bold text-primary-foreground"
+                className="border-2 border-foreground bg-foreground px-3 py-2 text-sm font-black uppercase tracking-widest text-background shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
                 onClick={submit}
               >
                 Submit
               </button>
               <button
-                className="rounded-lg border border-border px-3 py-2 text-sm font-semibold"
+                className="border-2 border-foreground bg-background px-3 py-2 text-sm font-black uppercase tracking-widest text-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
                 onClick={() => onSetTarget(challenge.target)}
               >
                 Show target
               </button>
-              <button className="rounded-lg border border-border px-3 py-2 text-sm font-semibold" onClick={start}>
+              <button className="border-2 border-foreground bg-background px-3 py-2 text-sm font-black uppercase tracking-widest text-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]" onClick={start}>
                 New
               </button>
             </div>
           </>
         ) : (
           <button
-            className="rounded-lg bg-primary px-3 py-2 text-sm font-bold text-primary-foreground"
+            className="border-2 border-foreground bg-foreground px-3 py-2 text-sm font-black uppercase tracking-widest text-background shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
             onClick={start}
           >
             Start challenge
           </button>
         )}
         {result && (
-          <div className="rounded-lg border border-border p-2 font-mono text-xs">
-            <div>error: {result.error.toFixed(2)} px</div>
-            <div>time: {result.secs.toFixed(1)} s</div>
-            <div className="font-bold text-primary">score: {result.score}/100</div>
+          <div className="border-2 border-foreground p-3 font-mono text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+            <div className="mb-1 uppercase font-black tracking-widest opacity-50 text-[9px]">Last Result</div>
+            <div>Error: {result.error.toFixed(2)} px</div>
+            <div>Time: {result.secs.toFixed(1)} s</div>
+            <div className="mt-2 text-lg font-black text-foreground">Score: {result.score}/100</div>
           </div>
         )}
         {history.length > 0 && (

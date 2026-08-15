@@ -133,12 +133,12 @@ export function LessonPanel({
           <button
             key={l.id}
             onClick={() => onSelect(l)}
-            className={`rounded-md px-2 py-1 text-xs font-bold ${
+            className={`border-2 px-2 py-1 text-xs font-black uppercase tracking-widest ${
               l.id === activeId
-                ? "bg-primary text-primary-foreground"
+                ? "bg-foreground text-background border-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
                 : completed[l.id]
-                  ? "bg-link-3/20 text-foreground"
-                  : "bg-secondary text-secondary-foreground"
+                  ? "bg-background text-foreground border-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+                  : "bg-background text-muted-foreground border-muted opacity-50"
             }`}
           >
             {l.id.replace("l", "")}
@@ -152,8 +152,8 @@ export function LessonPanel({
         </p>
       ))}
       <div
-        className={`rounded-lg border p-2 text-xs font-semibold ${
-          passed ? "border-link-3 bg-link-3/10 text-foreground" : "border-border text-muted-foreground"
+        className={`border-2 p-3 text-xs font-black uppercase tracking-widest shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] ${
+          passed ? "border-foreground bg-foreground text-background" : "border-foreground text-foreground"
         }`}
       >
         {passed ? "✓ Checkpoint passed — " : "Goal: "}

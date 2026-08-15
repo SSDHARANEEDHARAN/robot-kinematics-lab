@@ -533,8 +533,8 @@ function KinematicsLab() {
           };
 
   return (
-    <main className="min-h-screen px-4 pb-8 pt-0 md:px-8 max-w-[1920px] mx-auto select-none flex flex-col">
-      <header className="py-6 mb-6 flex items-center justify-between border-b-4 border-slate-900">
+    <main className="min-h-screen px-4 pb-8 pt-0 md:px-8 max-w-[1920px] mx-auto select-none flex flex-col bg-background text-foreground">
+      <header className="py-6 mb-6 flex items-center justify-between border-b-4 border-foreground">
         <div className="flex flex-col gap-0.5">
           <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">
             Industrial Kinematics
@@ -554,9 +554,9 @@ function KinematicsLab() {
             value={unit}
             onChange={(v) => setUnit(v as "deg" | "rad")}
           />
-          <div className="flex items-center gap-2 rounded-full border border-border bg-card/50 px-3 py-1.5">
-            <span className={`h-2 w-2 rounded-full ${mode === "IK" && !ik.reachable ? "bg-destructive animate-pulse" : "bg-link-3"}`} />
-            <span className="text-[10px] font-bold uppercase tracking-wider text-foreground">
+          <div className="flex items-center gap-2 border-2 border-foreground bg-background px-3 py-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+            <span className={`h-2 w-2 rounded-full ${mode === "IK" && !ik.reachable ? "bg-foreground animate-pulse" : "bg-foreground"}`} />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">
               {mode === "IK" && !ik.reachable ? "Out of reach" : playing ? "Running" : "System Ready"}
             </span>
           </div>
@@ -564,14 +564,14 @@ function KinematicsLab() {
       </header>
 
 
-      <div className="grid gap-8 xl:grid-cols-[300px_minmax(0,1fr)_340px] xl:h-[750px]">
+      <div className="grid gap-8 grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)_340px] xl:h-[750px]">
         {/* ---------- Left: popups ---------- */}
-        <aside className="flex h-full flex-col gap-3 overflow-hidden">
+        <aside className="flex flex-col gap-3 overflow-hidden h-[500px] xl:h-full order-2 xl:order-1">
           <div className="flex flex-1 flex-col overflow-hidden">
-            <div className="w-full rounded-t-xl border-2 border-slate-900 bg-yellow-400 px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="w-full border-2 border-foreground bg-foreground px-4 py-3 text-xs font-black uppercase tracking-widest text-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
               Robot Settings
             </div>
-            <div className="mt-0 flex-1 overflow-y-auto rounded-b-xl border-2 border-t-0 border-slate-900 bg-card shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] scrollbar-hide">
+            <div className="mt-0 flex-1 overflow-y-auto border-2 border-t-0 border-foreground bg-card shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] scrollbar-hide">
               <div className="lab-card border-none shadow-none divide-y-2 divide-slate-900/5">
                 <Section title="Mode">
                   <SegButton
@@ -587,18 +587,18 @@ function KinematicsLab() {
                 {mode === "DH" ? (
                   <>
                     <Section title="Joints">
-                      <div className="flex items-center justify-center gap-0 rounded-lg border border-border">
+                      <div className="flex items-center justify-center gap-0 border-2 border-foreground">
                         <button
-                          className="px-4 py-2 text-lg font-bold text-primary"
+                          className="px-4 py-2 text-lg font-bold text-foreground hover:bg-foreground hover:text-background transition-colors"
                           onClick={() => setJointCount((c) => Math.max(2, c - 1))}
                         >
                           -
                         </button>
-                        <span className="min-w-12 border-x border-border px-4 py-2 text-center text-lg font-extrabold">
+                        <span className="min-w-12 border-x-2 border-foreground px-4 py-2 text-center text-lg font-extrabold">
                           {jointCount}
                         </span>
                         <button
-                          className="px-4 py-2 text-lg font-bold text-primary"
+                          className="px-4 py-2 text-lg font-bold text-foreground hover:bg-foreground hover:text-background transition-colors"
                           onClick={() => setJointCount((c) => Math.min(6, c + 1))}
                         >
                           +
@@ -617,14 +617,14 @@ function KinematicsLab() {
                         ))}
                         {dhRows.map((r, i) => (
                           <Fragment key={i}>
-                            <span className="self-center text-xs font-bold text-primary">{i + 1}</span>
+                            <span className="self-center text-xs font-bold text-foreground">{i + 1}</span>
                             {(["theta", "d", "a", "alpha"] as const).map((k) => (
                               <input
                                 key={`${i}-${k}`}
                                 type="number"
                                 value={r[k]}
                                 onChange={(e) => setDhCell(i, k, Number(e.target.value))}
-                                className={`lab-input px-1 text-center text-sm ${k === "theta" ? "text-primary" : ""}`}
+                                className={`lab-input px-1 text-center text-sm ${k === "theta" ? "text-foreground" : ""}`}
                               />
                             ))}
                           </Fragment>
@@ -762,12 +762,12 @@ function KinematicsLab() {
                     <Section title="Environment" collapsible defaultOpen={false}>
                       <div className="flex flex-col gap-3">
                         <label className="flex items-center gap-2">
-                          <input type="checkbox" checked={showAxes} onChange={e => setShowAxes(e.target.checked)} />
-                          <span className="text-xs">Show Joint Axes</span>
+                          <input type="checkbox" className="accent-foreground" checked={showAxes} onChange={e => setShowAxes(e.target.checked)} />
+                          <span className="text-xs font-bold uppercase tracking-widest">Show Joint Axes</span>
                         </label>
                         <label className="flex items-center gap-2">
-                          <input type="checkbox" checked={showHeatmap} onChange={e => setShowHeatmap(e.target.checked)} />
-                          <span className="text-xs">Show Heatmap</span>
+                          <input type="checkbox" className="accent-foreground" checked={showHeatmap} onChange={e => setShowHeatmap(e.target.checked)} />
+                          <span className="text-xs font-bold uppercase tracking-widest">Show Heatmap</span>
                         </label>
                         <GhostButton onClick={() => setAngles([0,0,0])}>Reset Pose</GhostButton>
                         <GhostButton onClick={() => exportPresetReport(preset, ikFkConsistency)}>
@@ -783,9 +783,9 @@ function KinematicsLab() {
           </div>
         </aside>
 
-        {/* ---------- Center: viewport ---------- */}
-        <section className="lab-card flex h-full flex-col overflow-hidden border-2 border-slate-900 border-t-8 border-t-yellow-400 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <div className="flex flex-wrap items-start justify-between gap-4 px-5 py-5 bg-slate-50/50 border-b-2 border-slate-900/10">
+      <div className="flex-1 min-h-[500px] xl:h-full order-1 xl:order-2">
+        <section className="lab-card flex h-full flex-col overflow-hidden border-2 border-foreground border-t-8 border-t-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
+          <div className="flex flex-wrap items-start justify-between gap-4 px-5 py-5 bg-background border-b-2 border-foreground">
             <div>
               <h2 className="text-lg font-extrabold tracking-tight text-foreground">
                 {headline.title}
@@ -832,10 +832,11 @@ function KinematicsLab() {
             </div>
           </div>
         </section>
+      </div>
 
 
         {/* ---------- Right: readouts + tools ---------- */}
-        <aside className="flex h-full flex-col gap-4 overflow-hidden">
+        <aside className="flex flex-col gap-4 overflow-hidden h-auto xl:h-full order-3">
           <div className="grid grid-cols-2 gap-3 divide-y-0">
             <Stat label="End X" value={(mode === "DH" ? dhEnd.x : end.x).toFixed(1)} />
             <Stat label="End Y" value={(mode === "DH" ? dhEnd.y : end.y).toFixed(1)} />
@@ -843,7 +844,7 @@ function KinematicsLab() {
             <Stat label="Error" value={(mode === "IK" ? ik.error : 0).toFixed(1)} />
           </div>
 
-          <div className="lab-card flex flex-1 flex-col overflow-hidden border-2 border-slate-900 border-t-8 border-t-yellow-400 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <div className="lab-card flex flex-1 flex-col overflow-hidden border-2 border-foreground border-t-8 border-t-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
             <div className="flex-1 overflow-y-auto scrollbar-hide">
               {/* Validation & Settings Panel */}
               <Section title="Validation & Settings" collapsible defaultOpen>
@@ -980,7 +981,7 @@ function KinematicsLab() {
 
               <Section title="Industrial Progress" collapsible defaultOpen={false}>
                 <div className="space-y-4">
-                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Robotics Mastery</h4>
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Robotics Mastery</h4>
                   <Stat label="Completed" value={`${Object.keys(completed).length}/${LESSONS.length}`} />
                 </div>
               </Section>
@@ -989,14 +990,14 @@ function KinematicsLab() {
         </aside>
       </div>
 
-      <footer className="mt-8 flex items-center justify-between border-t-2 border-slate-900/10 pt-6 text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-        <div className="flex items-center gap-2 text-yellow-500">
+      <footer className="mt-8 flex items-center justify-between border-t-2 border-foreground pt-6 text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+        <div className="flex items-center gap-2 text-foreground">
            <div className="h-2 w-2 rounded-full bg-current animate-pulse" />
            <span>System Online</span>
         </div>
         <div className="flex items-center gap-4">
           <span className="text-foreground">Present by Tharaneetharan SS</span>
-          <span className="h-1 w-1 rounded-full bg-yellow-400" />
+          <span className="h-1 w-1 rounded-full bg-foreground" />
           <span>Industrial Automation Series</span>
         </div>
       </footer>

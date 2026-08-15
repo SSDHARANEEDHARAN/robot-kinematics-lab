@@ -167,11 +167,11 @@ export function IKWalkthrough({ target, lengths, angles, unit, elbowUp: initialE
               )}
               {(step.up || step.down) && (
                 <div className="grid grid-cols-2 gap-2 mt-1">
-                  <div className={`rounded p-1.5 border ${effectiveElbowUp ? 'border-primary bg-primary/5 text-primary' : 'border-border opacity-60'}`}>
+                  <div className={`border-2 p-1.5 ${effectiveElbowUp ? 'border-foreground bg-foreground text-background shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]' : 'border-muted opacity-40'}`}>
                     <div className="text-[8px] uppercase font-bold mb-0.5">Up</div>
                     <div className="font-bold truncate">{step.up}</div>
                   </div>
-                  <div className={`rounded p-1.5 border ${!effectiveElbowUp ? 'border-primary bg-primary/5 text-primary' : 'border-border opacity-60'}`}>
+                  <div className={`border-2 p-1.5 ${!effectiveElbowUp ? 'border-foreground bg-foreground text-background shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]' : 'border-muted opacity-40'}`}>
                     <div className="text-[8px] uppercase font-bold mb-0.5">Down</div>
                     <div className="font-bold truncate">{step.down}</div>
                   </div>
@@ -182,11 +182,11 @@ export function IKWalkthrough({ target, lengths, angles, unit, elbowUp: initialE
         ))}
       </div>
       
-      <div className="flex items-center justify-between border-t border-border pt-3">
+      <div className="flex items-center justify-between border-t-2 border-foreground pt-3">
         <button
           onClick={() => setActiveStep(Math.max(0, activeStep - 1))}
           disabled={activeStep === 0}
-          className="rounded border border-border p-1.5 transition-colors hover:bg-accent disabled:opacity-30"
+          className="border-2 border-foreground p-1.5 transition-colors hover:bg-foreground hover:text-background disabled:opacity-30 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
         >
           <ChevronLeft size={14} />
         </button>
@@ -196,7 +196,7 @@ export function IKWalkthrough({ target, lengths, angles, unit, elbowUp: initialE
         <button
           onClick={() => setActiveStep(Math.min(steps.length - 1, activeStep + 1))}
           disabled={activeStep === steps.length - 1}
-          className="rounded border border-border p-1.5 transition-colors hover:bg-accent disabled:opacity-30"
+          className="border-2 border-foreground p-1.5 transition-colors hover:bg-foreground hover:text-background disabled:opacity-30 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
         >
           <ChevronRight size={14} />
         </button>

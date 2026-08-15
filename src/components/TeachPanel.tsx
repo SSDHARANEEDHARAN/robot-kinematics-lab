@@ -34,26 +34,26 @@ export function TeachPanel({
   onRunDemo: (type: "pick" | "round" | "dance") => void;
 }) {
   const jog =
-    "rounded-md border-2 border-slate-900 bg-card px-2 py-2 text-sm font-bold text-foreground hover:bg-yellow-400 hover:text-slate-900 active:bg-yellow-500 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none";
+    "border-2 border-foreground bg-background px-2 py-2 text-sm font-bold text-foreground hover:bg-foreground hover:text-background active:bg-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none";
   return (
     <div className="space-y-4">
       <div>
         <h4 className="lab-label mb-2">Demo Programs</h4>
         <div className="grid grid-cols-3 gap-2 mb-4">
           <button 
-            className="rounded-lg border border-border bg-secondary/50 py-2 text-[10px] font-black uppercase tracking-wider hover:bg-primary hover:text-primary-foreground transition-colors"
+            className="border-2 border-foreground bg-background py-2 text-[10px] font-black uppercase tracking-wider hover:bg-foreground hover:text-background transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
             onClick={() => onRunDemo("pick")}
           >
             Pick & Place
           </button>
           <button 
-            className="rounded-lg border border-border bg-secondary/50 py-2 text-[10px] font-black uppercase tracking-wider hover:bg-primary hover:text-primary-foreground transition-colors"
+            className="border-2 border-foreground bg-background py-2 text-[10px] font-black uppercase tracking-wider hover:bg-foreground hover:text-background transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
             onClick={() => onRunDemo("round")}
           >
             Arounding
           </button>
           <button 
-            className="rounded-lg border border-border bg-secondary/50 py-2 text-[10px] font-black uppercase tracking-wider hover:bg-primary hover:text-primary-foreground transition-colors"
+            className="border-2 border-foreground bg-background py-2 text-[10px] font-black uppercase tracking-wider hover:bg-foreground hover:text-background transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
             onClick={() => onRunDemo("dance")}
           >
             Dancing
