@@ -61,10 +61,10 @@ export function SegButton({
           key={o.value}
           type="button"
           onClick={() => onChange(o.value)}
-          className={`relative z-10 rounded-md px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+          className={`relative z-10 rounded-none px-3 py-2 text-xs font-black uppercase tracking-wider transition-all duration-300 ${
             value === o.value
-              ? "text-primary-foreground"
-              : "text-muted-foreground hover:text-foreground"
+              ? "text-background"
+              : "text-foreground hover:bg-muted/30"
           }`}
         >
           {value === o.value && (
