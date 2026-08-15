@@ -363,7 +363,7 @@ function KinematicsLab() {
           };
 
   return (
-    <main className="min-h-screen px-4 pb-16 pt-6 md:px-8">
+    <main className="min-h-screen px-4 pb-16 pt-6 md:px-8 max-w-[1920px] mx-auto">
       <header className="mb-5 flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
@@ -402,14 +402,14 @@ function KinematicsLab() {
         </div>
       </header>
 
-      <div className="grid gap-5 xl:grid-cols-[200px_minmax(0,1fr)_340px]">
+      <div className="grid gap-5 xl:grid-cols-[280px_minmax(0,1fr)_340px]">
         {/* ---------- Left: popups ---------- */}
         <aside className="space-y-3">
           <div className="relative">
             <div className="w-full rounded-xl border border-border bg-card/50 px-4 py-3 text-xs font-black uppercase tracking-widest text-primary">
               Robot Settings
             </div>
-            <div className="mt-2 w-full max-h-[60vh] overflow-y-auto rounded-xl border border-border bg-card shadow-lg scrollbar-hide">
+            <div className="mt-2 w-full max-h-[75vh] overflow-y-auto rounded-xl border border-border bg-card shadow-lg scrollbar-hide">
               <div className="lab-card border-none shadow-none">
                 <Section title="Mode">
                   <SegButton
@@ -559,7 +559,7 @@ function KinematicsLab() {
 
         {/* ---------- Center: viewport ---------- */}
         <section className="lab-card overflow-hidden">
-          <div className="flex flex-wrap items-start justify-between gap-4 px-5 py-4">
+          <div className="flex flex-wrap items-start justify-between gap-4 px-5 py-5">
             <div>
               <h2 className="text-lg font-extrabold tracking-tight text-foreground">
                 {headline.title}
@@ -567,7 +567,7 @@ function KinematicsLab() {
               <p className="text-sm text-muted-foreground">{headline.sub}</p>
             </div>
           </div>
-          <div className="h-[560px] border-t border-border bg-panel overflow-hidden relative">
+          <div className="h-[640px] border-t border-border bg-panel overflow-hidden relative">
              {/* Realistic fixed simulation area */}
             {mode === "DH" ? (
               <div className="flex h-full w-full">
@@ -615,7 +615,7 @@ function KinematicsLab() {
                 onChange={(v) => setTab(v as Tab)}
               />
             </div>
-            <div className="px-4 py-4 max-h-[500px] overflow-y-auto scrollbar-hide">
+            <div className="px-4 py-4 max-h-[600px] overflow-y-auto scrollbar-hide">
               {tab === "math" && (
                 <div className="space-y-3">
                    {mode === "FK" && <FKFormula lengths={activeLengths} angles={planarAngles} unit={unit} end={end} />}
