@@ -188,7 +188,7 @@ export function ArmView2D({
         )}
 
         {target && (
-          <g className="stroke-primary" strokeWidth={2.5} fill="none">
+          <g stroke="currentColor" className="text-primary" strokeWidth={2.5} fill="none">
             <circle cx={target.x} cy={target.y} r={10} className="fill-primary/10" />
             <line x1={target.x - 18} y1={target.y} x2={target.x + 18} y2={target.y} />
             <line x1={target.x} y1={target.y - 18} x2={target.x} y2={target.y + 18} />
