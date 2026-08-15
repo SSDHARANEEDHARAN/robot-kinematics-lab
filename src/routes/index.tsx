@@ -539,8 +539,8 @@ function KinematicsLab() {
           <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">
             Industrial Kinematics
           </p>
-          <p className="text-xs font-black uppercase tracking-widest text-primary">
-            Virtual Lab Environment
+          <p className="text-xl font-black uppercase tracking-tighter text-foreground">
+            Factory Precision V3
           </p>
         </div>
 
