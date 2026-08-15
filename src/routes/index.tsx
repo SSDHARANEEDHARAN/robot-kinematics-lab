@@ -95,7 +95,7 @@ function KinematicsLab() {
   const [jointCount, setJointCount] = useState(6);
 
   const [unit, setUnit] = useState<"deg" | "rad">("deg");
-  const [tab, setTab] = useState<Tab>("math");
+  const [tab, setTab] = useState<Tab>("teach");
   const [dhStep, setDhStep] = useState(0);
   const [waypoints, setWaypoints] = useState<Waypoint[]>([]);
   const [playing, setPlaying] = useState(false);
