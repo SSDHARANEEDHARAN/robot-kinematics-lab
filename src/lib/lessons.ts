@@ -13,6 +13,10 @@ export type Lesson = {
   title: string;
   goal: string;
   body: string[];
+  setup?: {
+    mode?: string;
+    linkCount?: number;
+  };
   check: (s: LessonState) => boolean;
 };
 
@@ -26,6 +30,7 @@ export const LESSONS: Lesson[] = [
       "Inverse Kinematics (IK) calculates joint angles for a given target position.",
       "Try dragging the target point to X: 200.",
     ],
+    setup: { mode: "IK", linkCount: 2 },
     check: (s) => Math.abs(s.target.x - 200) < 5,
   },
   {
@@ -36,6 +41,7 @@ export const LESSONS: Lesson[] = [
       "The total reach is the sum of all link lengths.",
       "Straighten the arm to reach the workspace boundary.",
     ],
+    setup: { mode: "IK" },
     check: (s) => {
       const max = s.lengths.reduce((a, b) => a + b, 0);
       const d = Math.hypot(s.target.x, s.target.y);
@@ -50,6 +56,7 @@ export const LESSONS: Lesson[] = [
       "Forward Kinematics (FK) calculates the end position from joint angles.",
       "Switch to FK mode and adjust J2 to exactly 90°.",
     ],
+    setup: { mode: "FK" },
     check: (s) => {
       const j2 = s.angles[1];
       if (j2 === undefined) return false;
@@ -64,6 +71,7 @@ export const LESSONS: Lesson[] = [
       "The 'inner dead zone' is a region the robot cannot reach.",
       "This happens when the distance is less than |L1 - L2|.",
     ],
+    setup: { mode: "IK" },
     check: (s) => {
       const l1 = s.lengths[0];
       const l2 = s.lengths[1];
