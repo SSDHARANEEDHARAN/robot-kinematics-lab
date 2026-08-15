@@ -852,7 +852,7 @@ function KinematicsLab() {
               )}
 
               {tab === "ai" && (
-                <div className="h-[400px]">
+                <div className="h-[450px]">
                   <AIPanel
                     state={{
                       mode,
