@@ -843,7 +843,7 @@ function KinematicsLab() {
             <Stat label="Error" value={(mode === "IK" ? ik.error : 0).toFixed(1)} />
           </div>
 
-          <div className="lab-card flex flex-1 flex-col overflow-hidden">
+          <div className="lab-card flex flex-1 flex-col overflow-hidden border-t-4 border-t-yellow-400">
             <div className="flex-1 overflow-y-auto scrollbar-hide">
               {/* Validation & Settings Panel */}
               <Section title="Validation & Settings" collapsible defaultOpen>
