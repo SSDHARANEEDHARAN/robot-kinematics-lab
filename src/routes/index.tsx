@@ -38,7 +38,10 @@ import {
   uid,
   type Preset,
   type Waypoint,
+  exportPresetReport,
 } from "@/lib/lab";
+import { generateReachabilityHeatmap, type JointLimits, isLimitViolated } from "@/lib/kinematics";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -110,8 +113,15 @@ function KinematicsLab() {
   const [lessonId, setLessonId] = useState(LESSONS[0]!.id);
   const [activeWalkthroughStep, setActiveWalkthroughStep] = useState(0);
   const [completed, setCompleted] = useState<Record<string, boolean>>({});
-  const [showWorkspace, setShowWorkspace] = useState(false);
   const [showVelocity, setShowVelocity] = useState(false);
+  const [showAxes, setShowAxes] = useState(true);
+  const [showHeatmap, setShowHeatmap] = useState(false);
+  const [jointLimits, setJointLimits] = useState<JointLimits[]>([
+    { min: -180, max: 180 },
+    { min: -150, max: 150 },
+    { min: -150, max: 150 },
+  ]);
+
 
   const activeLengths = lengths.slice(0, linkCount);
 
@@ -192,10 +202,29 @@ function KinematicsLab() {
   };
 
   /* ---------- kinematics ---------- */
-  const ik = useMemo(
-    () => ik2d(activeLengths, target, elbowUp, angles[2] ?? 0),
-    [activeLengths.join(), target.x, target.y, elbowUp, angles[2]],
-  );
+  const ik = useMemo(() => {
+    const res = ik2d(activeLengths, target, elbowUp, angles[2] ?? 0);
+    // Apply joint limits to IK result
+    const limitedAngles = res.angles.map((a, i) => {
+      const limit = jointLimits[i];
+      if (!limit) return a;
+      return Math.min(limit.max, Math.max(limit.min, a));
+    });
+    
+    // Check if limits were violated
+    const violates = res.angles.some((a, i) => {
+      const limit = jointLimits[i];
+      return limit ? isLimitViolated(a, limit) : false;
+    });
+
+    return { 
+      ...res, 
+      angles: limitedAngles, 
+      limitViolation: violates,
+      originalAngles: res.angles 
+    };
+  }, [activeLengths.join(), target.x, target.y, elbowUp, angles[2], jointLimits]);
+
   const ikGhost = useMemo(
     () => ik2d(activeLengths, target, !elbowUp, angles[2] ?? 0),
     [activeLengths.join(), target.x, target.y, elbowUp, angles[2]],
@@ -222,10 +251,22 @@ function KinematicsLab() {
   const manipulability = Math.abs(det2x2(jacobian));
   const isSingular = manipulability < 5000;
 
-  const workspace = useMemo(
-    () => (showWorkspace ? workspaceSweep(activeLengths) : []),
-    [activeLengths.join(), showWorkspace],
+  const heatmap = useMemo(
+    () => (showHeatmap ? generateReachabilityHeatmap(activeLengths, 15) : []),
+    [activeLengths.join(), showHeatmap],
   );
+
+  const ikFkConsistency = useMemo(() => {
+    if (mode === "DH") return null;
+    const fkPos = points[points.length - 1] ?? { x: 0, y: 0 };
+    const dist = Math.hypot(fkPos.x - target.x, fkPos.y - target.y);
+    return {
+      match: dist < 1.0,
+      error: dist,
+      fkPos
+    };
+  }, [points, target, mode]);
+
 
   const velocity = useMemo(() => {
     if (!showVelocity || mode === "DH") return undefined;
@@ -628,6 +669,48 @@ function KinematicsLab() {
                         <GhostButton onClick={() => setAngles([0,0,0])}>Reset</GhostButton>
                       </div>
                     </Section>
+
+                    <Section title="Display Settings" collapsible>
+                      <div className="flex flex-col gap-3">
+                        <label className="flex items-center gap-2">
+                          <input type="checkbox" checked={showAxes} onChange={e => setShowAxes(e.target.checked)} />
+                          <span className="text-xs">Show Joint Axes</span>
+                        </label>
+                        <label className="flex items-center gap-2">
+                          <input type="checkbox" checked={showHeatmap} onChange={e => setShowHeatmap(e.target.checked)} />
+                          <span className="text-xs">Show Reach Heatmap</span>
+                        </label>
+                        <GhostButton onClick={() => exportPresetReport(preset, { error: ik.error, reachable: ik.reachable })}>
+                          Export PDF Report
+                        </GhostButton>
+                      </div>
+                    </Section>
+
+                    <Section title="Joint Limits" collapsible>
+                      <div className="flex flex-col gap-4">
+                        {[0, 1, 2].slice(0, linkCount).map(i => (
+                          <div key={i} className="space-y-2">
+                            <div className="text-[10px] font-bold uppercase text-muted-foreground">Joint J{i+1} Limits</div>
+                            <SliderRow 
+                              label="Min" 
+                              min={-180} max={0} 
+                              value={jointLimits[i]?.min ?? -180} 
+                              onChange={v => setJointLimits(prev => prev.map((l, k) => k === i ? { ...l, min: v } : l))} 
+                            />
+                            <SliderRow 
+                              label="Max" 
+                              min={0} max={180} 
+                              value={jointLimits[i]?.max ?? 180} 
+                              onChange={v => setJointLimits(prev => prev.map((l, k) => k === i ? { ...l, max: v } : l))} 
+                            />
+                            {isLimitViolated(planarAngles[i] ?? 0, jointLimits[i]!) && (
+                              <div className="text-[9px] font-bold text-destructive animate-pulse uppercase">Limit Violated!</div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </Section>
+
                   </>
                 )}
               </div>
@@ -653,8 +736,10 @@ function KinematicsLab() {
                 frames={mode === "DH" ? frames : undefined}
                 planarPoints={mode !== "DH" ? points : undefined}
                 linkCount={mode === "DH" ? jointCount : linkCount}
+                showAxes={showAxes}
                 activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
               />
+
 
               {mode === "IK" && !pathMode && !playing && (
                 <div className="absolute inset-0 pointer-events-none">
@@ -667,14 +752,17 @@ function KinematicsLab() {
                     ghostPoints={showGhost ? ghostPoints : undefined}
                     trace={showTrace ? trace : undefined}
                     path={waypoints.map((w) => w.target)}
-                    workspace={workspace}
+                    heatmap={heatmap}
+                    workspace={[]}
+
                     velocity={velocity}
                     unit={unit}
                     activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
-                    limits={[{ min: -150, max: 150 }, { min: -150, max: 150 }, { min: -180, max: 180 }]}
+                    limits={jointLimits}
                     angles={planarAngles}
                     interactive={true}
                   />
+
                 </div>
               )}
 
@@ -774,6 +862,7 @@ function KinematicsLab() {
         </div>
       </footer>
     </main>
+
   );
 }
 

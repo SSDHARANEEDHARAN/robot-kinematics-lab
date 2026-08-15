@@ -9,7 +9,9 @@ type Props = {
   mode?: string;
   planarPoints?: Vec2[] | undefined;
   linkCount?: number;
+  showAxes?: boolean;
 };
+
 
 // Colors based on the uploaded reference image
 const LINK_COLORS = [
@@ -21,7 +23,7 @@ const LINK_COLORS = [
   "#2ECC71", // Green (if needed)
 ];
 
-export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = [], linkCount = 2 }: Props) {
+export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = [], linkCount = 2, showAxes = true }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [cam, setCam] = useState({ yaw: -0.9, pitch: 0.5, zoom: 1.2 });
   const [baseScale, setBaseScale] = useState(1);
@@ -154,7 +156,9 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
     }
 
     // Draw origin axes at base with arrows - matching reference
-    drawAxes({x: 0, y: 0, z: 0}, [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1], 60, true);
+    if (showAxes) {
+      drawAxes({x: 0, y: 0, z: 0}, [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1], 60, true);
+    }
 
     // Links and Joints
     for (let i = 0; i < effectiveFrames.length - 1; i++) {
@@ -276,7 +280,9 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       }
 
       // Frame axes at each joint
-      drawAxes(a, frames[i] as Mat4, 34);
+      if (showAxes) {
+        drawAxes(a, frames[i] as Mat4, 34);
+      }
     }
 
     // End Effector (Blue Sphere in reference)
@@ -288,7 +294,9 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
     ctx.fill();
     ctx.strokeStyle = "rgba(0,0,0,0.3)";
     ctx.stroke();
-    drawAxes(eePos, frames[frames.length - 1] as Mat4, 35);
+    if (showAxes) {
+      drawAxes(eePos, frames[frames.length - 1] as Mat4, 35);
+    }
 
 
   }, [effectiveFrames, cam, activeStep]);

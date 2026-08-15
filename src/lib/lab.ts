@@ -1,4 +1,7 @@
 import { deg2rad, fk2d, ik2d, type DHRow, type Vec2 } from "./kinematics";
+import type { jsPDF } from "jspdf";
+import "jspdf-autotable";
+
 
 export type Waypoint = {
   id: string;
@@ -93,3 +96,53 @@ export function samplePose(
 }
 
 export const uid = () => Math.random().toString(36).slice(2, 9);
+
+export async function exportPresetReport(preset: Preset, stats: any) {
+  const { jsPDF } = await import("jspdf");
+  const doc = new jsPDF();
+  
+  doc.setFontSize(20);
+  doc.text("Industrial Kinematics Lab Report", 20, 20);
+  
+  doc.setFontSize(12);
+  doc.text(`Generated: ${new Date().toLocaleString()}`, 20, 30);
+  doc.text(`Mode: ${preset.mode}`, 20, 40);
+  doc.text(`Link Count: ${preset.linkCount}`, 20, 50);
+  
+  doc.setFontSize(14);
+  doc.text("System Parameters", 20, 65);
+  
+  const paramData = [
+    ["Target Position", `X: ${preset.target.x.toFixed(2)}, Y: ${preset.target.y.toFixed(2)}`],
+    ["Lengths", preset.lengths.slice(0, preset.linkCount).join(", ")],
+    ["Computed Angles", preset.angles.slice(0, preset.linkCount).map(a => a.toFixed(2) + "°").join(", ")],
+    ["End-Effector Error", stats.error.toFixed(4) + " units"],
+    ["Reachability", stats.reachable ? "YES" : "NO"],
+  ];
+  
+  (doc as any).autoTable({
+    startY: 70,
+    head: [["Parameter", "Value"]],
+    body: paramData,
+  });
+  
+  if (preset.waypoints.length > 0) {
+    doc.text("Program Waypoints", 20, (doc as any).lastAutoTable.finalY + 15);
+    const waypointsData = preset.waypoints.map(w => [
+      w.name,
+      w.move,
+      `X: ${w.target.x}, Y: ${w.target.y}`,
+      w.angles.map(a => a.toFixed(1) + "°").join(", "),
+      w.spd
+    ]);
+    
+    (doc as any).autoTable({
+      startY: (doc as any).lastAutoTable.finalY + 20,
+      head: [["Name", "Type", "Target", "Angles", "Speed"]],
+      body: waypointsData,
+    });
+  }
+  
+  doc.save(`kinematics-report-${preset.mode.toLowerCase()}.pdf`);
+}
+

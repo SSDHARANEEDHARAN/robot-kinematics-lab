@@ -20,7 +20,9 @@ type Props = {
   limits?: { min: number; max: number }[];
   angles?: number[];
   interactive?: boolean;
+  heatmap?: { x: number; y: number; reachable: boolean }[];
 };
+
 
 const r1 = (n: number) => Math.round(n * 1000) / 1000;
 
@@ -44,7 +46,9 @@ export function ArmView2D({
   limits,
   angles,
   interactive: forceInteractive,
+  heatmap = [],
 }: Props) {
+
   const svgRef = useRef<SVGSVGElement>(null);
   const dragging = useRef(false);
 
@@ -92,7 +96,19 @@ export function ArmView2D({
       onPointerLeave={() => (dragging.current = false)}
     >
       <g transform="scale(1,-1)">
+        {/* heatmap */}
+        {heatmap.map((p, i) => (
+          <rect
+            key={i}
+            x={p.x - 7.5}
+            y={p.y - 7.5}
+            width={15}
+            height={15}
+            fill={p.reachable ? "rgba(46, 204, 113, 0.15)" : "rgba(231, 76, 60, 0.05)"}
+          />
+        ))}
         {/* grid */}
+
         <g stroke="currentColor" className="text-border" strokeWidth={1} opacity={0.3}>
           {grid.map((g) => (
             <line key={`v${g}`} x1={g} y1={-H / 2} x2={g} y2={H / 2} />
