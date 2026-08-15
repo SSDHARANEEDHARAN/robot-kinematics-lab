@@ -666,7 +666,7 @@ function KinematicsLab() {
               {tab === "ai" && <div className="h-[400px]"><AIPanel state={{ mode, target, lengths: activeLengths, angles: planarAngles, reachable: ik.reachable, ikError: ik.error }} /></div>}
               {tab === "progress" && (
                 <div className="space-y-4">
-                  <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-brand">Robotics Mastery</h4>
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Robotics Mastery</h4>
                   <Stat label="Completed" value={`${Object.keys(completed).length}/${LESSONS.length}`} />
                 </div>
               )}
