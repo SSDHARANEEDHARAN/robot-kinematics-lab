@@ -89,7 +89,7 @@ export function ArmView2D({
       onPointerUp={() => (dragging.current = false)}
       onPointerLeave={() => (dragging.current = false)}
     >
-      <g transform="scale(1,-1)">
+      <g transform="scale(1,-1)" opacity={onTargetChange ? 1 : 0}>
         {/* grid */}
         <g stroke="currentColor" className="text-border" strokeWidth={1} opacity={0.3}>
           {grid.map((g) => (
