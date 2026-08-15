@@ -285,12 +285,13 @@ function KinematicsLab() {
     });
 
     return {
-      match: dist < 1.0 && !limitViolated,
+      match: dist < 1.0 && !limitViolated && !collisionResult.colliding,
       error: dist,
       fkPos,
       limitViolated,
+      colliding: collisionResult.colliding
     };
-  }, [points, target, mode, planarAngles, jointLimits]);
+  }, [points, target, mode, planarAngles, jointLimits, collisionResult.colliding]);
 
 
   const velocity = useMemo(() => {
