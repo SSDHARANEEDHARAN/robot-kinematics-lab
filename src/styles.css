@@ -179,21 +179,20 @@
 
 @utility lab-input {
   width: 100%;
-  border: 1px solid var(--color-input);
-  border-radius: var(--radius-lg);
-  background-color: var(--color-secondary);
-  padding: 0.625rem 0.875rem;
+  border: 2px solid var(--border);
+  border-radius: 0;
+  background-color: var(--background);
+  padding: 0.5rem 0.75rem;
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--color-foreground);
+  color: var(--foreground);
   outline: none;
   transition: all 0.2s ease;
 }
 
 .lab-input:focus {
-  border-color: var(--color-primary);
-  background-color: var(--color-muted);
-  box-shadow: 0 0 0 4px oklch(0.75 0.22 190 / 0.15);
+  border-color: var(--foreground);
+  background-color: var(--muted);
 }
 
 input[type="range"] {
