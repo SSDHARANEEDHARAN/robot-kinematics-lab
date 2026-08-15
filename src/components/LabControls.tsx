@@ -163,7 +163,7 @@ export function Stat({ label, value }: { label: string; value: string }) {
 
 export function Card({ title, children }: { title?: string; children: ReactNode }) {
   return (
-    <div className="lab-card overflow-hidden">
+    <div className="lab-card overflow-hidden group/card transition-all duration-500 hover:shadow-primary/5">
       {title && (
         <div className="border-b border-border/50 bg-secondary/30 px-5 py-3 backdrop-blur-sm">
           <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/70">{title}</h3>
