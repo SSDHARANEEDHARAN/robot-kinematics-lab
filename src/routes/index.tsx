@@ -862,6 +862,7 @@ function KinematicsLab() {
         </div>
       </footer>
     </main>
+
   );
 }
 
