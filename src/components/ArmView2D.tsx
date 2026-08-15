@@ -233,7 +233,7 @@ export function ArmView2D({
             cx={r1(p.x)}
             cy={r1(p.y)}
             r={i === 0 ? 8 : 7}
-            className={i === 0 ? "fill-foreground stroke-foreground" : "fill-card stroke-foreground"}
+            className={i === 0 ? "fill-primary stroke-primary" : "fill-card stroke-primary"}
             strokeWidth={2.5}
           />
         ))}
