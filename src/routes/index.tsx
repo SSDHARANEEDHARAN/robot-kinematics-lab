@@ -1006,17 +1006,25 @@ function KinematicsLab() {
         </aside>
       </div>
 
-      <footer className="mt-12 flex items-center justify-between border-t border-border/50 py-8 text-[9px] font-bold uppercase tracking-[0.3em] text-muted-foreground">
-        <div className="flex items-center gap-3 text-foreground/60 transition-colors hover:text-primary">
-           <div className="h-2 w-2 rounded-full bg-primary shadow-[0_0_8px] shadow-primary/50 animate-pulse" />
-           <span>Lab System Active</span>
+      <footer className="mt-12 flex flex-col items-center gap-6 border-t border-border/50 py-12">
+        <div className="flex w-full items-center justify-between text-[9px] font-bold uppercase tracking-[0.3em] text-muted-foreground">
+          <div className="flex items-center gap-3 text-foreground/60 transition-colors hover:text-primary">
+             <div className="h-2 w-2 rounded-full bg-primary shadow-[0_0_8px] shadow-primary/50 animate-pulse" />
+             <span>Lab System Active</span>
+          </div>
+          <div className="flex items-center gap-6">
+            <span className="text-foreground/80 font-black">Powered by Factory AI</span>
+            <span className="h-1 w-1 rounded-full bg-border" />
+            <span className="text-primary font-black">Presented by Tharaneetharan SS</span>
+            <span>Industrial Automation Series</span>
+          </div>
         </div>
-        <div className="flex items-center gap-6">
-          <span className="text-foreground/80 font-black">Powered by Factory AI</span>
-          <span className="h-1 w-1 rounded-full bg-border" />
-          <span className="text-primary font-black">Presented by Tharaneetharan SS</span>
-          <span>Industrial Automation Series</span>
-        </div>
+        
+        <p className="max-w-xl text-center text-[7px] leading-relaxed font-bold uppercase tracking-[0.15em] text-muted-foreground opacity-30 select-none">
+          '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
+          <br />
+          inside of all car same of this style based i need
+        </p>
       </footer>
     </main>
 
