@@ -162,7 +162,7 @@ export function ArmView2D({
         )}
 
         {/* links */}
-        {points.slice(0, -1).map((p, i) => {
+        {onTargetChange && points.slice(0, -1).map((p, i) => {
           const q = points[i + 1] as Vec2;
           
           const isLink1Step = activeStep !== undefined && activeStep >= 1 && activeStep <= 4;
@@ -185,7 +185,7 @@ export function ArmView2D({
         })}
 
         {/* joints & angle arrows */}
-        {points.map((p, i) => {
+        {onTargetChange && points.map((p, i) => {
           const isJoint2 = i === 1; 
           const isJoint1 = i === 0; 
           const isJoint2Highlighted = activeStep !== undefined && activeStep >= 2 && isJoint2;
@@ -260,7 +260,7 @@ export function ArmView2D({
           );
         })}
 
-        <circle cx={r1(end.x)} cy={r1(end.y)} r={6} className="fill-primary" />
+        {onTargetChange && <circle cx={r1(end.x)} cy={r1(end.y)} r={6} className="fill-primary" />}
       </g>
     </svg>
   );
