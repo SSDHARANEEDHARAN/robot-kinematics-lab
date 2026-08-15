@@ -112,7 +112,14 @@ export function DHView3D({ frames, activeStep }: Props) {
     // Joint Housings (Realistic motors)
     frames.forEach((f, i) => {
       const p = project(originOf(f));
-      const r = 18 - i * 1.8;
+      
+      const isJoint2 = i === 1; 
+      const isJoint1 = i === 0; 
+      const isJoint2Highlighted = activeStep !== undefined && activeStep >= 2 && isJoint2;
+      const isJoint1Highlighted = activeStep !== undefined && activeStep >= 4 && isJoint1;
+      const isHighlighted = isJoint1Highlighted || isJoint2Highlighted;
+
+      const r = (18 - i * 1.8) * (isHighlighted ? 1.25 : 1);
       
       // Housing gradient
       const grad = ctx.createRadialGradient(p.x - r/3, p.y - r/3, 1, p.x, p.y, r);
