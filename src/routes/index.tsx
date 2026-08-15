@@ -555,7 +555,7 @@ function KinematicsLab() {
         </aside>
 
         {/* ---------- Center: viewport ---------- */}
-        <section className="lab-card overflow-hidden">
+        <section className="lab-card flex h-full flex-col overflow-hidden">
           <div className="flex flex-wrap items-start justify-between gap-4 px-5 py-5">
             <div>
               <h2 className="text-lg font-extrabold tracking-tight text-foreground">
@@ -564,7 +564,7 @@ function KinematicsLab() {
               <p className="text-sm text-muted-foreground">{headline.sub}</p>
             </div>
           </div>
-          <div className="h-[640px] border-t border-border bg-panel overflow-hidden relative">
+          <div className="relative flex-1 overflow-hidden border-t border-border bg-panel">
              {/* Realistic fixed simulation area */}
             {mode === "DH" ? (
               <div className="flex h-full w-full">
