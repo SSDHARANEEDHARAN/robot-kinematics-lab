@@ -92,8 +92,8 @@ const TABS: { value: Tab; label: string }[] = [
 function KinematicsLab() {
   const [mode, setMode] = useState<Mode>("IK");
   const [linkCount, setLinkCount] = useState(2);
-  const [lengths, setLengths] = useState([120, 100, 80, 60]);
-  const [angles, setAngles] = useState([20, 20, 10, 0]);
+  const [lengths, setLengths] = useState([120, 100, 80, 60, 50, 40]);
+  const [angles, setAngles] = useState([20, 20, 10, 0, 0, 0]);
   const [target, setTarget] = useState({ x: 100, y: 30 });
   const [elbowUp, setElbowUp] = useState(false);
   const [showZone, setShowZone] = useState(true);
