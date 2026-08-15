@@ -390,12 +390,6 @@ function KinematicsLab() {
             value={unit}
             onChange={(v) => setUnit(v as "deg" | "rad")}
           />
-          <button
-            onClick={share}
-            className="rounded-lg bg-primary px-4 py-2 text-xs font-black uppercase tracking-widest text-primary-foreground shadow-sm transition-all hover:scale-105 active:scale-95"
-          >
-            {shareMsg || "Share preset"}
-          </button>
           <div className="lab-card flex items-center gap-2 px-4 py-3">
             <span className="h-2.5 w-2.5 rounded-full bg-link-3" />
             <span className="text-sm font-semibold text-foreground">
@@ -614,7 +608,7 @@ function KinematicsLab() {
             <Stat label="Error" value={(mode === "IK" ? ik.error : 0).toFixed(1)} />
           </div>
 
-          <div className="lab-card overflow-hidden">
+          <div className="lab-card flex flex-col h-[600px] overflow-hidden">
             <div className="border-b border-border px-3 py-3">
               <SegButton
                 options={TABS.map((t) => ({ value: t.value, label: t.label }))}
@@ -622,7 +616,7 @@ function KinematicsLab() {
                 onChange={(v) => setTab(v as Tab)}
               />
             </div>
-            <div className="px-4 py-4 max-h-[600px] overflow-y-auto scrollbar-hide">
+            <div className="flex-1 overflow-y-auto px-4 py-4 scrollbar-hide">
               {tab === "math" && (
                 <div className="space-y-3">
                    {mode === "FK" && <FKFormula lengths={activeLengths} angles={planarAngles} unit={unit} end={end} />}
@@ -650,9 +644,9 @@ function KinematicsLab() {
               )}
               {tab === "quiz" && <QuizPanel lengths={activeLengths} angles={planarAngles} onSetTarget={(t) => { setMode("IK"); setTarget(t); }} />}
               {tab === "lessons" && <LessonPanel state={lessonState} activeId={lessonId} onSelect={selectLesson} completed={completed} />}
-              {tab === "ai" && <div className="h-[400px]"><AIPanel state={{ mode, target, lengths: activeLengths, angles: planarAngles, reachable: ik.reachable, ikError: ik.error }} /></div>}
+              {tab === "ai" && <AIPanel state={{ mode, target, lengths: activeLengths, angles: planarAngles, reachable: ik.reachable, ikError: ik.error }} />}
               {tab === "walkthrough" && (
-                <div className="h-[500px]">
+                <div className="h-full">
                   {mode === "IK" ? (
                     <IKWalkthrough 
                       target={target} 
