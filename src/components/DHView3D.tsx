@@ -1,28 +1,25 @@
 import { useEffect, useRef, useState, useMemo } from "react";
-import { axisOf, originOf, type Mat4, type Vec3, deg2rad, type Vec2, fk2d } from "@/lib/kinematics";
+import { axisOf, originOf, type Mat4, type Vec3, type Vec2 } from "@/lib/kinematics";
 import { GhostButton } from "./LabControls";
 
 type Props = { 
   frames?: Mat4[] | undefined;
   activeStep?: number | undefined;
-  // Planar support
   mode?: string;
   planarPoints?: Vec2[] | undefined;
   linkCount?: number;
   showAxes?: boolean;
 };
 
-
-// Colors based on schematic request: Dark Blue and Vibrant Red
+// Colors based on a premium industrial design: Slate and Bright Orange
 const LINK_COLORS = [
-  "#1A2B3C", // J1: Deep Dark Blue
-  "#E74C3C", // J2: Vibrant Red
-  "#1A2B3C", // J3: Deep Dark Blue
-  "#E74C3C", // J4: Vibrant Red
-  "#1A2B3C", // J5: Deep Dark Blue
-  "#E74C3C", // J6: Vibrant Red
+  "#334155", // Slate 700
+  "#F97316", // Orange 500
+  "#475569", // Slate 600
+  "#FB923C", // Orange 400
+  "#64748B", // Slate 500
+  "#FDBA74", // Orange 300
 ];
-
 
 export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = [], linkCount = 2, showAxes = true }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -30,7 +27,6 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
   const [baseScale, setBaseScale] = useState(1);
   const drag = useRef<{ x: number; y: number } | null>(null);
 
-  // Convert 2D points to 3D frames for consistent rendering if in IK/FK mode
   const effectiveFrames = useMemo(() => {
     if (mode === "DH" || !planarPoints || planarPoints.length === 0) return frames || [];
     
@@ -72,9 +68,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
     const currentBaseScale = Math.min(w, h) / 480;
     const drawScale = currentBaseScale * cam.zoom;
     
-    if (baseScale !== currentBaseScale) {
-       setBaseScale(currentBaseScale);
-    }
+    if (baseScale !== currentBaseScale) setBaseScale(currentBaseScale);
 
     const j1Pos = effectiveFrames.length > 0 ? originOf(effectiveFrames[0] as Mat4) : { x: 0, y: 0, z: 0 };
     const ctr = { x: j1Pos.x, y: j1Pos.y, z: j1Pos.z };
@@ -96,7 +90,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       };
     };
 
-    const drawAxes = (pos: Vec3, frame: Mat4, size = 30, isBase = false) => {
+    const drawAxes = (pos: Vec3, frame: Mat4, size = 30) => {
       const p = project(pos);
       const axisSize = size * currentBaseScale;
       const xAxis = axisOf(frame, 0);
@@ -107,48 +101,30 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       const py = project({ x: pos.x + yAxis.x * axisSize, y: pos.y + yAxis.y * axisSize, z: pos.z + yAxis.z * axisSize });
       const pz = project({ x: pos.x + zAxis.x * axisSize, y: pos.y + zAxis.y * axisSize, z: pos.z + zAxis.z * axisSize });
 
-      const drawArrow = (from: {x: number, y: number}, to: {x: number, y: number}, color: string) => {
+      const drawLine = (to: {x: number, y: number}, color: string) => {
         ctx.strokeStyle = color;
-        ctx.fillStyle = color;
         ctx.lineWidth = 2;
         ctx.beginPath(); 
-        ctx.moveTo(from.x, from.y); 
+        ctx.moveTo(p.x, p.y); 
         ctx.lineTo(to.x, to.y); 
         ctx.stroke();
-
-        const angle = Math.atan2(to.y - from.y, to.x - from.x);
-        ctx.beginPath();
-        ctx.moveTo(to.x, to.y);
-        ctx.lineTo(to.x - 8 * Math.cos(angle - Math.PI/6), to.y - 8 * Math.sin(angle - Math.PI/6));
-        ctx.lineTo(to.x - 8 * Math.cos(angle + Math.PI/6), to.y - 8 * Math.sin(angle + Math.PI/6));
-        ctx.closePath();
-        ctx.fill();
       };
 
-      if (isBase) {
-        drawArrow(p, px, "#FF0000"); // X - Red
-        drawArrow(p, pz, "#0000FF"); // Z - Blue
-      } else {
-        drawArrow(p, px, "#E51400"); // X - Red arrow
-        drawArrow(p, py, "#1DB954"); // Y - Green arrow
-        drawArrow(p, pz, "#1436D6"); // Z - Blue arrow
-      }
+      drawLine(px, "#EF4444"); // X
+      drawLine(py, "#22C55E"); // Y
+      drawLine(pz, "#3B82F6"); // Z
     };
 
-    // Light grey perspective grid floor
-    ctx.strokeStyle = "rgba(0,0,0,0.06)";
+    // Grid Floor
+    ctx.strokeStyle = "rgba(0,0,0,0.04)";
     ctx.lineWidth = 1;
-    for(let i = -10; i <= 10; i++) {
-        const p1 = project({x: i*50, y: -500, z: 0});
-        const p2 = project({x: i*50, y: 500, z: 0});
+    for(let i = -8; i <= 8; i++) {
+        const p1 = project({x: i*60, y: -480, z: 0});
+        const p2 = project({x: i*60, y: 480, z: 0});
         ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
-        const p3 = project({x: -500, y: i*50, z: 0});
-        const p4 = project({x: 500, y: i*50, z: 0});
+        const p3 = project({x: -480, y: i*60, z: 0});
+        const p4 = project({x: 480, y: i*60, z: 0});
         ctx.beginPath(); ctx.moveTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y); ctx.stroke();
-    }
-
-    if (showAxes) {
-      drawAxes({x: 0, y: 0, z: 0}, [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1], 70, true);
     }
 
     // Links and Joints
@@ -159,51 +135,46 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       const pb = project(b);
 
       const isHighlighted = activeStep !== undefined && i < activeStep;
-      const r = (12 - i * 1.0) * currentBaseScale;
+      const r = (14 - i * 1.5) * currentBaseScale;
 
-      // --- Link body: Technical schematic cylinders ---
+      // Link body: Sophisticated industrial rods
       const ang = Math.atan2(pb.y - pa.y, pb.x - pa.x);
       const nx = Math.cos(ang + Math.PI / 2);
       const ny = Math.sin(ang + Math.PI / 2);
-      const lw = r * 2.2;
+      const lw = r * 2.0;
       
-      const linkColor = LINK_COLORS[i % LINK_COLORS.length] || "#7F8C8D";
+      const linkColor = LINK_COLORS[i % LINK_COLORS.length];
 
       ctx.save();
-      ctx.shadowColor = "rgba(0,0,0,0.15)";
-      ctx.shadowBlur = 8;
-      ctx.shadowOffsetY = 4;
-      
-      const cylinderGrad = ctx.createLinearGradient(
-        pa.x + nx * lw * 0.5, pa.y + ny * lw * 0.5,
-        pa.x - nx * lw * 0.5, pa.y - ny * lw * 0.5
+      // Material shading
+      const grad = ctx.createLinearGradient(
+        pa.x + nx * lw, pa.y + ny * lw,
+        pa.x - nx * lw, pa.y - ny * lw
       );
-      cylinderGrad.addColorStop(0, linkColor);
-      cylinderGrad.addColorStop(0.3, linkColor);
-      cylinderGrad.addColorStop(0.7, "rgba(0,0,0,0.3)");
-      cylinderGrad.addColorStop(1, "rgba(0,0,0,0.5)");
+      grad.addColorStop(0, linkColor);
+      grad.addColorStop(0.4, linkColor);
+      grad.addColorStop(1, "#1e293b"); // Deep dark shadow
       
-      ctx.strokeStyle = cylinderGrad;
+      ctx.strokeStyle = grad;
       ctx.lineWidth = lw;
-      ctx.lineCap = "butt";
+      ctx.lineCap = "round";
       ctx.beginPath();
       ctx.moveTo(pa.x, pa.y);
       ctx.lineTo(pb.x, pb.y);
       ctx.stroke();
       
-      // Specular Highlight
-      ctx.strokeStyle = "rgba(255,255,255,0.25)";
-      ctx.lineWidth = lw * 0.12;
+      // Glossy highlight
+      ctx.strokeStyle = "rgba(255,255,255,0.2)";
+      ctx.lineWidth = lw * 0.2;
       ctx.beginPath();
-      ctx.moveTo(pa.x + nx * lw * 0.25, pa.y + ny * lw * 0.25);
-      ctx.lineTo(pb.x + nx * lw * 0.25, pb.y + ny * lw * 0.25);
+      ctx.moveTo(pa.x + nx * lw * 0.3, pa.y + ny * lw * 0.3);
+      ctx.lineTo(pb.x + nx * lw * 0.3, pb.y + ny * lw * 0.3);
       ctx.stroke();
       ctx.restore();
 
-      // --- Joint: Semi-transparent mechanical housing ---
-      const hr = r * 2.6;  
-      const hw = r * 1.8;  
-      
+      // Premium Mechanical Joint
+      const hr = r * 2.2;
+      const hw = r * 1.6;
       const frameA = effectiveFrames[i] as Mat4;
       const zAxis = axisOf(frameA, 2);
       const projZ = project({x: a.x + zAxis.x, y: a.y + zAxis.y, z: a.z + zAxis.z});
@@ -213,35 +184,36 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       ctx.translate(pa.x, pa.y);
       ctx.rotate(jointAngle);
       
-      // Housing
-      ctx.fillStyle = "rgba(245, 246, 250, 0.75)";
-      ctx.strokeStyle = "rgba(189, 195, 199, 0.6)";
-      ctx.lineWidth = 1;
+      // Joint Housing
+      const hGrad = ctx.createLinearGradient(0, -hr, 0, hr);
+      hGrad.addColorStop(0, "#f8fafc");
+      hGrad.addColorStop(0.5, "#cbd5e1");
+      hGrad.addColorStop(1, "#94a3b8");
+      
+      ctx.fillStyle = hGrad;
       ctx.beginPath();
-      ctx.roundRect(-hw/2, -hr, hw, hr * 2, hr * 0.25);
+      ctx.roundRect(-hw/2, -hr, hw, hr * 2, hr * 0.3);
       ctx.fill();
+      ctx.strokeStyle = "rgba(0,0,0,0.1)";
       ctx.stroke();
 
-      // Mechanical core
-      ctx.fillStyle = "rgba(52, 73, 94, 0.55)";
-      ctx.fillRect(-hw * 0.18, -hr * 0.88, hw * 0.36, hr * 1.76);
+      // Accented core
+      ctx.fillStyle = linkColor;
+      ctx.fillRect(-hw * 0.2, -hr * 0.7, hw * 0.4, hr * 1.4);
       
       ctx.restore();
 
       if (isHighlighted) {
         ctx.save();
-        ctx.strokeStyle = "#E74C3C";
-        ctx.lineWidth = 2;
-        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = "#3b82f6";
+        ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.arc(pa.x, pa.y, hr * 1.35, 0, Math.PI * 2);
+        ctx.arc(pa.x, pa.y, hr * 1.5, 0, Math.PI * 2);
         ctx.stroke();
         ctx.restore();
       }
 
-      if (showAxes && effectiveFrames[i]) {
-        drawAxes(a, effectiveFrames[i] as Mat4, 42);
-      }
+      if (showAxes && effectiveFrames[i]) drawAxes(a, effectiveFrames[i] as Mat4, 40);
     }
 
     // End Effector
@@ -249,33 +221,23 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
     if (eeFrame) {
       const eePos = originOf(eeFrame as Mat4);
       const pee = project(eePos);
-      const zAxis = axisOf(eeFrame as Mat4, 2);
-      const projZ = project({x: eePos.x + zAxis.x, y: eePos.y + zAxis.y, z: eePos.z + zAxis.z});
-      const eeAngle = Math.atan2(projZ.y - pee.y, projZ.x - pee.x);
+      const eer = 15 * currentBaseScale;
       
       ctx.save();
       ctx.translate(pee.x, pee.y);
-      ctx.rotate(eeAngle);
-      
-      const eer = 14 * currentBaseScale;
-      ctx.fillStyle = "rgba(52, 152, 219, 0.85)";
+      ctx.fillStyle = "#3b82f6";
       ctx.beginPath();
-      ctx.roundRect(-eer, -eer, eer * 2, eer * 2, eer * 0.3);
+      ctx.arc(0, 0, eer, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = "rgba(0,0,0,0.25)";
-      ctx.stroke();
-      
       ctx.restore();
 
-      if (showAxes) {
-        drawAxes(eePos, eeFrame as Mat4, 50);
-      }
+      if (showAxes) drawAxes(eePos, eeFrame as Mat4, 50);
     }
 
   }, [effectiveFrames, cam, activeStep, showAxes, baseScale]);
 
   return (
-    <div className="relative h-full w-full">
+    <div className="relative h-full w-full bg-slate-50/50">
       <canvas
         ref={canvasRef}
         className="h-full w-full cursor-grab touch-none active:cursor-grabbing"
@@ -306,19 +268,16 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
           Reset View
         </GhostButton>
       </div>
-      <div className="absolute top-4 right-4 rounded-xl border border-border bg-card/80 p-3 text-[10px] font-bold shadow-xl backdrop-blur-md">
-        <div className="text-primary uppercase tracking-[0.2em] mb-2 font-black">Technical Schematic</div>
-        <div className="text-foreground/70 space-y-1">
+      <div className="absolute top-4 right-4 rounded-xl border border-border bg-white/90 p-4 text-[10px] font-bold shadow-2xl backdrop-blur-sm">
+        <div className="text-slate-900 uppercase tracking-[0.2em] mb-3 font-black border-b pb-2">Industrial Robot V2</div>
+        <div className="text-slate-500 space-y-1.5">
           {effectiveFrames.length > 0 && (
             <>
-              <div>X: {originOf(effectiveFrames[effectiveFrames.length - 1] as Mat4).x.toFixed(1)}</div>
-              <div>Y: {originOf(effectiveFrames[effectiveFrames.length - 1] as Mat4).y.toFixed(1)}</div>
-              <div>Z: {originOf(effectiveFrames[effectiveFrames.length - 1] as Mat4).z.toFixed(1)}</div>
+              <div className="flex justify-between gap-4"><span>X</span> <span className="font-mono text-slate-900">{originOf(effectiveFrames[effectiveFrames.length - 1] as Mat4).x.toFixed(1)}</span></div>
+              <div className="flex justify-between gap-4"><span>Y</span> <span className="font-mono text-slate-900">{originOf(effectiveFrames[effectiveFrames.length - 1] as Mat4).y.toFixed(1)}</span></div>
+              <div className="flex justify-between gap-4"><span>Z</span> <span className="font-mono text-slate-900">{originOf(effectiveFrames[effectiveFrames.length - 1] as Mat4).z.toFixed(1)}</span></div>
             </>
           )}
-          <div className="mt-2 border-t border-border pt-1 text-[8px] opacity-60">
-            Scale: {baseScale.toFixed(3)}x | Zoom: {cam.zoom.toFixed(2)}x
-          </div>
         </div>
       </div>
     </div>
