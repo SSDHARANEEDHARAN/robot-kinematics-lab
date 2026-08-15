@@ -182,7 +182,7 @@ export function Badge({ children, variant = "default" }: { children: ReactNode; 
     danger: "bg-foreground text-background border-2 border-foreground animate-pulse",
   };
   return (
-    <span className={`px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${styles[variant]}`}>
+    <span className={`rounded-full px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.15em] transition-all hover:scale-105 ${styles[variant]}`}>
       {children}
     </span>
   );
