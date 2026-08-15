@@ -575,7 +575,10 @@ function KinematicsLab() {
             {mode === "DH" ? (
               <div className="flex h-full w-full">
                 <div className="flex-1">
-                  <DHView3D frames={frames} />
+                  <DHView3D 
+                    frames={frames} 
+                    activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
+                  />
                 </div>
               </div>
             ) : (
