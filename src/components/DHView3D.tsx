@@ -116,7 +116,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
     };
 
     // Grid Floor: Dark Factory Floor Grid
-    ctx.strokeStyle = "rgba(0,0,0,0.1)";
+    ctx.strokeStyle = "var(--grid)";
     ctx.lineWidth = 1;
     for(let i = -10; i <= 10; i++) {
         const p1 = project({x: i*60, y: -600, z: 0});
