@@ -587,18 +587,18 @@ function KinematicsLab() {
                 {mode === "DH" ? (
                   <>
                     <Section title="Joints">
-                      <div className="flex items-center justify-center gap-0 rounded-lg border border-border">
+                      <div className="flex items-center justify-center gap-0 border-2 border-foreground">
                         <button
-                          className="px-4 py-2 text-lg font-bold text-primary"
+                          className="px-4 py-2 text-lg font-bold text-foreground hover:bg-foreground hover:text-background transition-colors"
                           onClick={() => setJointCount((c) => Math.max(2, c - 1))}
                         >
                           -
                         </button>
-                        <span className="min-w-12 border-x border-border px-4 py-2 text-center text-lg font-extrabold">
+                        <span className="min-w-12 border-x-2 border-foreground px-4 py-2 text-center text-lg font-extrabold">
                           {jointCount}
                         </span>
                         <button
-                          className="px-4 py-2 text-lg font-bold text-foreground"
+                          className="px-4 py-2 text-lg font-bold text-foreground hover:bg-foreground hover:text-background transition-colors"
                           onClick={() => setJointCount((c) => Math.min(6, c + 1))}
                         >
                           +
