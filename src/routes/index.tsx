@@ -26,6 +26,7 @@ import {
   jacobian2d,
   originOf,
   workspaceSweep,
+  checkCollisions2d,
   type DHRow,
   type Mat4,
   type Vec2,
@@ -91,8 +92,8 @@ const TABS: { value: Tab; label: string }[] = [
 function KinematicsLab() {
   const [mode, setMode] = useState<Mode>("IK");
   const [linkCount, setLinkCount] = useState(2);
-  const [lengths, setLengths] = useState([120, 100, 80]);
-  const [angles, setAngles] = useState([20, 20, 10]);
+  const [lengths, setLengths] = useState([120, 100, 80, 60, 50, 40]);
+  const [angles, setAngles] = useState([20, 20, 10, 0, 0, 0]);
   const [target, setTarget] = useState({ x: 100, y: 30 });
   const [elbowUp, setElbowUp] = useState(false);
   const [showZone, setShowZone] = useState(true);
@@ -118,6 +119,9 @@ function KinematicsLab() {
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [jointLimits, setJointLimits] = useState<JointLimits[]>([
     { min: -180, max: 180 },
+    { min: -150, max: 150 },
+    { min: -150, max: 150 },
+    { min: -150, max: 150 },
     { min: -150, max: 150 },
     { min: -150, max: 150 },
   ]);
@@ -252,17 +256,22 @@ function KinematicsLab() {
     () => fk2d(activeLengths, ikGhost.angles),
     [activeLengths.join(), ikGhost.angles.join()],
   );
+  
+  const collisionResult = useMemo(() => {
+    if (mode === "DH") return { colliding: false, pairs: [], points: [] };
+    return checkCollisions2d(points);
+  }, [points, mode]);
 
   const dhRows = dh.slice(0, jointCount);
   const frames = useMemo(() => dhChain(dhRows), [JSON.stringify(dhRows)]);
   const dhEnd = originOf(frames[frames.length - 1] as Mat4);
 
   const jacobian = useMemo(
-    () => jacobian2d(activeLengths, planarAngles),
-    [activeLengths.join(), planarAngles.join()],
+    () => (mode === "DH" || linkCount > 2) ? [[0,0],[0,0]] : jacobian2d(activeLengths, planarAngles),
+    [activeLengths.join(), planarAngles.join(), mode, linkCount],
   );
   const manipulability = Math.abs(det2x2(jacobian));
-  const isSingular = manipulability < 5000;
+  const isSingular = linkCount <= 2 && manipulability < 5000;
 
   const heatmap = useMemo(
     () => (showHeatmap ? generateReachabilityHeatmap(activeLengths, 15) : []),
@@ -279,16 +288,17 @@ function KinematicsLab() {
     });
 
     return {
-      match: dist < 1.0 && !limitViolated,
+      match: dist < 1.0 && !limitViolated && !collisionResult.colliding,
       error: dist,
       fkPos,
       limitViolated,
+      colliding: collisionResult.colliding,
     };
-  }, [points, target, mode, planarAngles, jointLimits]);
+  }, [points, target, mode, planarAngles, jointLimits, collisionResult.colliding]);
 
 
   const velocity = useMemo(() => {
-    if (!showVelocity || mode === "DH") return undefined;
+    if (!showVelocity || mode === "DH" || linkCount > 2) return undefined;
     const J = jacobian;
     const j0 = J[0];
     const j1 = J[1];
@@ -425,7 +435,8 @@ function KinematicsLab() {
         if (mode === "DH") {
            anglesForPose = new Array(jointCount).fill(0).map((_, j) => (j === 1 ? -30 : j === 2 ? 60 : 0));
         } else {
-           anglesForPose = ik2d(activeLengths, p, false).angles;
+           const ikRes = ik2d(activeLengths, p, false);
+           anglesForPose = ikRes.angles;
         }
         return {
           id: uid(),
@@ -444,7 +455,8 @@ function KinematicsLab() {
         if (mode === "DH") {
            anglesForPose = new Array(jointCount).fill(0).map((_, j) => (j === 0 ? i : 0));
         } else {
-           anglesForPose = ik2d(activeLengths, p, true).angles;
+           const ikRes = ik2d(activeLengths, p, true);
+           anglesForPose = ikRes.angles;
         }
         demoPoints.push({
           id: uid(),
@@ -667,6 +679,9 @@ function KinematicsLab() {
                         options={[
                           { value: "2", label: "2 Links" },
                           { value: "3", label: "3 Links" },
+                          { value: "4", label: "4 Links" },
+                          { value: "5", label: "5 Links" },
+                          { value: "6", label: "6 Links" },
                         ]}
                         value={String(linkCount)}
                         onChange={(v) => setLinkCount(Number(v))}
@@ -678,6 +693,15 @@ function KinematicsLab() {
                         <NumberField label="L2" value={lengths[1] ?? 0} onChange={(v) => setLength(1, v)} />
                         {linkCount > 2 && (
                           <NumberField label="L3" value={lengths[2] ?? 0} onChange={(v) => setLength(2, v)} />
+                        )}
+                        {linkCount > 3 && (
+                          <NumberField label="L4" value={lengths[3] ?? 0} onChange={(v) => setLength(3, v)} />
+                        )}
+                        {linkCount > 4 && (
+                          <NumberField label="L5" value={lengths[4] ?? 0} onChange={(v) => setLength(4, v)} />
+                        )}
+                        {linkCount > 5 && (
+                          <NumberField label="L6" value={lengths[5] ?? 0} onChange={(v) => setLength(5, v)} />
                         )}
                       </div>
                     </Section>
@@ -715,7 +739,7 @@ function KinematicsLab() {
                     
                     <Section title="Joint Limits" collapsible defaultOpen={false}>
                       <div className="flex flex-col gap-4">
-                        {[0, 1, 2].slice(0, linkCount).map(i => (
+                        {[0, 1, 2, 3, 4, 5].slice(0, linkCount).map(i => (
                           <div key={i} className="space-y-2">
                             <div className="text-[10px] font-bold uppercase text-muted-foreground">Joint J{i+1} Limits</div>
                             <SliderRow 
@@ -772,7 +796,7 @@ function KinematicsLab() {
           <div className="relative flex-1 overflow-hidden border-t border-border bg-panel">
              {/* Realistic fixed simulation area */}
             <div className="relative h-full w-full">
-              {(mode as string === "DH" || (mode as string !== "DH" && linkCount > 3)) ? (
+              {mode === "DH" ? (
                 <DHView3D 
                   mode={mode}
                   frames={mode === "DH" ? frames : undefined}
@@ -800,32 +824,11 @@ function KinematicsLab() {
                     limits={jointLimits}
                     angles={planarAngles}
                     interactive={true}
+                    collisions={collisionResult}
                   />
                 </div>
               )}
 
-              {mode === "IK" && !pathMode && !playing && (mode as string === "DH" || linkCount > 3) && (
-                <div className="absolute inset-0 pointer-events-none">
-                  <ArmView2D
-                    points={points}
-                    lengths={activeLengths}
-                    showZone={showZone}
-                    target={target}
-                    onTargetChange={setTarget}
-                    ghostPoints={showGhost ? ghostPoints : undefined}
-                    trace={showTrace ? trace : undefined}
-                    path={waypoints.map((w) => w.target)}
-                    heatmap={heatmap}
-                    workspace={[]}
-                    velocity={velocity}
-                    unit={unit}
-                    activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
-                    limits={jointLimits}
-                    angles={planarAngles}
-                    interactive={true}
-                  />
-                </div>
-              )}
             </div>
           </div>
         </section>
