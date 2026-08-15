@@ -172,10 +172,10 @@ export function Card({ title, children }: { title?: string; children: ReactNode 
 
 export function Badge({ children, variant = "default" }: { children: ReactNode; variant?: "default" | "success" | "warning" | "danger" }) {
   const styles = {
-    default: "bg-secondary text-secondary-foreground",
-    success: "bg-link-3/20 text-link-3",
-    warning: "bg-link-2/20 text-link-2",
-    danger: "bg-destructive/20 text-destructive",
+    default: "bg-foreground text-background",
+    success: "border border-foreground text-foreground",
+    warning: "bg-foreground text-background",
+    danger: "bg-foreground text-background animate-pulse",
   };
   return (
     <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${styles[variant]}`}>
