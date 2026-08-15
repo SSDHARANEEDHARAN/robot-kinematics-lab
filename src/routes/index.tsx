@@ -931,6 +931,7 @@ function KinematicsLab() {
                         setLinkCount(v);
                         if (v > lengths.length) setLengths([...lengths, 80]);
                       }}
+                      tooltip="Number of active kinematic links in the chain"
                     />
                     {activeLengths.map((l, i) => (
                       <SliderRow
