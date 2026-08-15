@@ -576,7 +576,7 @@ function KinematicsLab() {
       </header>
 
 
-      <div className="grid gap-8 grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)_340px] xl:h-[750px]">
+      <div className="grid gap-8 grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[300px_minmax(0,1fr)_340px] xl:h-[750px]">
         {/* ---------- Left: popups ---------- */}
         <aside className="flex flex-col gap-3 overflow-hidden h-[500px] xl:h-full order-2 xl:order-1">
           <div className="flex flex-1 flex-col overflow-hidden">
@@ -599,6 +599,14 @@ function KinematicsLab() {
                   <div className="mt-4 flex flex-col gap-2">
                     <GhostButton onClick={share}>
                       {shareMsg || "Share Preset"}
+                    </GhostButton>
+                    <GhostButton 
+                      onClick={() => exportPresetReport(preset, { 
+                        error: ikFkConsistency?.error ?? 0, 
+                        reachable: !ikFkConsistency?.limitViolated 
+                      })}
+                    >
+                      Export PDF Report
                     </GhostButton>
                   </div>
                 </Section>
