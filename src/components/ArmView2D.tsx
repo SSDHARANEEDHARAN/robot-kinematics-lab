@@ -116,20 +116,23 @@ export function ArmView2D({
           />
         ))}
         {/* grid */}
-
-        <g stroke="rgba(0,0,0,0.05)" strokeWidth={1}>
-          {grid.map((g) => (
-            <line key={`v${g}`} x1={g} y1={-H / 2} x2={g} y2={H / 2} />
-          ))}
-          {gridY.map((g) => (
-            <line key={`h${g}`} x1={-W / 2} y1={g} x2={W / 2} y2={g} />
-          ))}
-        </g>
+        {showGrid && (
+          <g stroke="rgba(0,0,0,0.05)" strokeWidth={1}>
+            {grid.map((g) => (
+              <line key={`v${g}`} x1={g} y1={-H / 2} x2={g} y2={H / 2} />
+            ))}
+            {gridY.map((g) => (
+              <line key={`h${g}`} x1={-W / 2} y1={g} x2={W / 2} y2={g} />
+            ))}
+          </g>
+        )}
         {/* axes */}
-        <g stroke="rgba(0,0,0,0.1)" strokeWidth={1}>
-          <line x1={-W / 2} y1={0} x2={W / 2} y2={0} />
-          <line x1={0} y1={-H / 2} x2={0} y2={H / 2} />
-        </g>
+        {showAxesOverlay && (
+          <g stroke="rgba(0,0,0,0.1)" strokeWidth={1}>
+            <line x1={-W / 2} y1={0} x2={W / 2} y2={0} />
+            <line x1={0} y1={-H / 2} x2={0} y2={H / 2} />
+          </g>
+        )}
 
         {showZone && (
           <g className="opacity-20 transition-opacity duration-700 hover:opacity-40">
