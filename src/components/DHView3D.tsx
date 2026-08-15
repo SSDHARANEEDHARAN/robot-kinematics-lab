@@ -115,15 +115,15 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       drawLine(pz, "#3B82F6"); // Z
     };
 
-    // Grid Floor
-    ctx.strokeStyle = "rgba(0,0,0,0.04)";
+    // Grid Floor: Dark Factory Floor Grid
+    ctx.strokeStyle = "rgba(0,0,0,0.1)";
     ctx.lineWidth = 1;
-    for(let i = -8; i <= 8; i++) {
-        const p1 = project({x: i*60, y: -480, z: 0});
-        const p2 = project({x: i*60, y: 480, z: 0});
+    for(let i = -10; i <= 10; i++) {
+        const p1 = project({x: i*60, y: -600, z: 0});
+        const p2 = project({x: i*60, y: 600, z: 0});
         ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
-        const p3 = project({x: -480, y: i*60, z: 0});
-        const p4 = project({x: 480, y: i*60, z: 0});
+        const p3 = project({x: -600, y: i*60, z: 0});
+        const p4 = project({x: 600, y: i*60, z: 0});
         ctx.beginPath(); ctx.moveTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y); ctx.stroke();
     }
 
@@ -151,9 +151,10 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
         pa.x + nx * lw, pa.y + ny * lw,
         pa.x - nx * lw, pa.y - ny * lw
       );
-      grad.addColorStop(0, linkColor);
-      grad.addColorStop(0.4, linkColor);
-      grad.addColorStop(1, "#1e293b"); // Deep dark shadow
+      grad.addColorStop(0, "#cbd5e1"); // Brushed Aluminum highlight
+      grad.addColorStop(0.3, linkColor);
+      grad.addColorStop(0.7, linkColor);
+      grad.addColorStop(1, "#1e293b"); // Heavy shadow
       
       ctx.strokeStyle = grad;
       ctx.lineWidth = lw;
@@ -184,35 +185,46 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       ctx.translate(pa.x, pa.y);
       ctx.rotate(jointAngle);
       
-      // Joint Housing: Rounded "Cup" Shape
+      // Joint Housing: Brushed Aluminum "Hub" with Warning Stripes
       const hGrad = ctx.createLinearGradient(0, -hr, 0, hr);
-      hGrad.addColorStop(0, "#f8fafc");
-      hGrad.addColorStop(0.5, "#cbd5e1");
-      hGrad.addColorStop(1, "#94a3b8");
+      hGrad.addColorStop(0, "#f1f5f9"); // Bright aluminum
+      hGrad.addColorStop(0.5, "#94a3b8"); // Brushed mid
+      hGrad.addColorStop(1, "#475569"); // Dark base
       
       ctx.fillStyle = hGrad;
       
-      // Draw the "Cup" / Sphere segment for joint
       ctx.beginPath();
-      ctx.arc(0, 0, hr, -Math.PI/2, Math.PI/2); // Main housing curve
+      ctx.arc(0, 0, hr, -Math.PI/2, Math.PI/2);
       ctx.lineTo(-hw/2, hr);
       ctx.lineTo(-hw/2, -hr);
       ctx.closePath();
       ctx.fill();
-      ctx.strokeStyle = "rgba(0,0,0,0.15)";
-      ctx.lineWidth = 1;
+      
+      // Safety Warning Stripes (Yellow/Black)
+      ctx.save();
+      ctx.clip();
+      ctx.fillStyle = "#FACC15"; // Safety Yellow
+      for (let j = -hr; j < hr; j += 8) {
+        if (Math.floor(j / 8) % 2 === 0) {
+          ctx.fillRect(-hw/2, j, hw, 4);
+        }
+      }
+      ctx.restore();
+
+      ctx.strokeStyle = "rgba(0,0,0,0.3)";
+      ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      // Accented central ring (the "actuator" hub)
-      ctx.fillStyle = linkColor || "#3b82f6";
+      // Accented central actuator hub
+      ctx.fillStyle = "#1e293b"; // Dark steel
       ctx.beginPath();
-      ctx.ellipse(0, 0, hw * 0.3, hr * 0.9, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, 0, hw * 0.4, hr * 0.8, 0, 0, Math.PI * 2);
       ctx.fill();
       
-      // End Cap highlight
-      ctx.fillStyle = "rgba(255,255,255,0.3)";
+      // Aluminum bolt detail
+      ctx.fillStyle = "#cbd5e1";
       ctx.beginPath();
-      ctx.ellipse(0, -hr * 0.6, hw * 0.2, hr * 0.1, 0, 0, Math.PI * 2);
+      ctx.arc(0, 0, hw * 0.15, 0, Math.PI * 2);
       ctx.fill();
       
       ctx.restore();
@@ -239,10 +251,13 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       
       ctx.save();
       ctx.translate(pee.x, pee.y);
-      ctx.fillStyle = "#3b82f6";
+      ctx.fillStyle = "#FACC15"; // Safety Yellow End Effector
       ctx.beginPath();
       ctx.arc(0, 0, eer, 0, Math.PI * 2);
       ctx.fill();
+      ctx.strokeStyle = "#1e293b";
+      ctx.lineWidth = 2;
+      ctx.stroke();
       ctx.restore();
 
       if (showAxes) drawAxes(eePos, eeFrame as Mat4, 50);
@@ -251,7 +266,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
   }, [effectiveFrames, cam, activeStep, showAxes, baseScale]);
 
   return (
-    <div className="relative h-full w-full bg-slate-50/50">
+    <div className="relative h-full w-full bg-slate-100">
       <canvas
         ref={canvasRef}
         className="h-full w-full cursor-grab touch-none active:cursor-grabbing"
@@ -283,7 +298,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
         </GhostButton>
       </div>
       <div className="absolute top-4 right-4 rounded-xl border border-border bg-white/90 p-4 text-[10px] font-bold shadow-2xl backdrop-blur-sm">
-        <div className="text-slate-900 uppercase tracking-[0.2em] mb-3 font-black border-b pb-2">Industrial Robot V2</div>
+        <div className="text-slate-900 uppercase tracking-[0.2em] mb-3 font-black border-b border-yellow-400 pb-2">Factory Precision V3</div>
         <div className="text-slate-500 space-y-1.5">
           {effectiveFrames.length > 0 && (
             <>
