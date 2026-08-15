@@ -34,7 +34,7 @@ export function TeachPanel({
   onRunDemo: (type: "pick" | "round" | "dance") => void;
 }) {
   const jog =
-    "rounded-md border border-border bg-card px-2 py-2 text-sm font-bold text-foreground hover:bg-accent active:bg-secondary";
+    "rounded-md border-2 border-slate-900 bg-card px-2 py-2 text-sm font-bold text-foreground hover:bg-yellow-400 hover:text-slate-900 active:bg-yellow-500 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none";
   return (
     <div className="space-y-4">
       <div>
