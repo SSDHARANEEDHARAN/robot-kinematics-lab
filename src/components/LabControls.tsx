@@ -68,7 +68,7 @@ export function SegButton({
           }`}
         >
           {value === o.value && (
-            <div className="absolute inset-0 -z-10 rounded-md bg-primary shadow-sm animate-in fade-in zoom-in-95 duration-300" />
+            <div className="absolute inset-0 -z-10 bg-foreground animate-in fade-in zoom-in-95 duration-300" />
           )}
           {o.label}
         </button>
