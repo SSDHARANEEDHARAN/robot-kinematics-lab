@@ -17,6 +17,8 @@ type Props = {
   velocity?: Vec2 | undefined;
   unit?: "deg" | "rad";
   activeStep?: number | undefined;
+  limits?: { min: number; max: number }[];
+  angles?: number[];
 };
 
 const r1 = (n: number) => Math.round(n * 1000) / 1000;
@@ -38,6 +40,8 @@ export function ArmView2D({
   velocity,
   unit = "deg",
   activeStep,
+  limits,
+  angles,
 }: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
   const dragging = useRef(false);
@@ -124,10 +128,36 @@ export function ArmView2D({
 
         {/* target */}
         {target && (
-          <g stroke="currentColor" className="text-primary" strokeWidth={2.5} fill="none">
-            <circle cx={target.x} cy={target.y} r={10} className="fill-primary/10" />
-            <line x1={target.x - 18} y1={target.y} x2={target.x + 18} y2={target.y} />
-            <line x1={target.x} y1={target.y - 18} x2={target.x} y2={target.y + 18} />
+          <g>
+            <g stroke="currentColor" className={showZone && !lengths.every((_, i) => true) ? "text-red-500" : "text-primary"} strokeWidth={2.5} fill="none">
+              <circle cx={target.x} cy={target.y} r={10} className="fill-current opacity-10" />
+              <line x1={target.x - 18} y1={target.y} x2={target.x + 18} y2={target.y} />
+              <line x1={target.x} y1={target.y - 18} x2={target.x} y2={target.y + 18} />
+            </g>
+            {/* Reachability Warning line if unreachable */}
+            {(() => {
+              const d = Math.hypot(target.x, target.y);
+              const maxReach = lengths.reduce((a, b) => a + b, 0);
+              const minReach = Math.abs((lengths[0] ?? 0) - (lengths[1] ?? 0));
+              if (d > maxReach || d < minReach) {
+                return (
+                  <g>
+                    <line 
+                      x1={end.x} y1={end.y} x2={target.x} y2={target.y} 
+                      stroke="red" strokeWidth={1} strokeDasharray="4 2" 
+                    />
+                    <text 
+                      x={(end.x + target.x)/2} y={(end.y + target.y)/2} 
+                      className="fill-red-500 text-[10px] font-bold" 
+                      transform="scale(1,-1)"
+                    >
+                      ERR: {Math.round(Math.hypot(end.x - target.x, end.y - target.y))}mm
+                    </text>
+                  </g>
+                );
+              }
+              return null;
+            })()}
           </g>
         )}
 
@@ -179,17 +209,24 @@ export function ArmView2D({
           const arrowX = p.x + Math.cos(angle) * arrowLen;
           const arrowY = p.y + Math.sin(angle) * arrowLen;
 
-          return (
-            <g key={i}>
-              {/* Transparent Joint Housing - matching reference style */}
-              <circle
-                cx={r1(p.x)}
-                cy={r1(p.y)}
-                r={i === 0 ? 15 : 12}
-                fill="rgba(0,0,0,0.05)"
-                stroke="rgba(0,0,0,0.1)"
-                strokeWidth={1}
-              />
+            return (
+              <g key={i}>
+                {/* Joint Limit Arc/Indicator */}
+                {limits && limits[i] && (
+                  <g opacity={0.3}>
+                    <circle cx={p.x} cy={p.y} r={20} fill="none" stroke="currentColor" className="text-muted-foreground" strokeWidth={1} strokeDasharray="2 2" />
+                  </g>
+                )}
+                
+                {/* Transparent Joint Housing - matching reference style */}
+                <circle
+                  cx={r1(p.x)}
+                  cy={r1(p.y)}
+                  r={i === 0 ? 15 : 12}
+                  fill="rgba(40,45,50,0.15)"
+                  stroke="rgba(0,0,0,0.2)"
+                  strokeWidth={1.2}
+                />
               
               {/* Angle Indicator Arrow */}
               <line 
@@ -212,6 +249,10 @@ export function ArmView2D({
                 className={isHighlighted ? "fill-primary stroke-primary" : (i === 0 ? "fill-primary stroke-primary" : "fill-card stroke-primary")}
                 strokeWidth={2}
               />
+              {/* Limit Violation Warning */}
+              {limits && limits[i] && angles && angles[i] !== undefined && (angles[i] < (limits[i]?.min ?? -360) || angles[i] > (limits[i]?.max ?? 360)) && (
+                <circle cx={p.x} cy={p.y} r={isHighlighted ? 12 : 10} className="fill-none stroke-red-500" strokeWidth={2} />
+              )}
               {i === 0 && (
                 <text x={p.x + 18} y={p.y - 18} className="fill-primary text-[10px] font-black uppercase tracking-widest" transform="scale(1,-1)">FIXED J1</text>
               )}
