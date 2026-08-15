@@ -21,10 +21,22 @@ const LINK_COLORS = [
   "#2ECC71", // Green (if needed)
 ];
 
-export function DHView3D({ frames, activeStep }: Props) {
+export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = [], linkCount = 2 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [cam, setCam] = useState({ yaw: -0.9, pitch: 0.5, zoom: 1.2 });
   const drag = useRef<{ x: number; y: number } | null>(null);
+
+  // Convert 2D points to 3D frames for consistent rendering if in IK/FK mode
+  const effectiveFrames = useMemo(() => {
+    if (mode === "DH") return frames;
+    
+    // Create Mat4 frames from 2D points
+    return planarPoints.map((p, i) => {
+      const m = [1, 0, 0, p.x, 0, 1, 0, p.y, 0, 0, 1, 0, 0, 0, 0, 1];
+      // Tag with some DH-like properties for the axis renderer
+      return m;
+    });
+  }, [mode, frames, planarPoints]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -50,7 +62,7 @@ export function DHView3D({ frames, activeStep }: Props) {
     const baseScale = Math.min(w, h) / 480;
     const scale = baseScale * cam.zoom;
 
-    const j1Pos = originOf(frames[0] as Mat4);
+    const j1Pos = effectiveFrames.length > 0 ? originOf(effectiveFrames[0] as Mat4) : { x: 0, y: 0, z: 0 };
     const ctr = { x: j1Pos.x, y: j1Pos.y, z: j1Pos.z };
 
     const project = (p0: Vec3) => {
@@ -127,9 +139,9 @@ export function DHView3D({ frames, activeStep }: Props) {
     drawAxes({x: 0, y: 0, z: 0}, [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1], 60, true);
 
     // Links and Joints
-    for (let i = 0; i < frames.length - 1; i++) {
-      const a = originOf(frames[i] as Mat4);
-      const b = originOf(frames[i + 1] as Mat4);
+    for (let i = 0; i < effectiveFrames.length - 1; i++) {
+      const a = originOf(effectiveFrames[i] as Mat4);
+      const b = originOf(effectiveFrames[i + 1] as Mat4);
       const pa = project(a);
       const pb = project(b);
 
@@ -261,7 +273,7 @@ export function DHView3D({ frames, activeStep }: Props) {
     drawAxes(eePos, frames[frames.length - 1] as Mat4, 35);
 
 
-  }, [frames, cam, activeStep]);
+  }, [effectiveFrames, cam, activeStep, baseScale]);
 
   return (
     <div className="relative h-full w-full">
@@ -298,9 +310,16 @@ export function DHView3D({ frames, activeStep }: Props) {
       <div className="absolute top-4 right-4 rounded-xl border border-border bg-card/80 p-3 text-[10px] font-bold shadow-xl backdrop-blur-md">
         <div className="text-primary uppercase tracking-[0.2em] mb-2 font-black">Industrial Kinematics</div>
         <div className="text-foreground/70 space-y-1">
-          <div>X: {originOf(frames[frames.length - 1] as Mat4).x.toFixed(1)}</div>
-          <div>Y: {originOf(frames[frames.length - 1] as Mat4).y.toFixed(1)}</div>
-          <div>Z: {originOf(frames[frames.length - 1] as Mat4).z.toFixed(1)}</div>
+          {effectiveFrames.length > 0 && (
+            <>
+              <div>X: {originOf(effectiveFrames[effectiveFrames.length - 1] as Mat4).x.toFixed(1)}</div>
+              <div>Y: {originOf(effectiveFrames[effectiveFrames.length - 1] as Mat4).y.toFixed(1)}</div>
+              <div>Z: {originOf(effectiveFrames[effectiveFrames.length - 1] as Mat4).z.toFixed(1)}</div>
+            </>
+          )}
+          <div className="mt-2 border-t border-border pt-1 text-[8px] opacity-60">
+            Scale: {baseScale.toFixed(3)}x | Zoom: {cam.zoom.toFixed(2)}x
+          </div>
         </div>
       </div>
     </div>
