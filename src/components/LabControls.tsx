@@ -141,7 +141,7 @@ export function GhostButton({ children, onClick }: { children: ReactNode; onClic
     <button
       type="button"
       onClick={onClick}
-      className="rounded-lg border border-border bg-secondary px-3 py-2 text-xs font-bold uppercase tracking-wider text-foreground transition-all hover:bg-primary hover:text-primary-foreground active:scale-95"
+      className="rounded-lg border-2 border-slate-900 bg-secondary px-3 py-2 text-xs font-bold uppercase tracking-wider text-foreground transition-all hover:bg-yellow-400 hover:text-slate-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
     >
       {children}
     </button>
@@ -150,7 +150,7 @@ export function GhostButton({ children, onClick }: { children: ReactNode; onClic
 
 export function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="lab-card px-4 py-3">
+    <div className="lab-card px-4 py-3 border-l-4 border-l-yellow-400">
       <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">{label}</div>
       <div className="mt-1 text-2xl font-black tabular-nums tracking-tight text-primary drop-shadow-none">{value}</div>
     </div>
@@ -159,10 +159,10 @@ export function Stat({ label, value }: { label: string; value: string }) {
 
 export function Card({ title, children }: { title?: string; children: ReactNode }) {
   return (
-    <div className="lab-card overflow-hidden">
+    <div className="lab-card overflow-hidden border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
       {title && (
-        <div className="border-b border-border bg-panel/50 px-5 py-3">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">{title}</h3>
+        <div className="border-b-2 border-slate-900 bg-yellow-400 px-5 py-3">
+          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">{title}</h3>
         </div>
       )}
       <div className="p-5">{children}</div>
