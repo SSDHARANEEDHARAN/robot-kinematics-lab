@@ -26,6 +26,7 @@ import {
   jacobian2d,
   originOf,
   workspaceSweep,
+  checkCollisions2d,
   type DHRow,
   type Mat4,
   type Vec2,
