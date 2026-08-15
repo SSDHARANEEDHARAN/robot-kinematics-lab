@@ -298,7 +298,7 @@ export function ArmView2D({
                 cx={r1(p.x)}
                 cy={r1(p.y)}
                 r={isHighlighted ? 8 : (i === 0 ? 7 : 6)}
-                className={isHighlighted ? "fill-foreground stroke-foreground" : (i === 0 ? "fill-foreground stroke-foreground" : "fill-background stroke-foreground")}
+                className={`transition-all duration-300 hover:scale-125 ${isHighlighted ? "fill-primary stroke-primary" : (i === 0 ? "fill-primary stroke-primary" : "fill-background stroke-primary")}`}
                 strokeWidth={2}
               />
               {/* Limit Violation Warning */}
