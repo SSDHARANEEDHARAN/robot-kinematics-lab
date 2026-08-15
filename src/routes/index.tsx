@@ -916,7 +916,6 @@ function KinematicsLab() {
               )}
             </div>
           </div>
-        </aside>
 
 
           <div className="lab-card px-4 py-3">
