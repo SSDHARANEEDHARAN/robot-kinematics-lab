@@ -181,7 +181,7 @@ function KinematicsLab() {
     window.history.replaceState(null, "", url);
     try {
       await navigator.clipboard.writeText(url);
-      setShareMsg("Link copied");
+      setShareMsg("COPIED");
     } catch {
       setShareMsg("Link in address bar");
     }
@@ -367,15 +367,15 @@ function KinematicsLab() {
       <header className="mb-5 flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <p className="text-sm font-extrabold uppercase tracking-widest text-brand">
+            <p className="text-xl font-black uppercase tracking-[0.2em] text-foreground drop-shadow-[0_0_10px_oklch(0.75_0.22_190_/_0.3)]">
               Kinematics Lab
             </p>
-            <span className="text-[10px] font-bold text-muted-foreground opacity-60">
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">
               PRESENT BY THARANEETHARAN SS
-            </span>
+            </p>
           </div>
-          <h1 className="mt-1 text-4xl font-extrabold tracking-tight text-foreground md:text-5xl">
-            Robot Kinematics Virtual Lab
+          <h1 className="mt-1 text-2xl font-black tracking-tighter text-foreground uppercase opacity-80 md:text-3xl">
+            Virtual Lab Environment
           </h1>
           <div className="mt-2 group relative">
             <span className="cursor-help text-[10px] text-muted-foreground/40 hover:text-muted-foreground transition-colors">
@@ -399,7 +399,7 @@ function KinematicsLab() {
           />
           <button
             onClick={share}
-            className="rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground"
+            className="rounded-lg bg-primary px-4 py-2 text-xs font-black uppercase tracking-widest text-primary-foreground shadow-[0_0_20px_oklch(0.75_0.22_190_/_0.4)] transition-all hover:scale-105 active:scale-95"
           >
             {shareMsg || "Share preset"}
           </button>
@@ -416,7 +416,7 @@ function KinematicsLab() {
         {/* ---------- Left: popups ---------- */}
         <aside className="space-y-3">
           <div className="group relative">
-            <button className="flex w-full items-center justify-between rounded-xl border border-border bg-card px-4 py-3 text-sm font-bold transition-all hover:border-brand hover:text-brand">
+            <button className="flex w-full items-center justify-between rounded-xl border border-border bg-card/50 px-4 py-3 text-xs font-black uppercase tracking-widest transition-all hover:border-primary hover:text-primary hover:shadow-[0_0_15px_oklch(0.75_0.22_190_/_0.2)]">
               <span>Robot Settings</span>
               <span className="text-xs opacity-50">▼</span>
             </button>
@@ -585,8 +585,8 @@ function KinematicsLab() {
                 <div className="flex-1">
                   <DHView3D frames={frames} />
                 </div>
-                <div className="w-[300px] border-l border-border bg-card/50 p-4 backdrop-blur-sm overflow-y-auto">
-                  <h3 className="mb-4 text-[10px] font-extrabold uppercase tracking-widest text-brand">Live Transform Chain</h3>
+                <div className="w-[300px] border-l border-border bg-panel p-4 backdrop-blur-xl overflow-y-auto">
+                  <h3 className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-primary">Live Transform Chain</h3>
                   <DHFormula frames={frames} dhRows={dhRows} step={dhStep} onStep={setDhStep} />
                 </div>
               </div>
@@ -607,8 +607,8 @@ function KinematicsLab() {
                     unit={unit}
                   />
                 </div>
-                <div className="w-[300px] border-l border-border bg-card/50 p-4 backdrop-blur-sm overflow-y-auto">
-                   <h3 className="mb-4 text-[10px] font-extrabold uppercase tracking-widest text-brand">Live Math Solver</h3>
+                <div className="w-[300px] border-l border-border bg-panel p-4 backdrop-blur-xl overflow-y-auto">
+                   <h3 className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-primary">Live Math Solver</h3>
                    {mode === "FK" && <FKFormula lengths={activeLengths} angles={planarAngles} unit={unit} end={end} />}
                    {mode === "IK" && <IKFormula lengths={activeLengths} target={target} angles={ik.angles} unit={unit} reachable={ik.reachable} />}
                 </div>
@@ -666,7 +666,7 @@ function KinematicsLab() {
               {tab === "ai" && <div className="h-[400px]"><AIPanel state={{ mode, target, lengths: activeLengths, angles: planarAngles, reachable: ik.reachable, ikError: ik.error }} /></div>}
               {tab === "progress" && (
                 <div className="space-y-4">
-                  <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-brand">Robotics Mastery</h4>
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Robotics Mastery</h4>
                   <Stat label="Completed" value={`${Object.keys(completed).length}/${LESSONS.length}`} />
                 </div>
               )}

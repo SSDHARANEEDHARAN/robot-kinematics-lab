@@ -3,7 +3,7 @@ import type { Vec2 } from "@/lib/kinematics";
 import { fmtAngle } from "@/lib/lab";
 
 
-const LINK_CLASSES = ["stroke-link-1", "stroke-link-2", "stroke-link-3"];
+const LINK_CLASSES = ["stroke-primary", "stroke-accent", "stroke-primary"];
 
 type Props = {
   points: Vec2[];
@@ -90,7 +90,7 @@ export function ArmView2D({
       <g transform="scale(1,-1)">
         {/* workspace sweep */}
         {workspace && workspace.length > 0 && (
-          <g opacity={0.15}>
+          <g opacity={0.3}>
             {workspace.map((p, i) => (
               <circle key={i} cx={r1(p.x)} cy={r1(p.y)} r={3} className="fill-brand" />
             ))}
@@ -115,16 +115,16 @@ export function ArmView2D({
           <g>
             <circle
               r={maxReach}
-              className="fill-zone/8 stroke-zone/45"
+              className="fill-primary/5 stroke-primary/20"
               strokeWidth={1.5}
-              strokeDasharray="0"
+              strokeDasharray="4 4"
             />
             {minReach > 1 && (
               <circle
                 r={minReach}
-                className="fill-background stroke-zone/35"
+                className="fill-background stroke-primary/10"
                 strokeWidth={1.2}
-                strokeDasharray="5 5"
+                strokeDasharray="2 2"
               />
             )}
           </g>
@@ -186,10 +186,10 @@ export function ArmView2D({
         )}
 
         {target && (
-          <g className="stroke-primary" strokeWidth={2} fill="none">
-            <circle cx={target.x} cy={target.y} r={9} />
-            <line x1={target.x - 15} y1={target.y} x2={target.x + 15} y2={target.y} />
-            <line x1={target.x} y1={target.y - 15} x2={target.x} y2={target.y + 15} />
+          <g className="stroke-primary" strokeWidth={2.5} fill="none">
+            <circle cx={target.x} cy={target.y} r={10} className="fill-primary/10" />
+            <line x1={target.x - 18} y1={target.y} x2={target.x + 18} y2={target.y} />
+            <line x1={target.x} y1={target.y - 18} x2={target.x} y2={target.y + 18} />
           </g>
         )}
 
@@ -217,8 +217,8 @@ export function ArmView2D({
           const len = lengths[i] ?? 0;
           return (
             <g key={`m${i}`} transform={`translate(${r1(mid.x)}, ${r1(mid.y)}) scale(1,-1)`}>
-              <rect x={-20} y={-8} width={40} height={16} rx={4} className="fill-card shadow-sm" opacity={0.8} />
-              <text textAnchor="middle" dy={4} fontSize={10} fontWeight={700} className="fill-foreground">
+              <rect x={-20} y={-8} width={40} height={16} rx={4} className="fill-secondary/80" />
+              <text textAnchor="middle" dy={4} fontSize={9} fontWeight={900} className="fill-primary drop-shadow-[0_0_5px_oklch(0.75_0.22_190_/_0.3)]">
                 {Math.round(len)}
               </text>
             </g>
@@ -233,15 +233,15 @@ export function ArmView2D({
             cx={r1(p.x)}
             cy={r1(p.y)}
             r={i === 0 ? 8 : 7}
-            className={i === 0 ? "fill-foreground stroke-foreground" : "fill-card stroke-foreground"}
+            className={i === 0 ? "fill-primary stroke-primary" : "fill-card stroke-primary"}
             strokeWidth={2.5}
           />
         ))}
 
         <circle cx={r1(end.x)} cy={r1(end.y)} r={6} className="fill-primary" />
         <g transform={`translate(${r1(end.x) + 12}, ${r1(end.y) + 12}) scale(1,-1)`}>
-          <rect x={-5} y={-24} width={75} height={32} rx={4} className="fill-primary/90" />
-          <text x={4} y={-10} fontSize={9} fontWeight={800} className="fill-primary-foreground">
+          <rect x={-5} y={-24} width={85} height={32} rx={6} className="fill-primary shadow-[0_0_15px_oklch(0.75_0.22_190_/_0.4)]" />
+          <text x={4} y={-8} fontSize={9} fontWeight={900} className="fill-primary-foreground">
             EE: {Math.round(end.x)}, {Math.round(end.y)}
           </text>
         </g>

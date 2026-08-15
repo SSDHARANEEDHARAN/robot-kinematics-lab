@@ -32,12 +32,15 @@ export function SegButton({
           key={o.value}
           type="button"
           onClick={() => onChange(o.value)}
-          className={`rounded-md px-3 py-2 text-sm font-semibold transition-colors ${
+          className={`relative z-10 rounded-md px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
             value === o.value
-              ? "bg-card text-primary shadow-sm"
-              : "text-secondary-foreground hover:text-foreground"
+              ? "text-primary-foreground"
+              : "text-muted-foreground hover:text-foreground"
           }`}
         >
+          {value === o.value && (
+            <div className="absolute inset-0 -z-10 rounded-md bg-primary shadow-[0_0_15px_oklch(0.75_0.22_190_/_0.4)] animate-in fade-in zoom-in-95 duration-300" />
+          )}
           {o.label}
         </button>
       ))}
@@ -109,7 +112,7 @@ export function GhostButton({ children, onClick }: { children: ReactNode; onClic
     <button
       type="button"
       onClick={onClick}
-      className="rounded-lg border border-border bg-card px-3 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-accent"
+      className="rounded-lg border border-border bg-secondary px-3 py-2 text-xs font-bold uppercase tracking-wider text-foreground transition-all hover:bg-primary hover:text-primary-foreground hover:shadow-[0_0_15px_oklch(0.75_0.22_190_/_0.3)] active:scale-95"
     >
       {children}
     </button>
@@ -119,8 +122,8 @@ export function GhostButton({ children, onClick }: { children: ReactNode; onClic
 export function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="lab-card px-4 py-3">
-      <div className="text-sm font-bold text-foreground">{label}</div>
-      <div className="mt-0.5 text-xl font-extrabold tracking-tight text-foreground">{value}</div>
+      <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">{label}</div>
+      <div className="mt-1 text-2xl font-black tabular-nums tracking-tight text-primary drop-shadow-[0_0_8px_oklch(0.75_0.22_190_/_0.3)]">{value}</div>
     </div>
   );
 }
@@ -130,7 +133,7 @@ export function Card({ title, children }: { title?: string; children: ReactNode 
     <div className="lab-card overflow-hidden">
       {title && (
         <div className="border-b border-border bg-panel/50 px-5 py-3">
-          <h3 className="text-sm font-extrabold uppercase tracking-widest text-brand">{title}</h3>
+          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">{title}</h3>
         </div>
       )}
       <div className="p-5">{children}</div>
