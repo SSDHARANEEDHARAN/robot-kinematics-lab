@@ -32,7 +32,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
 
   // Convert 2D points to 3D frames for consistent rendering if in IK/FK mode
   const effectiveFrames = useMemo(() => {
-    if (mode === "DH") return frames;
+    if (mode === "DH" || !planarPoints || planarPoints.length === 0) return frames || [];
     
     // Create Mat4 frames from 2D points
     // In planar mode, J1 is at (0,0), J2 is at planarPoints[1], etc.
@@ -50,7 +50,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
         0, 1, 0, 0,
         -s, 0, c, p.y,
         0, 0, 0, 1
-      ];
+      ] as Mat4;
     });
   }, [mode, frames, planarPoints]);
 
