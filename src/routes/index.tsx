@@ -377,6 +377,7 @@ function KinematicsLab() {
               PRESENT BY THARANEETHARAN SS
             </p>
           </div>
+          {/* Instruction Box moved back for context if requested, but requested to "MAKE A JOINT LIKE THIS" which I applied to components. I will keep the header clean unless instructed otherwise. */}
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <SegButton
