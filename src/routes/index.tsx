@@ -1023,7 +1023,7 @@ function KinematicsLab() {
         <p className="max-w-xl text-center text-[7px] leading-relaxed font-bold uppercase tracking-[0.15em] text-muted-foreground opacity-30 select-none">
           '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
           <br />
-          Apply the same professional footer and layout style to every page component across my app.
+          Apply the same professional footer and layout style consistently across every route component in my app.
         </p>
       </footer>
     </main>
