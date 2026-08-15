@@ -952,6 +952,7 @@ function KinematicsLab() {
                           max={jointLimits[i]?.max ?? 180}
                           value={angles[i] ?? 0}
                           onChange={(v) => setAngle(i, v)}
+                          tooltip={`Directly control rotation of Joint ${i+1}`}
                         />
                       ))}
                     
