@@ -663,8 +663,6 @@ function KinematicsLab() {
                   )}
                 </div>
               )}
-            </div>
-          </div>
               {tab === "progress" && (
                 <div className="space-y-4">
                   <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Robotics Mastery</h4>
