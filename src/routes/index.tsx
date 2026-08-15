@@ -273,12 +273,18 @@ function KinematicsLab() {
     if (mode === "DH") return null;
     const fkPos = points[points.length - 1] ?? { x: 0, y: 0 };
     const dist = Math.hypot(fkPos.x - target.x, fkPos.y - target.y);
+    const limitViolated = planarAngles.some((a, i) => {
+      const limit = jointLimits[i];
+      return limit ? isLimitViolated(a, limit) : false;
+    });
+
     return {
-      match: dist < 1.0,
+      match: dist < 1.0 && !limitViolated,
       error: dist,
-      fkPos
+      fkPos,
+      limitViolated,
     };
-  }, [points, target, mode]);
+  }, [points, target, mode, planarAngles, jointLimits]);
 
 
   const velocity = useMemo(() => {
@@ -374,7 +380,18 @@ function KinematicsLab() {
 
   const jogJoint = (i: number, delta: number) => {
     if (mode === "IK") setMode("FK");
-    setAngles((a) => a.map((v, k) => (k === i ? Math.max(-180, Math.min(180, v + delta)) : v)));
+    setAngles((a) => a.map((v, k) => {
+      if (k === i) {
+        const next = v + delta;
+        const limit = jointLimits[k];
+        if (limit) {
+          // Allow free moving for checking limits but visual warning is shown
+          return Math.round(next * 10) / 10;
+        }
+        return Math.round(next * 10) / 10;
+      }
+      return v;
+    }));
   };
   const jogCart = (axis: "x" | "y", delta: number) => {
     if (mode === "FK") {
