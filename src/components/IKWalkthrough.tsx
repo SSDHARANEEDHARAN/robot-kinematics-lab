@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { n } from "@/lib/utils";
+const n = (v: number, d = 2) => v.toFixed(d);
 import { deg2rad, rad2deg } from "@/lib/kinematics";
 import type { Vec2 } from "@/lib/kinematics";
 
