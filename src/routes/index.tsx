@@ -564,7 +564,7 @@ function KinematicsLab() {
       </header>
 
 
-      <div className="grid gap-8 xl:grid-cols-[300px_minmax(0,1fr)_340px] xl:h-[750px]">
+      <div className="grid gap-8 grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)_340px] xl:h-[750px]">
         {/* ---------- Left: popups ---------- */}
         <aside className="flex h-full flex-col gap-3 overflow-hidden">
           <div className="flex flex-1 flex-col overflow-hidden">
