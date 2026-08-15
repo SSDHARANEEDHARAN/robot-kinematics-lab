@@ -901,7 +901,7 @@ function KinematicsLab() {
             <Stat label="Error" value={(mode === "IK" ? ik.error : 0).toFixed(1)} />
           </div>
 
-          <div className="lab-card flex flex-1 flex-col overflow-hidden border-2 border-foreground border-t-8 border-t-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
+          <div className="lab-card flex flex-1 flex-col overflow-hidden shadow-none border-none">
             <div className="flex-1 overflow-y-auto scrollbar-hide">
               {/* Validation & Settings Panel */}
               <Section title="Validation & Settings" collapsible defaultOpen>
