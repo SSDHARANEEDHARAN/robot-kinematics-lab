@@ -3,11 +3,11 @@ import { axisOf, originOf, type Mat4, type Vec3 } from "@/lib/kinematics";
 
 type Props = { frames: Mat4[] };
 
-const LINK_COLORS = ["#1e293b", "#dc2626", "#10b981", "#7c3aed", "#0ea5e9", "#f59e0b"];
+const LINK_COLORS = ["#334155", "#475569", "#64748b", "#94a3b8", "#cbd5e1", "#e2e8f0"];
 
 export function DHView3D({ frames }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [cam, setCam] = useState({ yaw: -0.9, pitch: 0.5, zoom: 1 });
+  const [cam, setCam] = useState({ yaw: -0.9, pitch: 0.5, zoom: 1.2 });
   const drag = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
@@ -45,72 +45,82 @@ export function DHView3D({ frames }: Props) {
       const z1 = p.z;
       const y2 = y1 * cp - z1 * sp;
       const z2 = y1 * sp + z1 * cp;
-      const depth = 900;
-      const persp = depth / (depth + y2 * 0.6);
+      const depth = 1200;
+      const persp = depth / (depth + y2 * 0.8);
       return {
         x: w / 2 + x1 * scale * persp,
-        y: h / 2 + 100 - z2 * scale * persp,
+        y: h / 2 + 120 - z2 * scale * persp,
         d: y2,
       };
     };
 
-    const line = (a: Vec3, b: Vec3, color: string, width: number) => {
+    const drawCylinder = (a: Vec3, b: Vec3, radius: number, color: string) => {
       const pa = project(a);
       const pb = project(b);
+      
+      // Shadow Link
+      ctx.strokeStyle = "rgba(0,0,0,0.1)";
+      ctx.lineWidth = radius * 2.5;
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      ctx.moveTo(pa.x, pa.y + 4);
+      ctx.lineTo(pb.x, pb.y + 4);
+      ctx.stroke();
+
+      // Main Link
       ctx.strokeStyle = color;
-      ctx.lineWidth = width;
+      ctx.lineWidth = radius * 2;
       ctx.lineCap = "round";
       ctx.beginPath();
       ctx.moveTo(pa.x, pa.y);
       ctx.lineTo(pb.x, pb.y);
       ctx.stroke();
+
+      // Highlight for "Realistic" look
+      ctx.strokeStyle = "rgba(255,255,255,0.2)";
+      ctx.lineWidth = radius;
+      ctx.beginPath();
+      ctx.moveTo(pa.x - radius/4, pa.y - radius/4);
+      ctx.lineTo(pb.x - radius/4, pb.y - radius/4);
+      ctx.stroke();
     };
 
-    // floor grid
-    const G = 300;
-    const step = 60;
-    ctx.globalAlpha = 0.5;
-    for (let i = -G; i <= G; i += step) {
-      line({ x: i + ctr.x, y: -G + ctr.y, z: 0 }, { x: i + ctr.x, y: G + ctr.y, z: 0 }, "#cbd5e1", 1);
-      line({ x: -G + ctr.x, y: i + ctr.y, z: 0 }, { x: G + ctr.x, y: i + ctr.y, z: 0 }, "#cbd5e1", 1);
-    }
-    ctx.globalAlpha = 1;
+    // Realistic Floor
+    ctx.fillStyle = "#f1f5f9";
+    ctx.beginPath();
+    ctx.ellipse(w/2, h/2 + 180, 250 * cam.zoom, 100 * cam.zoom, 0, 0, Math.PI * 2);
+    ctx.fill();
 
-    // links
+    // Links (Realistic Robot Body)
     for (let i = 0; i < frames.length - 1; i++) {
       const a = originOf(frames[i] as Mat4);
       const b = originOf(frames[i + 1] as Mat4);
-      line(a, b, "#94a3b8", 16);
-      line(a, b, LINK_COLORS[i % LINK_COLORS.length] as string, 11);
+      const color = LINK_COLORS[i % LINK_COLORS.length] || "#475569";
+      drawCylinder(a, b, 14 - i * 1.5, color);
     }
 
-    // frame axes
-    const axisColors = ["#ef4444", "#22c55e", "#3b82f6"];
-    frames.forEach((f) => {
-      const o = originOf(f);
-      ([0, 1, 2] as const).forEach((k) => {
-        const ax = axisOf(f, k);
-        const len = 42;
-        line(
-          o,
-          { x: o.x + ax.x * len, y: o.y + ax.y * len, z: o.z + ax.z * len },
-          axisColors[k] as string,
-          2.5,
-        );
-      });
-    });
-
-    // joint spheres
+    // Joint Housings (Realistic motors)
     frames.forEach((f, i) => {
       const p = project(originOf(f));
+      const r = 18 - i * 1.8;
+      
+      // Housing gradient
+      const grad = ctx.createRadialGradient(p.x - r/3, p.y - r/3, 1, p.x, p.y, r);
+      grad.addColorStop(0, "#94a3b8");
+      grad.addColorStop(1, "#1e293b");
+
       ctx.beginPath();
-      ctx.arc(p.x, p.y, i === 0 ? 8 : 7, 0, Math.PI * 2);
-      ctx.fillStyle = i === frames.length - 1 ? "#2563eb" : "#e2e8f0";
-      ctx.strokeStyle = "#475569";
-      ctx.lineWidth = 2;
+      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
       ctx.fill();
-      ctx.stroke();
+      
+      // Cap
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r * 0.7, 0, Math.PI * 2);
+      ctx.fillStyle = i === frames.length - 1 ? "#0ea5e9" : "#334155";
+      ctx.fill();
     });
+
   }, [frames, cam]);
 
   return (
@@ -135,6 +145,7 @@ export function DHView3D({ frames }: Props) {
       onPointerUp={() => (drag.current = null)}
       onPointerLeave={() => (drag.current = null)}
       onWheel={(e) => {
+        // Internal scroll for zoom
         setCam((c) => ({ ...c, zoom: Math.max(0.3, Math.min(3, c.zoom - e.deltaY * 0.001)) }));
       }}
     />
