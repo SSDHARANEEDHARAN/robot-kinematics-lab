@@ -534,7 +534,7 @@ function KinematicsLab() {
 
   return (
     <main className="min-h-screen px-4 pb-8 pt-0 md:px-8 max-w-[1920px] mx-auto select-none flex flex-col">
-      <header className="py-6 mb-6 flex items-center justify-between border-b-4 border-slate-900">
+      <header className="py-6 mb-6 flex items-center justify-between border-b-4 border-foreground">
         <div className="flex flex-col gap-0.5">
           <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">
             Industrial Kinematics
@@ -566,12 +566,12 @@ function KinematicsLab() {
 
       <div className="grid gap-8 grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)_340px] xl:h-[750px]">
         {/* ---------- Left: popups ---------- */}
-        <aside className="flex h-full flex-col gap-3 overflow-hidden">
+        <aside className="flex flex-col gap-3 overflow-hidden h-[500px] xl:h-full order-2 xl:order-1">
           <div className="flex flex-1 flex-col overflow-hidden">
-            <div className="w-full rounded-t-xl border-2 border-slate-900 bg-yellow-400 px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="w-full rounded-t-xl border-2 border-foreground bg-foreground px-4 py-3 text-xs font-black uppercase tracking-widest text-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
               Robot Settings
             </div>
-            <div className="mt-0 flex-1 overflow-y-auto rounded-b-xl border-2 border-t-0 border-slate-900 bg-card shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] scrollbar-hide">
+            <div className="mt-0 flex-1 overflow-y-auto rounded-b-xl border-2 border-t-0 border-foreground bg-card shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] scrollbar-hide">
               <div className="lab-card border-none shadow-none divide-y-2 divide-slate-900/5">
                 <Section title="Mode">
                   <SegButton
@@ -784,7 +784,7 @@ function KinematicsLab() {
         </aside>
 
         {/* ---------- Center: viewport ---------- */}
-        <section className="lab-card flex h-full flex-col overflow-hidden border-2 border-slate-900 border-t-8 border-t-yellow-400 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <section className="lab-card flex h-full flex-col overflow-hidden border-2 border-foreground border-t-8 border-t-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
           <div className="flex flex-wrap items-start justify-between gap-4 px-5 py-5 bg-slate-50/50 border-b-2 border-slate-900/10">
             <div>
               <h2 className="text-lg font-extrabold tracking-tight text-foreground">
@@ -835,7 +835,7 @@ function KinematicsLab() {
 
 
         {/* ---------- Right: readouts + tools ---------- */}
-        <aside className="flex h-full flex-col gap-4 overflow-hidden">
+        <aside className="flex flex-col gap-4 overflow-hidden h-auto xl:h-full order-3">
           <div className="grid grid-cols-2 gap-3 divide-y-0">
             <Stat label="End X" value={(mode === "DH" ? dhEnd.x : end.x).toFixed(1)} />
             <Stat label="End Y" value={(mode === "DH" ? dhEnd.y : end.y).toFixed(1)} />
@@ -843,7 +843,7 @@ function KinematicsLab() {
             <Stat label="Error" value={(mode === "IK" ? ik.error : 0).toFixed(1)} />
           </div>
 
-          <div className="lab-card flex flex-1 flex-col overflow-hidden border-2 border-slate-900 border-t-8 border-t-yellow-400 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <div className="lab-card flex flex-1 flex-col overflow-hidden border-2 border-foreground border-t-8 border-t-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
             <div className="flex-1 overflow-y-auto scrollbar-hide">
               {/* Validation & Settings Panel */}
               <Section title="Validation & Settings" collapsible defaultOpen>
