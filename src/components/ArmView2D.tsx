@@ -198,10 +198,11 @@ export function ArmView2D({
                 y1={r1(p.y)}
                 x2={r1(q.x)}
                 y2={r1(q.y)}
-                stroke={isColliding ? "#ef4444" : (i % 2 === 0 ? "var(--foreground)" : "var(--muted-foreground)")}
+                stroke={isColliding ? "#ef4444" : "var(--primary)"}
                 strokeWidth={isHighlighted ? 18 : 12}
                 strokeLinecap="round"
                 opacity={isHighlighted ? 1 : 0.9}
+                className="transition-all duration-300 hover:opacity-100"
               />
               {/* Brushed highlight */}
               <line
