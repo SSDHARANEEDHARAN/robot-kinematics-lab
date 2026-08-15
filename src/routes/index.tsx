@@ -165,6 +165,15 @@ function KinematicsLab() {
         if (typeof s.elbowUp === "boolean") setElbowUp(s.elbowUp);
         if (s.dh) setDh(s.dh);
         if (s.jointCount) setJointCount(s.jointCount);
+        if (s.showAxes !== undefined) setShowAxes(s.showAxes);
+        if (s.showGrid !== undefined) setShowGrid(s.showGrid);
+        if (s.showAxesOverlay !== undefined) setShowAxesOverlay(s.showAxesOverlay);
+        if (s.showHeatmap !== undefined) setShowHeatmap(s.showHeatmap);
+        if (s.tab) setTab(s.tab);
+        if (s.collapsibleStates) {
+           // We might need to handle Section persistence separately if we want to be thorough,
+           // but for now let's focus on the toggle selections as requested.
+        }
       } catch (e) {
         console.error("Failed to load settings", e);
       }
@@ -182,9 +191,14 @@ function KinematicsLab() {
       elbowUp,
       dh,
       jointCount,
+      showAxes,
+      showGrid,
+      showAxesOverlay,
+      showHeatmap,
+      tab,
     };
     localStorage.setItem("lab-settings", JSON.stringify(settings));
-  }, [mode, linkCount, lengths, angles, target, elbowUp, dh, jointCount]);
+  }, [mode, linkCount, lengths, angles, target, elbowUp, dh, jointCount, showAxes, showGrid, showAxesOverlay, showHeatmap, tab]);
 
 
   const preset: Preset = {
@@ -599,7 +613,7 @@ function KinematicsLab() {
                     onChange={(v) => setMode(v as Mode)}
                   />
                   <div className="mt-4 flex flex-col gap-2">
-                    <GhostButton onClick={share}>
+                    <GhostButton onClick={share} tooltip="Copy a link to these exact settings to your clipboard">
                       {shareMsg || "Share Preset"}
                     </GhostButton>
                     <GhostButton 
@@ -607,6 +621,7 @@ function KinematicsLab() {
                         error: ikFkConsistency?.error ?? 0, 
                         reachable: !ikFkConsistency?.limitViolated 
                       })}
+                      tooltip="Generate and download a detailed PDF analysis of the current configuration"
                     >
                       Export PDF Report
                     </GhostButton>
@@ -670,6 +685,7 @@ function KinematicsLab() {
                             max={180}
                             value={r.theta}
                             onChange={(v) => setDhCell(i, "theta", v)}
+                            tooltip={`Adjust rotation angle for Joint ${i + 1} (in degrees)`}
                           />
                         ))}
                       </div>
@@ -677,8 +693,8 @@ function KinematicsLab() {
 
                     <Section title="Presets">
                       <div className="grid grid-cols-2 gap-2">
-                        <GhostButton onClick={() => setDh(DEFAULT_DH)}>Home</GhostButton>
-                        <GhostButton onClick={() => setDh(DEFAULT_DH)}>Reset</GhostButton>
+                        <GhostButton onClick={() => setDh(DEFAULT_DH)} tooltip="Return to default industrial arm dimensions">Home</GhostButton>
+                        <GhostButton onClick={() => setDh(DEFAULT_DH)} tooltip="Reset all joint rotations to zero">Reset</GhostButton>
                       </div>
                     </Section>
                   </>
@@ -744,6 +760,7 @@ function KinematicsLab() {
                               max={jointLimits[i]?.max ?? 180}
                               value={angles[i] ?? 0}
                               onChange={(v) => setAngle(i, v)}
+                              tooltip={`Manually rotate Link ${i + 1}`}
                             />
                           ))}
                         </div>
@@ -774,13 +791,15 @@ function KinematicsLab() {
                               label="Min" 
                               min={-180} max={0} 
                               value={jointLimits[i]?.min ?? -180} 
-                              onChange={v => setJointLimits(prev => prev.map((l, k) => k === i ? { ...l, min: v } : l))} 
+                              onChange={v => setJointLimits(prev => prev.map((l, k) => k === i ? { ...l, min: v } : l))}
+                              tooltip={`Lower mechanical limit for Joint ${i+1}`}
                             />
                             <SliderRow 
                               label="Max" 
                               min={0} max={180} 
                               value={jointLimits[i]?.max ?? 180} 
-                              onChange={v => setJointLimits(prev => prev.map((l, k) => k === i ? { ...l, max: v } : l))} 
+                              onChange={v => setJointLimits(prev => prev.map((l, k) => k === i ? { ...l, max: v } : l))}
+                              tooltip={`Upper mechanical limit for Joint ${i+1}`}
                             />
                           </div>
                         ))}
@@ -805,7 +824,7 @@ function KinematicsLab() {
                           <input type="checkbox" className="accent-foreground" checked={showHeatmap} onChange={e => setShowHeatmap(e.target.checked)} />
                           <span className="text-xs font-bold uppercase tracking-widest">Show Heatmap</span>
                         </label>
-                        <GhostButton onClick={() => setAngles([0,0,0])}>Reset Pose</GhostButton>
+                        <GhostButton onClick={() => setAngles([0,0,0])} tooltip="Reset all joints to zero-rotation home position">Reset Pose</GhostButton>
                       </div>
                     </Section>
 
