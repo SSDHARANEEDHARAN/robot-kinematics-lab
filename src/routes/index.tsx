@@ -2,7 +2,21 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { ArmView2D } from "@/components/ArmView2D";
-...
+import { DHView3D } from "@/components/DHView3D";
+import { DHFormula, FKFormula, IKFormula } from "@/components/FormulaPanel";
+import { AIPanel } from "@/components/AIPanel";
+import {
+  Badge,
+  Card,
+  GhostButton,
+  NumberField,
+  Section,
+  SegButton,
+  SliderRow,
+  Stat,
+} from "@/components/LabControls";
+import { LESSONS, LessonPanel, type Lesson } from "@/components/LessonPanel";
+import { QuizPanel } from "@/components/QuizPanel";
 import { TeachPanel } from "@/components/TeachPanel";
 import { IKWalkthrough } from "@/components/IKWalkthrough";
 import {
