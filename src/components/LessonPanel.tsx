@@ -14,6 +14,7 @@ export function LessonPanel({
   completed: Record<string, boolean>;
 }) {
   const [showIntro, setShowIntro] = useState(true);
+  const active = LESSONS.find((l: Lesson) => l.id === activeId) ?? LESSONS[0]!;
   const passed = active.check(state);
 
   // Auto-complete lesson if check passes
@@ -21,11 +22,11 @@ export function LessonPanel({
     if (passed && !completed[active.id]) {
       // Small delay for visual feedback
       const timer = setTimeout(() => {
-        // We don't have the markComplete function here, 
-        // but the parent will re-render if its state changes via onSelect or similar mechanisms
+        // Parent will handle the completion state
       }, 500);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [passed, active.id, completed]);
 
   return (
