@@ -605,14 +605,14 @@ function KinematicsLab() {
                 {mode === "DH" ? (
                   <>
                     <Section title="Joints">
-                      <div className="flex items-center justify-center gap-0 border-2 border-foreground">
+                      <div className="flex items-center justify-center gap-0 bg-secondary/50 rounded-lg overflow-hidden">
                         <button
                           className="px-4 py-2 text-lg font-bold text-foreground hover:bg-foreground hover:text-background transition-colors"
                           onClick={() => setJointCount((c) => Math.max(2, c - 1))}
                         >
                           -
                         </button>
-                        <span className="min-w-12 border-x-2 border-foreground px-4 py-2 text-center text-lg font-extrabold">
+                        <span className="min-w-12 border-x border-border px-4 py-2 text-center text-lg font-extrabold">
                           {jointCount}
                         </span>
                         <button
@@ -802,8 +802,8 @@ function KinematicsLab() {
         </aside>
 
       <div className="flex-1 min-h-[500px] xl:h-full order-1 xl:order-2">
-        <section className="lab-card flex h-full flex-col overflow-hidden border-2 border-foreground border-t-8 border-t-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
-          <div className="flex flex-wrap items-start justify-between gap-4 px-5 py-5 bg-background border-b-2 border-foreground">
+        <section className="lab-card flex h-full flex-col overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500">
+          <div className="flex flex-wrap items-start justify-between gap-4 px-5 py-5 bg-background">
             <div>
               <h2 className="text-lg font-extrabold tracking-tight text-foreground">
                 {headline.title}
@@ -811,7 +811,7 @@ function KinematicsLab() {
               <p className="text-sm text-muted-foreground">{headline.sub}</p>
             </div>
           </div>
-          <div className="relative flex-1 overflow-hidden border-t border-border bg-panel">
+          <div className="relative flex-1 overflow-hidden bg-panel">
              {/* Realistic fixed simulation area */}
             <div className="relative h-full w-full">
               {mode === "DH" ? (
