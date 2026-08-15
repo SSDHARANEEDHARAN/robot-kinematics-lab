@@ -554,9 +554,9 @@ function KinematicsLab() {
             value={unit}
             onChange={(v) => setUnit(v as "deg" | "rad")}
           />
-          <div className="flex items-center gap-2 rounded-full border border-border bg-card/50 px-3 py-1.5">
-            <span className={`h-2 w-2 rounded-full ${mode === "IK" && !ik.reachable ? "bg-destructive animate-pulse" : "bg-link-3"}`} />
-            <span className="text-[10px] font-bold uppercase tracking-wider text-foreground">
+          <div className="flex items-center gap-2 border-2 border-foreground bg-background px-3 py-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+            <span className={`h-2 w-2 rounded-full ${mode === "IK" && !ik.reachable ? "bg-foreground animate-pulse" : "bg-foreground"}`} />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">
               {mode === "IK" && !ik.reachable ? "Out of reach" : playing ? "Running" : "System Ready"}
             </span>
           </div>
