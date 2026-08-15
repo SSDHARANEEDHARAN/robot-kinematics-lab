@@ -250,7 +250,7 @@ export function ArmView2D({
                 strokeWidth={2}
               />
               {/* Limit Violation Warning */}
-              {limits && limits[i] && angles && (angles[i] < limits[i].min || angles[i] > limits[i].max) && (
+              {limits && limits[i] && angles && angles[i] !== undefined && (angles[i] < (limits[i]?.min ?? -360) || angles[i] > (limits[i]?.max ?? 360)) && (
                 <circle cx={p.x} cy={p.y} r={isHighlighted ? 12 : 10} className="fill-none stroke-red-500" strokeWidth={2} />
               )}
               {i === 0 && (
