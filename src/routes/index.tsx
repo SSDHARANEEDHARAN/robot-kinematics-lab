@@ -732,7 +732,7 @@ function KinematicsLab() {
           <div className="relative flex-1 overflow-hidden border-t border-border bg-panel">
              {/* Realistic fixed simulation area */}
             <div className="relative h-full w-full">
-              {(mode === "DH" || (mode !== "DH" && linkCount > 3)) ? (
+              {(mode as string === "DH" || (mode as string !== "DH" && linkCount > 3)) ? (
                 <DHView3D 
                   mode={mode}
                   frames={mode === "DH" ? frames : undefined}
@@ -764,7 +764,7 @@ function KinematicsLab() {
                 </div>
               )}
 
-              {mode === "IK" && !pathMode && !playing && (mode === "DH" || linkCount > 3) && (
+              {mode === "IK" && !pathMode && !playing && (mode as string === "DH" || linkCount > 3) && (
                 <div className="absolute inset-0 pointer-events-none">
                   <ArmView2D
                     points={points}
