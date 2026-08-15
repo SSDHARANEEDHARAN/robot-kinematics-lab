@@ -106,7 +106,7 @@ export function ArmView2D({
           ))}
         </g>
         {/* axes */}
-        <g className="stroke-muted-foreground" strokeWidth={1.4} opacity={0.7}>
+        <g stroke="currentColor" className="text-muted-foreground" strokeWidth={1.4} opacity={0.4}>
           <line x1={-W / 2} y1={0} x2={W / 2} y2={0} />
           <line x1={0} y1={-H / 2} x2={0} y2={H / 2} />
         </g>
