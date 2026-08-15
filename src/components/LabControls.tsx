@@ -109,6 +109,7 @@ export function SliderRow({
   min,
   max,
   onChange,
+  ariaLabel,
 }: {
   label: string;
   value: number;
