@@ -83,11 +83,11 @@ const DEFAULT_DH: DHRow[] = [
 
 const TABS: { value: Tab; label: string }[] = [
   { value: "math", label: "Math" },
-  { value: "walkthrough", label: "Step-by-Step" },
+  { value: "walkthrough", label: "Solver Steps" },
+  { value: "lessons", label: "Learning" },
   { value: "teach", label: "Teach" },
   { value: "quiz", label: "Quiz" },
   { value: "ai", label: "AI Tutor" },
-  { value: "lessons", label: "Lessons" },
   { value: "industrial", label: "Industrial" },
   { value: "progress", label: "Stats" },
 ];
@@ -576,7 +576,7 @@ function KinematicsLab() {
       </header>
 
 
-      <div className="grid gap-8 grid-cols-1 xl:grid-cols-[300px_minmax(0,1fr)_340px] xl:h-[750px]">
+      <div className="grid gap-8 grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[300px_minmax(0,1fr)_340px] xl:h-[750px]">
         {/* ---------- Left: popups ---------- */}
         <aside className="flex flex-col gap-3 overflow-hidden h-[500px] xl:h-full order-2 xl:order-1">
           <div className="flex flex-1 flex-col overflow-hidden">
@@ -599,6 +599,14 @@ function KinematicsLab() {
                   <div className="mt-4 flex flex-col gap-2">
                     <GhostButton onClick={share}>
                       {shareMsg || "Share Preset"}
+                    </GhostButton>
+                    <GhostButton 
+                      onClick={() => exportPresetReport(preset, { 
+                        error: ikFkConsistency?.error ?? 0, 
+                        reachable: !ikFkConsistency?.limitViolated 
+                      })}
+                    >
+                      Export PDF Report
                     </GhostButton>
                   </div>
                 </Section>
@@ -801,7 +809,7 @@ function KinematicsLab() {
           </div>
         </aside>
 
-      <div className="flex-1 min-h-[500px] xl:h-full order-1 xl:order-2">
+      <div className="flex-1 min-h-[500px] xl:h-[750px] order-1 xl:order-2">
         <section className="lab-card flex h-full flex-col overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500">
           <div className="flex flex-wrap items-start justify-between gap-4 px-5 py-5 bg-background">
             <div>

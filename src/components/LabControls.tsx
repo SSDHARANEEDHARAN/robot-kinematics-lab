@@ -21,6 +21,15 @@ export function Section({
       <div 
         className={`flex items-center justify-between px-5 py-3 ${collapsible ? 'cursor-pointer' : ''}`}
         onClick={() => collapsible && setIsOpen(!isOpen)}
+        role={collapsible ? "button" : undefined}
+        tabIndex={collapsible ? 0 : undefined}
+        aria-expanded={collapsible ? isOpen : undefined}
+        onKeyDown={(e) => {
+          if (collapsible && (e.key === 'Enter' || e.key === ' ')) {
+            e.preventDefault();
+            setIsOpen(!isOpen);
+          }
+        }}
       >
         <div className="flex items-center gap-2">
           {collapsible && (
@@ -54,6 +63,7 @@ export function SegButton({
 }) {
   return (
     <div
+      role="radiogroup"
       className={`gap-1 rounded-lg bg-secondary/50 p-1 backdrop-blur-md ${stacked ? "grid grid-cols-1" : "grid grid-flow-col auto-cols-fr"}`}
     >
       {options.map((o) => (
@@ -61,6 +71,8 @@ export function SegButton({
           key={o.value}
           type="button"
           onClick={() => onChange(o.value)}
+          role="radio"
+          aria-checked={value === o.value}
           className={`relative z-10 rounded-md px-3 py-2 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 ${
             value === o.value
               ? "text-primary-foreground"
@@ -97,6 +109,7 @@ export function NumberField({
         className="lab-input"
         value={Number.isFinite(value) ? value : 0}
         onChange={(e) => onChange(Number(e.target.value))}
+        aria-label={label}
       />
     </label>
   );
@@ -108,16 +121,20 @@ export function SliderRow({
   min,
   max,
   onChange,
+  ariaLabel,
 }: {
   label: string;
   value: number;
   min: number;
   max: number;
   onChange: (v: number) => void;
+  ariaLabel?: string;
 }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="w-14 shrink-0 text-xs font-bold text-muted-foreground uppercase tracking-wider">{label}</span>
+      <span className="w-14 shrink-0 text-xs font-bold text-muted-foreground uppercase tracking-wider" id={`slider-label-${label}`}>
+        {label}
+      </span>
       <input
         type="range"
         min={min}
@@ -125,12 +142,15 @@ export function SliderRow({
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         className="min-w-0 flex-1"
+        aria-labelledby={`slider-label-${label}`}
+        aria-label={ariaLabel}
       />
       <input
         type="number"
         value={Math.round(value)}
         onChange={(e) => onChange(Number(e.target.value))}
         className="lab-input w-20 shrink-0 text-center text-xs"
+        aria-label={`${label} numeric value`}
       />
     </div>
   );
@@ -150,7 +170,7 @@ export function GhostButton({ children, onClick }: { children: ReactNode; onClic
 
 export function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="px-4 py-3 group relative overflow-hidden bg-secondary/20 rounded-xl">
+    <div className="px-4 py-3 group relative overflow-hidden bg-secondary/20 rounded-xl" role="status" aria-label={`${label}: ${value}`}>
       <div className="relative z-10">
         <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{label}</div>
         <div className="mt-1 text-2xl font-black tabular-nums tracking-tight text-foreground transition-transform duration-300 group-hover:scale-105">{value}</div>
