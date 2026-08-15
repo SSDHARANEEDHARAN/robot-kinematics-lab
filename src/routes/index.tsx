@@ -453,11 +453,11 @@ function KinematicsLab() {
     <main className="min-h-screen px-4 pb-16 pt-6 md:px-8 max-w-[1920px] mx-auto select-none">
       <header className="mb-5 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <p className="text-xl font-black uppercase tracking-[0.2em] text-foreground">
-              '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
+          <div className="flex flex-col gap-1">
+            <p className="text-[10px] leading-relaxed font-bold text-muted-foreground whitespace-pre-line">
+              {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''`}
             </p>
-            <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">
+            <p className="text-lg font-black uppercase tracking-widest text-primary">
               KEEP 2D STYLE FOR 2 NAD 3
             </p>
           </div>
