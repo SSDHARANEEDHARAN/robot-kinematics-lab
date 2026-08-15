@@ -363,7 +363,7 @@ function KinematicsLab() {
           };
 
   return (
-    <main className="min-h-screen px-4 pb-16 pt-6 md:px-8">
+    <main className="min-h-screen px-4 pb-16 pt-6 md:px-8 max-w-[1920px] mx-auto">
       <header className="mb-5 flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
