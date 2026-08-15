@@ -181,7 +181,7 @@ function KinematicsLab() {
     window.history.replaceState(null, "", url);
     try {
       await navigator.clipboard.writeText(url);
-      setShareMsg("Link copied");
+      setShareMsg("COPIED");
     } catch {
       setShareMsg("Link in address bar");
     }
