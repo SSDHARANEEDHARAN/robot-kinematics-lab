@@ -708,7 +708,7 @@ function KinematicsLab() {
                     ghostPoints={showGhost ? ghostPoints : undefined}
                     trace={showTrace ? trace : undefined}
                     path={waypoints.map((w) => w.target)}
-                    workspace={workspace}
+                    workspace={[]}
                     velocity={velocity}
                     unit={unit}
                     activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
