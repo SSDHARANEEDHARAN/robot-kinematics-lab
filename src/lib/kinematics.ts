@@ -205,3 +205,52 @@ export function clampAngle(angle: number, limits: JointLimits): number {
 export function isLimitViolated(angle: number, limits: JointLimits): boolean {
   return angle < limits.min - 1e-3 || angle > limits.max + 1e-3;
 }
+
+/** Check for collisions between links in 2D. 
+ *  Uses line-segment intersection between non-adjacent links.
+ */
+export function checkCollisions2d(points: Vec2[]): { colliding: boolean, pairs: [number, number][], points: Vec2[] } {
+  const result: { colliding: boolean, pairs: [number, number][], points: Vec2[] } = {
+    colliding: false,
+    pairs: [],
+    points: []
+  };
+
+  if (points.length < 4) return result; // Need at least 3 links (4 points) for a self-collision
+
+  // Check each link segment against other non-adjacent link segments
+  for (let i = 0; i < points.length - 1; i++) {
+    const p1 = points[i]!;
+    const p2 = points[i + 1]!;
+
+    for (let j = i + 2; j < points.length - 1; j++) {
+      const p3 = points[j]!;
+      const p4 = points[j + 1]!;
+
+      const intersect = getIntersection(p1, p2, p3, p4);
+      if (intersect) {
+        result.colliding = true;
+        result.pairs.push([i, j]);
+        result.points.push(intersect);
+      }
+    }
+  }
+
+  return result;
+}
+
+function getIntersection(p1: Vec2, p2: Vec2, p3: Vec2, p4: Vec2): Vec2 | null {
+  const det = (p2.x - p1.x) * (p4.y - p3.y) - (p2.y - p1.y) * (p4.x - p3.x);
+  if (Math.abs(det) < 1e-6) return null; // Parallel
+
+  const t = ((p3.x - p1.x) * (p4.y - p3.y) - (p3.y - p1.y) * (p4.x - p3.x)) / det;
+  const u = ((p3.x - p1.x) * (p2.y - p1.y) - (p3.y - p1.y) * (p2.x - p1.x)) / det;
+
+  if (t >= 0.05 && t <= 0.95 && u >= 0.05 && u <= 0.95) {
+    return {
+      x: p1.x + t * (p2.x - p1.x),
+      y: p1.y + t * (p2.y - p1.y)
+    };
+  }
+  return null;
+}
