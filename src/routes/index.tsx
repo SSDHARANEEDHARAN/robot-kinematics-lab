@@ -989,11 +989,14 @@ function KinematicsLab() {
         </aside>
       </div>
 
-      <footer className="mt-5 flex items-center justify-between border-t border-border pt-4 text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-        <div>&copy; 2026 Robotics Lab</div>
+      <footer className="mt-8 flex items-center justify-between border-t-2 border-slate-900/10 pt-6 text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+        <div className="flex items-center gap-2 text-yellow-500">
+           <div className="h-2 w-2 rounded-full bg-current animate-pulse" />
+           <span>System Online</span>
+        </div>
         <div className="flex items-center gap-4">
-          <span>Present by Tharaneetharan SS</span>
-          <span className="h-1 w-1 rounded-full bg-border" />
+          <span className="text-foreground">Present by Tharaneetharan SS</span>
+          <span className="h-1 w-1 rounded-full bg-yellow-400" />
           <span>Industrial Automation Series</span>
         </div>
       </footer>
