@@ -273,12 +273,18 @@ function KinematicsLab() {
     if (mode === "DH") return null;
     const fkPos = points[points.length - 1] ?? { x: 0, y: 0 };
     const dist = Math.hypot(fkPos.x - target.x, fkPos.y - target.y);
+    const limitViolated = planarAngles.some((a, i) => {
+      const limit = jointLimits[i];
+      return limit ? isLimitViolated(a, limit) : false;
+    });
+
     return {
-      match: dist < 1.0,
+      match: dist < 1.0 && !limitViolated,
       error: dist,
-      fkPos
+      fkPos,
+      limitViolated,
     };
-  }, [points, target, mode]);
+  }, [points, target, mode, planarAngles, jointLimits]);
 
 
   const velocity = useMemo(() => {
@@ -374,7 +380,18 @@ function KinematicsLab() {
 
   const jogJoint = (i: number, delta: number) => {
     if (mode === "IK") setMode("FK");
-    setAngles((a) => a.map((v, k) => (k === i ? Math.max(-180, Math.min(180, v + delta)) : v)));
+    setAngles((a) => a.map((v, k) => {
+      if (k === i) {
+        const next = v + delta;
+        const limit = jointLimits[k];
+        if (limit) {
+          // Allow free moving for checking limits but visual warning is shown
+          return Math.round(next * 10) / 10;
+        }
+        return Math.round(next * 10) / 10;
+      }
+      return v;
+    }));
   };
   const jogCart = (axis: "x" | "y", delta: number) => {
     if (mode === "FK") {
@@ -627,7 +644,24 @@ function KinematicsLab() {
                   </>
                 ) : (
                   <>
-                    <Section title="Links">
+                    <Section title="Validation Stats" collapsible defaultOpen>
+                      <div className="grid grid-cols-2 gap-3">
+                        <Stat label="FK POS X" value={`${Math.round(ikFkConsistency?.fkPos.x ?? 0)}mm`} />
+                        <Stat label="FK POS Y" value={`${Math.round(ikFkConsistency?.fkPos.y ?? 0)}mm`} />
+                        <Stat label="POS ERROR" value={`${(ikFkConsistency?.error ?? 0).toFixed(1)}mm`} />
+                        <Stat 
+                          label="STATUS" 
+                          value={ikFkConsistency?.limitViolated ? "LIMIT!" : (ikFkConsistency?.match ? "VALID" : "DRIFT")} 
+                        />
+                      </div>
+                      {ikFkConsistency?.limitViolated && (
+                        <div className="mt-2 rounded border border-red-200 bg-red-50 p-2 text-[10px] font-bold uppercase tracking-wider text-red-600">
+                          Joint Limit Violation
+                        </div>
+                      )}
+                    </Section>
+
+                    <Section title="Links" collapsible defaultOpen={false}>
                       <SegButton
                         stacked
                         options={[
@@ -638,7 +672,7 @@ function KinematicsLab() {
                         onChange={(v) => setLinkCount(Number(v))}
                       />
                     </Section>
-                    <Section title="Link Lengths" aside="px">
+                    <Section title="Link Lengths" aside="px" collapsible defaultOpen={false}>
                       <div className="grid grid-cols-2 gap-3">
                         <NumberField label="L1" value={lengths[0] ?? 0} onChange={(v) => setLength(0, v)} />
                         <NumberField label="L2" value={lengths[1] ?? 0} onChange={(v) => setLength(1, v)} />
@@ -648,14 +682,14 @@ function KinematicsLab() {
                       </div>
                     </Section>
                     {mode === "FK" ? (
-                      <Section title="Joint Angles">
+                      <Section title="Joint Angles" collapsible>
                         <div className="space-y-2.5">
                           {Array.from({ length: linkCount }).map((_, i) => (
                             <SliderRow
                               key={i}
                               label={`theta ${i + 1}`}
-                              min={-180}
-                              max={180}
+                              min={jointLimits[i]?.min ?? -180}
+                              max={jointLimits[i]?.max ?? 180}
                               value={angles[i] ?? 0}
                               onChange={(v) => setAngle(i, v)}
                             />
@@ -663,7 +697,7 @@ function KinematicsLab() {
                         </div>
                       </Section>
                     ) : (
-                      <Section title="Target">
+                      <Section title="Target" collapsible>
                         <div className="grid grid-cols-2 gap-3">
                           <NumberField
                             label="X"
@@ -678,29 +712,8 @@ function KinematicsLab() {
                         </div>
                       </Section>
                     )}
-                    <Section title="Presets">
-                      <div className="grid grid-cols-2 gap-2">
-                        <GhostButton onClick={() => setAngles([0,0,0])}>Reset</GhostButton>
-                      </div>
-                    </Section>
-
-                    <Section title="Display Settings" collapsible>
-                      <div className="flex flex-col gap-3">
-                        <label className="flex items-center gap-2">
-                          <input type="checkbox" checked={showAxes} onChange={e => setShowAxes(e.target.checked)} />
-                          <span className="text-xs">Show Joint Axes</span>
-                        </label>
-                        <label className="flex items-center gap-2">
-                          <input type="checkbox" checked={showHeatmap} onChange={e => setShowHeatmap(e.target.checked)} />
-                          <span className="text-xs">Show Reach Heatmap</span>
-                        </label>
-                        <GhostButton onClick={() => exportPresetReport(preset, { error: ik.error, reachable: ik.reachable })}>
-                          Export PDF Report
-                        </GhostButton>
-                      </div>
-                    </Section>
-
-                    <Section title="Joint Limits" collapsible>
+                    
+                    <Section title="Joint Limits" collapsible defaultOpen={false}>
                       <div className="flex flex-col gap-4">
                         {[0, 1, 2].slice(0, linkCount).map(i => (
                           <div key={i} className="space-y-2">
@@ -717,11 +730,25 @@ function KinematicsLab() {
                               value={jointLimits[i]?.max ?? 180} 
                               onChange={v => setJointLimits(prev => prev.map((l, k) => k === i ? { ...l, max: v } : l))} 
                             />
-                            {isLimitViolated(planarAngles[i] ?? 0, jointLimits[i]!) && (
-                              <div className="text-[9px] font-bold text-destructive animate-pulse uppercase">Limit Violated!</div>
-                            )}
                           </div>
                         ))}
+                      </div>
+                    </Section>
+
+                    <Section title="Environment" collapsible defaultOpen={false}>
+                      <div className="flex flex-col gap-3">
+                        <label className="flex items-center gap-2">
+                          <input type="checkbox" checked={showAxes} onChange={e => setShowAxes(e.target.checked)} />
+                          <span className="text-xs">Show Joint Axes</span>
+                        </label>
+                        <label className="flex items-center gap-2">
+                          <input type="checkbox" checked={showHeatmap} onChange={e => setShowHeatmap(e.target.checked)} />
+                          <span className="text-xs">Show Heatmap</span>
+                        </label>
+                        <GhostButton onClick={() => setAngles([0,0,0])}>Reset Pose</GhostButton>
+                        <GhostButton onClick={() => exportPresetReport(preset, ikFkConsistency)}>
+                          Export PDF
+                        </GhostButton>
                       </div>
                     </Section>
 
@@ -815,7 +842,80 @@ function KinematicsLab() {
 
           <div className="lab-card flex flex-1 flex-col overflow-hidden">
             <div className="flex-1 overflow-y-auto scrollbar-hide">
-              <Section title="Math Formulas" collapsible>
+              {/* Validation & Settings Panel */}
+              <Section title="Validation & Settings" collapsible defaultOpen>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <Stat label="FK POS X" value={`${Math.round(ikFkConsistency?.fkPos.x ?? 0)}mm`} />
+                    <Stat label="FK POS Y" value={`${Math.round(ikFkConsistency?.fkPos.y ?? 0)}mm`} />
+                    <Stat label="POS ERROR" value={`${(ikFkConsistency?.error ?? 0).toFixed(1)}mm`} />
+                    <Stat 
+                      label="STATUS" 
+                      value={ikFkConsistency?.limitViolated ? "LIMIT!" : (ikFkConsistency?.match ? "VALID" : "DRIFT")} 
+                    />
+                  </div>
+                  {ikFkConsistency?.limitViolated && (
+                    <div className="rounded border border-red-200 bg-red-50 p-2 text-[10px] font-bold uppercase tracking-wider text-red-600">
+                      Joint Limit Violation Detected
+                    </div>
+                  )}
+
+                  <div className="space-y-4 border-t border-border pt-4">
+                    <SliderRow
+                      label="Links"
+                      min={1}
+                      max={3}
+                      value={linkCount}
+                      onChange={(v) => {
+                        setLinkCount(v);
+                        if (v > lengths.length) setLengths([...lengths, 80]);
+                      }}
+                    />
+                    {activeLengths.map((l, i) => (
+                      <SliderRow
+                        key={i}
+                        label={`L${i + 1} (mm)`}
+                        min={20}
+                        max={200}
+                        value={l}
+                        onChange={(v) => setLength(i, v)}
+                      />
+                    ))}
+                    {mode === "FK" &&
+                      activeLengths.map((_, i) => (
+                        <SliderRow
+                          key={i}
+                          label={`J${i + 1} (°)`}
+                          min={jointLimits[i]?.min ?? -180}
+                          max={jointLimits[i]?.max ?? 180}
+                          value={angles[i] ?? 0}
+                          onChange={(v) => setAngle(i, v)}
+                        />
+                      ))}
+                    
+                    {/* Joint Limits Config */}
+                    <div className="space-y-3">
+                      <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Limit Configuration</h4>
+                      {activeLengths.map((_, i) => (
+                        <div key={i} className="grid grid-cols-2 gap-2">
+                          <NumberField 
+                            label={`J${i+1} Min`} 
+                            value={jointLimits[i]?.min ?? -180} 
+                            onChange={(v) => setJointLimits(l => l.map((lim, k) => k === i ? {...lim, min: v} : lim))} 
+                          />
+                          <NumberField 
+                            label={`J${i+1} Max`} 
+                            value={jointLimits[i]?.max ?? 180} 
+                            onChange={(v) => setJointLimits(l => l.map((lim, k) => k === i ? {...lim, max: v} : lim))} 
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </Section>
+
+              <Section title="Math Formulas" collapsible defaultOpen={false}>
                 <div className="space-y-3">
                    {mode === "FK" && <FKFormula lengths={activeLengths} angles={planarAngles} unit={unit} end={end} />}
                    {mode === "IK" && <IKFormula lengths={activeLengths} target={target} angles={ik.angles} unit={unit} reachable={ik.reachable} />}
