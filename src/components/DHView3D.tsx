@@ -13,12 +13,12 @@ type Props = {
 
 // Colors based on a premium industrial design: Slate and Bright Orange
 const LINK_COLORS = [
-  "#FFFFFF", // White
-  "#000000", // Black
-  "#CCCCCC", // Light Grey
-  "#333333", // Dark Grey
-  "#999999", // Grey
-  "#666666", // Medium Grey
+  "#2C3E50", // Dark Slate Blue
+  "#E74C3C", // Industrial Red
+  "#2C3E50", // Dark Slate Blue
+  "#E74C3C", // Industrial Red
+  "#2C3E50",
+  "#E74C3C",
 ];
 
 export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = [], linkCount = 2, showAxes = true }: Props) {
@@ -174,8 +174,8 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       ctx.restore();
 
       // Premium Mechanical Joint
-      const hr = r * 2.2;
-      const hw = r * 1.6;
+      const hr = r * 2.5; // Slightly larger for "cup" feel
+      const hw = r * 2.0;
       const frameA = effectiveFrames[i] as Mat4;
       const zAxis = axisOf(frameA, 2);
       const projZ = project({x: a.x + zAxis.x, y: a.y + zAxis.y, z: a.z + zAxis.z});
@@ -185,47 +185,42 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       ctx.translate(pa.x, pa.y);
       ctx.rotate(jointAngle);
       
-      // Joint Housing: Brushed Aluminum "Hub" with Warning Stripes
-      const hGrad = ctx.createLinearGradient(0, -hr, 0, hr);
-      hGrad.addColorStop(0, "white");
-      hGrad.addColorStop(0.5, "#999999");
-      hGrad.addColorStop(1, "black");
+      // Joint Housing: Spherical/Cup Shape
+      const hGrad = ctx.createRadialGradient(0, 0, hr * 0.2, 0, 0, hr);
+      hGrad.addColorStop(0, "#444");
+      hGrad.addColorStop(0.7, "#222");
+      hGrad.addColorStop(1, "#000");
       
       ctx.fillStyle = hGrad;
       
+      // Draw the "Cup" base
       ctx.beginPath();
-      ctx.arc(0, 0, hr, -Math.PI/2, Math.PI/2);
-      ctx.lineTo(-hw/2, hr);
-      ctx.lineTo(-hw/2, -hr);
-      ctx.closePath();
+      ctx.arc(0, 0, hr, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Industrial Inner Detail (Actuator)
+      ctx.fillStyle = i % 2 === 0 ? "#E74C3C" : "#F1C40F"; // Alternating Red/Yellow details
+      ctx.beginPath();
+      ctx.arc(0, 0, hr * 0.6, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Glossy Overlay for the Sphere
+      const gloss = ctx.createRadialGradient(-hr*0.3, -hr*0.3, 0, -hr*0.3, -hr*0.3, hr);
+      gloss.addColorStop(0, "rgba(255,255,255,0.2)");
+      gloss.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = gloss;
+      ctx.beginPath();
+      ctx.arc(0, 0, hr, 0, Math.PI * 2);
       ctx.fill();
       
-      // Safety Warning Stripes (Yellow/Black)
-      ctx.save();
-      ctx.clip();
-      ctx.fillStyle = "white";
-      for (let j = -hr; j < hr; j += 8) {
-        if (Math.floor(j / 8) % 2 === 0) {
-          ctx.fillRect(-hw/2, j, hw, 4);
-        }
+      // Bolts around the hub
+      ctx.fillStyle = "#FFF";
+      for(let b=0; b<8; b++) {
+          const ba = (b/8) * Math.PI * 2;
+          ctx.beginPath();
+          ctx.arc(Math.cos(ba)*hr*0.8, Math.sin(ba)*hr*0.8, 2, 0, Math.PI*2);
+          ctx.fill();
       }
-      ctx.restore();
-
-      ctx.strokeStyle = "rgba(0,0,0,0.3)";
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-
-      // Accented central actuator hub
-      ctx.fillStyle = "black";
-      ctx.beginPath();
-      ctx.ellipse(0, 0, hw * 0.4, hr * 0.8, 0, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Aluminum bolt detail
-      ctx.fillStyle = "white";
-      ctx.beginPath();
-      ctx.arc(0, 0, hw * 0.15, 0, Math.PI * 2);
-      ctx.fill();
       
       ctx.restore();
 

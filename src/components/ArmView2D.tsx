@@ -201,22 +201,33 @@ export function ArmView2D({
                 y1={r1(p.y)}
                 x2={r1(q.x)}
                 y2={r1(q.y)}
-                stroke={isColliding ? "#ef4444" : "var(--primary)"}
-                strokeWidth={isHighlighted ? 18 : 12}
+                stroke={isColliding ? "#ef4444" : (i % 2 === 0 ? "#2C3E50" : "#E74C3C")}
+                strokeWidth={isHighlighted ? 22 : 16}
                 strokeLinecap="round"
-                opacity={isHighlighted ? 1 : 0.9}
+                opacity={isHighlighted ? 1 : 0.95}
                 className="transition-all duration-300 hover:opacity-100"
               />
-              {/* Brushed highlight */}
+              {/* Material shading/gloss effect */}
               <line
                 x1={r1(p.x)}
                 y1={r1(p.y)}
                 x2={r1(q.x)}
                 y2={r1(q.y)}
-                stroke="rgba(255,255,255,0.3)"
-                strokeWidth={isHighlighted ? 4 : 3}
+                stroke="rgba(255,255,255,0.15)"
+                strokeWidth={isHighlighted ? 6 : 4}
                 strokeLinecap="round"
-                transform="translate(0, -3)"
+                transform="translate(0, -4)"
+              />
+              {/* Industrial edge detail */}
+              <line
+                x1={r1(p.x)}
+                y1={r1(p.y)}
+                x2={r1(q.x)}
+                y2={r1(q.y)}
+                stroke="rgba(0,0,0,0.2)"
+                strokeWidth={isHighlighted ? 24 : 18}
+                strokeLinecap="round"
+                opacity={0.3}
               />
             </g>
           );
@@ -273,14 +284,22 @@ export function ArmView2D({
                   </g>
                 )}
                 
-                {/* Transparent Joint Housing - matching reference style */}
+                {/* Spherical Joint Housing (Cup style) */}
                 <circle
                   cx={r1(p.x)}
                   cy={r1(p.y)}
-                  r={i === 0 ? 15 : 12}
-                  fill="rgba(40,45,50,0.15)"
-                  stroke="rgba(0,0,0,0.2)"
-                  strokeWidth={1.2}
+                  r={i === 0 ? 20 : 16}
+                  fill={i % 2 === 0 ? "#1a1a1a" : "#222"}
+                  stroke="rgba(255,255,255,0.1)"
+                  strokeWidth={1.5}
+                  className="shadow-xl"
+                />
+                <circle
+                  cx={r1(p.x)}
+                  cy={r1(p.y)}
+                  r={i === 0 ? 10 : 8}
+                  fill={i % 2 === 0 ? "#E74C3C" : "#F1C40F"}
+                  className="opacity-80"
                 />
               
               {/* Angle Indicator Arrow */}
@@ -300,9 +319,9 @@ export function ArmView2D({
               <circle
                 cx={r1(p.x)}
                 cy={r1(p.y)}
-                r={isHighlighted ? 8 : (i === 0 ? 7 : 6)}
-                className={`transition-all duration-300 hover:scale-125 ${isHighlighted ? "fill-primary stroke-primary" : (i === 0 ? "fill-primary stroke-primary" : "fill-background stroke-primary")}`}
-                strokeWidth={2}
+                r={isHighlighted ? 6 : 4}
+                className={`transition-all duration-300 hover:scale-125 ${isHighlighted ? "fill-white" : "fill-white/80"}`}
+                strokeWidth={1}
               />
               {/* Limit Violation Warning */}
               {limits && limits[i] && angles && angles[i] !== undefined && (angles[i] < (limits[i]?.min ?? -360) || angles[i] > (limits[i]?.max ?? 360)) && (
