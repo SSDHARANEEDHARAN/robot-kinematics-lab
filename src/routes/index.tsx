@@ -576,16 +576,6 @@ function KinematicsLab() {
                 </div>
               </Section>
 
-              {isSingular && (
-                <div className="mx-5 my-2 animate-pulse rounded-lg bg-link-2/10 p-3 text-center border border-link-2/30">
-                  <div className="flex items-center justify-center gap-2 text-link-2 font-bold text-xs uppercase tracking-widest">
-                    <span>⚠ Singularity Warning</span>
-                  </div>
-                  <p className="mt-1 text-[10px] text-link-2/80 font-medium">
-                    Manipulability low. Robot is losing degrees of freedom.
-                  </p>
-                </div>
-              )}
 
               <Section title="Presets">
                 <div className="grid grid-cols-2 gap-2">
