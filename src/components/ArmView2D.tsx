@@ -19,6 +19,7 @@ type Props = {
   activeStep?: number | undefined;
   limits?: { min: number; max: number }[];
   angles?: number[];
+  interactive?: boolean;
 };
 
 const r1 = (n: number) => Math.round(n * 1000) / 1000;
@@ -42,6 +43,7 @@ export function ArmView2D({
   activeStep,
   limits,
   angles,
+  interactive: forceInteractive,
 }: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
   const dragging = useRef(false);
@@ -72,7 +74,7 @@ export function ArmView2D({
   for (let g = -H / 2; g <= H / 2; g += 40) gridY.push(g);
 
   const end = points[points.length - 1] ?? { x: 0, y: 0 };
-  const interactive = Boolean(onTargetChange || onPathPoint);
+  const interactive = forceInteractive ?? Boolean(onTargetChange || onPathPoint);
 
   return (
     <svg
@@ -89,7 +91,7 @@ export function ArmView2D({
       onPointerUp={() => (dragging.current = false)}
       onPointerLeave={() => (dragging.current = false)}
     >
-      <g transform="scale(1,-1)" opacity={onTargetChange ? 1 : 0}>
+      <g transform="scale(1,-1)">
         {/* grid */}
         <g stroke="currentColor" className="text-border" strokeWidth={1} opacity={0.3}>
           {grid.map((g) => (
@@ -162,7 +164,7 @@ export function ArmView2D({
         )}
 
         {/* links */}
-        {onTargetChange && points.slice(0, -1).map((p, i) => {
+        {points.slice(0, -1).map((p, i) => {
           const q = points[i + 1] as Vec2;
           
           const isLink1Step = activeStep !== undefined && activeStep >= 1 && activeStep <= 4;
@@ -185,7 +187,7 @@ export function ArmView2D({
         })}
 
         {/* joints & angle arrows */}
-        {onTargetChange && points.map((p, i) => {
+        {points.map((p, i) => {
           const isJoint2 = i === 1; 
           const isJoint1 = i === 0; 
           const isJoint2Highlighted = activeStep !== undefined && activeStep >= 2 && isJoint2;
@@ -260,7 +262,7 @@ export function ArmView2D({
           );
         })}
 
-        {onTargetChange && <circle cx={r1(end.x)} cy={r1(end.y)} r={6} className="fill-primary" />}
+        <circle cx={r1(end.x)} cy={r1(end.y)} r={6} className="fill-primary" />
       </g>
     </svg>
   );
