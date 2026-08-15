@@ -598,7 +598,7 @@ function KinematicsLab() {
                           {jointCount}
                         </span>
                         <button
-                          className="px-4 py-2 text-lg font-bold text-primary"
+                          className="px-4 py-2 text-lg font-bold text-foreground"
                           onClick={() => setJointCount((c) => Math.min(6, c + 1))}
                         >
                           +
@@ -617,14 +617,14 @@ function KinematicsLab() {
                         ))}
                         {dhRows.map((r, i) => (
                           <Fragment key={i}>
-                            <span className="self-center text-xs font-bold text-primary">{i + 1}</span>
+                            <span className="self-center text-xs font-bold text-foreground">{i + 1}</span>
                             {(["theta", "d", "a", "alpha"] as const).map((k) => (
                               <input
                                 key={`${i}-${k}`}
                                 type="number"
                                 value={r[k]}
                                 onChange={(e) => setDhCell(i, k, Number(e.target.value))}
-                                className={`lab-input px-1 text-center text-sm ${k === "theta" ? "text-primary" : ""}`}
+                                className={`lab-input px-1 text-center text-sm ${k === "theta" ? "text-foreground" : ""}`}
                               />
                             ))}
                           </Fragment>
