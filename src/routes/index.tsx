@@ -377,9 +377,6 @@ function KinematicsLab() {
               PRESENT BY THARANEETHARAN SS
             </p>
           </div>
-          <div className="mt-2 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-[10px] font-bold text-primary max-w-md">
-            MAKE A JOINT LIKE THIS
-          </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <SegButton
