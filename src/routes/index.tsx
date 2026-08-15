@@ -402,7 +402,7 @@ function KinematicsLab() {
         </div>
       </header>
 
-      <div className="grid gap-5 xl:grid-cols-[200px_minmax(0,1fr)_340px]">
+      <div className="grid gap-5 xl:grid-cols-[280px_minmax(0,1fr)_340px]">
         {/* ---------- Left: popups ---------- */}
         <aside className="space-y-3">
           <div className="relative">
