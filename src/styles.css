@@ -148,15 +148,7 @@
   }
 
   .dark body {
-    background-image: 
-      radial-gradient(100% 100% at 50% 0%, oklch(0.25 0.05 250 / 0.3) 0%, transparent 50%),
-      radial-gradient(100% 100% at 100% 100%, oklch(0.2 0.05 280 / 0.1) 0%, transparent 50%);
-  }
-
-  .dark body {
-    background-image: 
-      radial-gradient(100% 100% at 50% 0%, oklch(0.7 0.1 200 / 0.05) 0%, transparent 50%),
-      radial-gradient(100% 100% at 100% 100%, oklch(0.7 0.1 280 / 0.03) 0%, transparent 50%);
+    background-image: none;
   }
 
   html {
