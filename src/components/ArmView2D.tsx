@@ -97,7 +97,7 @@ export function ArmView2D({
           </g>
         )}
         {/* grid */}
-        <g className="stroke-grid" strokeWidth={1} opacity={0.55}>
+        <g stroke="currentColor" className="text-border" strokeWidth={1} opacity={0.3}>
           {grid.map((g) => (
             <line key={`v${g}`} x1={g} y1={-H / 2} x2={g} y2={H / 2} />
           ))}
