@@ -154,3 +154,33 @@ export function workspaceSweep(lengths: number[], steps = 40): Vec2[] {
   }
   return pts;
 }
+
+/** Generates a heatmap grid for reachability */
+export function generateReachabilityHeatmap(lengths: number[], step = 10): { x: number; y: number; reachable: boolean }[] {
+  const l1 = lengths[0] ?? 0;
+  const l2 = lengths[1] ?? 0;
+  const max = l1 + l2;
+  const grid: { x: number; y: number; reachable: boolean }[] = [];
+  
+  for (let x = -max; x <= max; x += step) {
+    for (let y = -max; y <= max; y += step) {
+      const d = Math.hypot(x, y);
+      grid.push({ 
+        x, 
+        y, 
+        reachable: d >= Math.abs(l1 - l2) - 1e-6 && d <= max + 1e-6 
+      });
+    }
+  }
+  return grid;
+}
+
+export type JointLimits = { min: number; max: number };
+
+export function clampAngle(angle: number, limits: JointLimits): number {
+  return Math.min(limits.max, Math.max(limits.min, angle));
+}
+
+export function isLimitViolated(angle: number, limits: JointLimits): boolean {
+  return angle < limits.min - 1e-3 || angle > limits.max + 1e-3;
+}
