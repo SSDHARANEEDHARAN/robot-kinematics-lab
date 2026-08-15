@@ -162,17 +162,17 @@
 }
 
 @utility glass-card {
-  background-color: var(--card);
+  background-color: transparent;
   border-radius: var(--radius-xl);
   backdrop-filter: blur(20px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
   transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
   position: relative;
   overflow: hidden;
   border: none;
 
   @variant dark {
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   }
 }
 
@@ -180,10 +180,10 @@
   @apply glass-card;
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
     
     @variant dark {
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
     }
   }
 }
