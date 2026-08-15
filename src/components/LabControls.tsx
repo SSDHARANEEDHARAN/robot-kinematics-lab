@@ -1,13 +1,42 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 
-export function Section({ title, aside, children }: { title: string; aside?: ReactNode; children: ReactNode }) {
+export function Section({ 
+  title, 
+  aside, 
+  children, 
+  collapsible = false, 
+  defaultOpen = true 
+}: { 
+  title: string; 
+  aside?: ReactNode; 
+  children: ReactNode;
+  collapsible?: boolean;
+  defaultOpen?: boolean;
+}) {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
   return (
-    <div className="border-b border-border px-5 py-4 last:border-b-0">
-      <div className="mb-3 flex items-baseline justify-between">
-        <h3 className="lab-label">{title}</h3>
+    <div className="border-b border-border last:border-b-0">
+      <div 
+        className={`flex items-center justify-between px-5 py-4 ${collapsible ? 'cursor-pointer hover:bg-muted/30' : ''}`}
+        onClick={() => collapsible && setIsOpen(!isOpen)}
+      >
+        <div className="flex items-center gap-2">
+          {collapsible && (
+            <span className="text-muted-foreground">
+              {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+            </span>
+          )}
+          <h3 className="lab-label">{title}</h3>
+        </div>
         {aside ? <span className="text-xs font-medium text-muted-foreground">{aside}</span> : null}
       </div>
-      {children}
+      {(!collapsible || isOpen) && (
+        <div className="px-5 pb-4">
+          {children}
+        </div>
+      )}
     </div>
   );
 }
