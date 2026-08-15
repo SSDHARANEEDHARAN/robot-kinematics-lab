@@ -32,12 +32,15 @@ export function SegButton({
           key={o.value}
           type="button"
           onClick={() => onChange(o.value)}
-          className={`rounded-md px-3 py-2 text-sm font-semibold transition-colors ${
+          className={`relative z-10 rounded-md px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
             value === o.value
-              ? "bg-card text-primary shadow-sm"
-              : "text-secondary-foreground hover:text-foreground"
+              ? "text-primary-foreground"
+              : "text-muted-foreground hover:text-foreground"
           }`}
         >
+          {value === o.value && (
+            <div className="absolute inset-0 -z-10 rounded-md bg-primary shadow-[0_0_15px_oklch(0.75_0.22_190_/_0.4)] animate-in fade-in zoom-in-95 duration-300" />
+          )}
           {o.label}
         </button>
       ))}
