@@ -3,7 +3,10 @@ import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { ArmView2D } from "@/components/ArmView2D";
 import { DHView3D } from "@/components/DHView3D";
 import { DHFormula, FKFormula, IKFormula } from "@/components/FormulaPanel";
+import { AIPanel } from "@/components/AIPanel";
 import {
+  Badge,
+  Card,
   GhostButton,
   NumberField,
   Section,
@@ -14,7 +17,18 @@ import {
 import { LESSONS, LessonPanel, type Lesson } from "@/components/LessonPanel";
 import { QuizPanel } from "@/components/QuizPanel";
 import { TeachPanel } from "@/components/TeachPanel";
-import { dhChain, fk2d, ik2d, originOf, type DHRow, type Mat4, type Vec2 } from "@/lib/kinematics";
+import {
+  det2x2,
+  dhChain,
+  fk2d,
+  ik2d,
+  jacobian2d,
+  originOf,
+  workspaceSweep,
+  type DHRow,
+  type Mat4,
+  type Vec2,
+} from "@/lib/kinematics";
 import {
   fmtAngle,
   readPresetFromLocation,
@@ -47,8 +61,8 @@ export const Route = createFileRoute("/")({
   component: KinematicsLab,
 });
 
-type Mode = "IK" | "FK" | "DH";
-type Tab = "math" | "teach" | "quiz" | "lessons";
+type Mode = "IK" | "FK" | "DH" | "EXPERIMENT";
+type Tab = "math" | "teach" | "quiz" | "lessons" | "ai" | "industrial" | "progress";
 
 const DEFAULT_DH: DHRow[] = [
   { theta: 0, d: 80, a: 0, alpha: -90 },
@@ -60,10 +74,12 @@ const DEFAULT_DH: DHRow[] = [
 ];
 
 const TABS: { value: Tab; label: string }[] = [
-  { value: "math", label: "Live math" },
+  { value: "math", label: "Math" },
   { value: "teach", label: "Teach" },
   { value: "quiz", label: "Quiz" },
+  { value: "ai", label: "AI Tutor" },
   { value: "lessons", label: "Lessons" },
+  { value: "progress", label: "Stats" },
 ];
 
 function KinematicsLab() {
@@ -90,6 +106,8 @@ function KinematicsLab() {
   const [shareMsg, setShareMsg] = useState("");
   const [lessonId, setLessonId] = useState(LESSONS[0]!.id);
   const [completed, setCompleted] = useState<Record<string, boolean>>({});
+  const [showWorkspace, setShowWorkspace] = useState(false);
+  const [showVelocity, setShowVelocity] = useState(false);
 
   const activeLengths = lengths.slice(0, linkCount);
 
@@ -155,6 +173,28 @@ function KinematicsLab() {
   const dhRows = dh.slice(0, jointCount);
   const frames = useMemo(() => dhChain(dhRows), [JSON.stringify(dhRows)]);
   const dhEnd = originOf(frames[frames.length - 1] as Mat4);
+
+  const jacobian = useMemo(
+    () => jacobian2d(activeLengths, planarAngles),
+    [activeLengths.join(), planarAngles.join()],
+  );
+  const manipulability = Math.abs(det2x2(jacobian));
+  const isSingular = manipulability < 5000;
+
+  const workspace = useMemo(
+    () => (showWorkspace ? workspaceSweep(activeLengths) : []),
+    [activeLengths.join(), showWorkspace],
+  );
+
+  const velocity = useMemo(() => {
+    if (!showVelocity || mode === "DH") return undefined;
+    // Example: unit joint velocities [1, 1]
+    const J = jacobian;
+    return {
+      x: J[0][0] + J[0][1],
+      y: J[1][0] + J[1][1],
+    };
+  }, [jacobian, showVelocity, mode]);
 
   const end = points[points.length - 1] ?? { x: 0, y: 0 };
   const maxReach = activeLengths.reduce((a, b) => a + b, 0);

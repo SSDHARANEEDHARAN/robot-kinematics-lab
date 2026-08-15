@@ -29,8 +29,10 @@ export function AIPanel({ state }: Props) {
 
     try {
       const hint = await getHint({
-        ...state,
-        userQuestion: question,
+        data: {
+          ...state,
+          userQuestion: question,
+        },
       });
       setMessages((m) => [...m, { role: "ai", content: hint }]);
     } catch (err) {
