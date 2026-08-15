@@ -154,7 +154,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       const pb = project(b);
 
       const isHighlighted = activeStep !== undefined && i < activeStep;
-      const r = (13 - i * 1.2) * baseScale;
+      const r = (13 - i * 1.2) * currentBaseScale;
 
       // --- Link body: glossy orange rod with cylindrical shading ---
       const ang = Math.atan2(pb.y - pa.y, pb.x - pa.x);
