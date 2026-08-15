@@ -253,6 +253,11 @@ function KinematicsLab() {
     () => fk2d(activeLengths, ikGhost.angles),
     [activeLengths.join(), ikGhost.angles.join()],
   );
+  
+  const collisionResult = useMemo(() => {
+    if (mode === "DH") return { colliding: false, pairs: [], points: [] };
+    return checkCollisions2d(points);
+  }, [points, mode]);
 
   const dhRows = dh.slice(0, jointCount);
   const frames = useMemo(() => dhChain(dhRows), [JSON.stringify(dhRows)]);
