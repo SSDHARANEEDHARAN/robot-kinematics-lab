@@ -382,6 +382,7 @@ function KinematicsLab() {
             <br /><br />
             I NEED SAME STYLE OF ROBOT DESIGN
           </div>
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           <SegButton
             options={[
