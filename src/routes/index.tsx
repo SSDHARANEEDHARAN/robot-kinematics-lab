@@ -998,14 +998,15 @@ function KinematicsLab() {
         </aside>
       </div>
 
-      <footer className="mt-8 flex items-center justify-between border-t-2 border-foreground pt-6 text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-        <div className="flex items-center gap-2 text-foreground">
-           <div className="h-2 w-2 rounded-full bg-current animate-pulse" />
-           <span>System Online</span>
+      <footer className="mt-12 flex items-center justify-between border-t border-border/50 py-8 text-[9px] font-bold uppercase tracking-[0.3em] text-muted-foreground">
+        <div className="flex items-center gap-3 text-foreground/60 transition-colors hover:text-primary">
+           <div className="h-2 w-2 rounded-full bg-primary shadow-[0_0_8px] shadow-primary/50 animate-pulse" />
+           <span>Lab System Active</span>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="text-foreground">Present by Tharaneetharan SS</span>
-          <span className="h-1 w-1 rounded-full bg-foreground" />
+        <div className="flex items-center gap-6">
+          <span className="text-foreground/80 font-black">Powered by Factory AI</span>
+          <span className="h-1 w-1 rounded-full bg-border" />
+          <span className="text-primary font-black">Presented by Tharaneetharan SS</span>
           <span>Industrial Automation Series</span>
         </div>
       </footer>
