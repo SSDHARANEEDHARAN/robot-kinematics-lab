@@ -1036,9 +1036,10 @@ function KinematicsLab() {
                       </div>
                     </div>
                   </Card>
+                </div>
+              )}
             </div>
           </div>
-        </aside>
 
           <div className="lab-card px-4 py-3">
             <h3 className="mb-2 text-base font-extrabold text-foreground">Joint Output</h3>
