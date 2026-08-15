@@ -192,17 +192,29 @@ export function ArmView2D({
           const isColliding = collisions?.pairs.some(pair => pair.includes(i));
 
           return (
-            <line
-              key={i}
-              x1={r1(p.x)}
-              y1={r1(p.y)}
-              x2={r1(q.x)}
-              y2={r1(q.y)}
-              stroke={isColliding ? "#ef4444" : "#1A252F"} // Red if colliding
-              strokeWidth={isHighlighted ? 18 : 12}
-              strokeLinecap="butt"
-              opacity={isHighlighted ? 1 : 0.9}
-            />
+            <g key={i}>
+              <line
+                x1={r1(p.x)}
+                y1={r1(p.y)}
+                x2={r1(q.x)}
+                y2={r1(q.y)}
+                stroke={isColliding ? "#ef4444" : (i % 2 === 0 ? "#94A3B8" : "#FACC15")}
+                strokeWidth={isHighlighted ? 18 : 12}
+                strokeLinecap="round"
+                opacity={isHighlighted ? 1 : 0.9}
+              />
+              {/* Brushed highlight */}
+              <line
+                x1={r1(p.x)}
+                y1={r1(p.y)}
+                x2={r1(q.x)}
+                y2={r1(q.y)}
+                stroke="rgba(255,255,255,0.3)"
+                strokeWidth={isHighlighted ? 4 : 3}
+                strokeLinecap="round"
+                transform="translate(0, -3)"
+              />
+            </g>
           );
         })}
 
@@ -299,7 +311,7 @@ export function ArmView2D({
           );
         })}
 
-        <circle cx={r1(end.x)} cy={r1(end.y)} r={6} className="fill-primary" />
+        <circle cx={r1(end.x)} cy={r1(end.y)} r={8} className="fill-yellow-400 stroke-slate-900" strokeWidth={2} />
       </g>
     </svg>
   );
