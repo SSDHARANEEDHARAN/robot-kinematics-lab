@@ -101,18 +101,28 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       const py = project({ x: pos.x + yAxis.x * axisSize, y: pos.y + yAxis.y * axisSize, z: pos.z + yAxis.z * axisSize });
       const pz = project({ x: pos.x + zAxis.x * axisSize, y: pos.y + zAxis.y * axisSize, z: pos.z + zAxis.z * axisSize });
 
-      const drawLine = (to: {x: number, y: number}, color: string) => {
+      const drawArrow = (to: {x: number, y: number}, color: string) => {
         ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
+        ctx.fillStyle = color;
+        ctx.lineWidth = 1.5;
         ctx.beginPath(); 
         ctx.moveTo(p.x, p.y); 
         ctx.lineTo(to.x, to.y); 
         ctx.stroke();
+        
+        // Arrow head
+        const ang = Math.atan2(to.y - p.y, to.x - p.x);
+        ctx.beginPath();
+        ctx.moveTo(to.x, to.y);
+        ctx.lineTo(to.x - 6 * Math.cos(ang - 0.5), to.y - 6 * Math.sin(ang - 0.5));
+        ctx.lineTo(to.x - 6 * Math.cos(ang + 0.5), to.y - 6 * Math.sin(ang + 0.5));
+        ctx.closePath();
+        ctx.fill();
       };
 
-      drawLine(px, "#EF4444"); // X
-      drawLine(py, "#22C55E"); // Y
-      drawLine(pz, "#3B82F6"); // Z
+      drawArrow(px, "#e74c3c"); // X - Red
+      drawArrow(py, "#2ecc71"); // Y - Green
+      drawArrow(pz, "#3498db"); // Z - Blue
     };
 
     // Grid Floor: Light Technical Grid
