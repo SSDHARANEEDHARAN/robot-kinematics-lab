@@ -111,7 +111,7 @@ export function ArmView2D({
         ))}
         {/* grid */}
 
-        <g stroke="currentColor" className="text-border" strokeWidth={1} opacity={0.3}>
+        <g stroke="rgba(0,0,0,0.05)" strokeWidth={1}>
           {grid.map((g) => (
             <line key={`v${g}`} x1={g} y1={-H / 2} x2={g} y2={H / 2} />
           ))}
@@ -120,7 +120,7 @@ export function ArmView2D({
           ))}
         </g>
         {/* axes */}
-        <g stroke="currentColor" className="text-muted-foreground" strokeWidth={1.4} opacity={0.4}>
+        <g stroke="rgba(0,0,0,0.1)" strokeWidth={1}>
           <line x1={-W / 2} y1={0} x2={W / 2} y2={0} />
           <line x1={0} y1={-H / 2} x2={0} y2={H / 2} />
         </g>
@@ -201,33 +201,21 @@ export function ArmView2D({
                 y1={r1(p.y)}
                 x2={r1(q.x)}
                 y2={r1(q.y)}
-                stroke={isColliding ? "#ef4444" : (i % 2 === 0 ? "#2C3E50" : "#E74C3C")}
-                strokeWidth={isHighlighted ? 22 : 16}
+                stroke={isColliding ? "#ef4444" : (["#2c3e50", "#e74c3c", "#27ae60", "#8e44ad", "#2980b9", "#e67e22"][i % 6])}
+                strokeWidth={isHighlighted ? 12 : 8}
                 strokeLinecap="round"
-                opacity={isHighlighted ? 1 : 0.95}
-                className="transition-all duration-300 hover:opacity-100"
+                opacity={0.9}
               />
-              {/* Material shading/gloss effect */}
+              {/* Glossy highlight */}
               <line
                 x1={r1(p.x)}
                 y1={r1(p.y)}
                 x2={r1(q.x)}
                 y2={r1(q.y)}
-                stroke="rgba(255,255,255,0.15)"
-                strokeWidth={isHighlighted ? 6 : 4}
+                stroke="rgba(255,255,255,0.2)"
+                strokeWidth={isHighlighted ? 3 : 2}
                 strokeLinecap="round"
-                transform="translate(0, -4)"
-              />
-              {/* Industrial edge detail */}
-              <line
-                x1={r1(p.x)}
-                y1={r1(p.y)}
-                x2={r1(q.x)}
-                y2={r1(q.y)}
-                stroke="rgba(0,0,0,0.2)"
-                strokeWidth={isHighlighted ? 24 : 18}
-                strokeLinecap="round"
-                opacity={0.3}
+                transform="translate(0, -2)"
               />
             </g>
           );
@@ -284,22 +272,20 @@ export function ArmView2D({
                   </g>
                 )}
                 
-                {/* Spherical Joint Housing (Cup style) */}
+                {/* Simple Industrial Joint Hub */}
                 <circle
                   cx={r1(p.x)}
                   cy={r1(p.y)}
-                  r={i === 0 ? 20 : 16}
-                  fill={i % 2 === 0 ? "#1a1a1a" : "#222"}
-                  stroke="rgba(255,255,255,0.1)"
-                  strokeWidth={1.5}
-                  className="shadow-xl"
+                  r={i === 0 ? 12 : 10}
+                  fill="#bdc3c7"
+                  stroke="#7f8c8d"
+                  strokeWidth={1}
                 />
                 <circle
                   cx={r1(p.x)}
                   cy={r1(p.y)}
-                  r={i === 0 ? 10 : 8}
-                  fill={i % 2 === 0 ? "#E74C3C" : "#F1C40F"}
-                  className="opacity-80"
+                  r={i === 0 ? 8 : 6}
+                  fill={["#2c3e50", "#e74c3c", "#27ae60", "#8e44ad", "#2980b9", "#e67e22"][i % 6] || "#7f8c8d"}
                 />
               
               {/* Angle Indicator Arrow */}
@@ -334,7 +320,7 @@ export function ArmView2D({
           );
         })}
 
-        <circle cx={r1(end.x)} cy={r1(end.y)} r={8} className="fill-primary stroke-background shadow-lg animate-pulse" strokeWidth={2} />
+        <circle cx={r1(end.x)} cy={r1(end.y)} r={8} className="fill-[#3498db] stroke-white shadow-lg" strokeWidth={2} />
       </g>
     </svg>
   );
