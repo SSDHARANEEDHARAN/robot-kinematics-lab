@@ -108,8 +108,8 @@ export function DHView3D({ frames }: Props) {
       
       // Housing gradient
       const grad = ctx.createRadialGradient(p.x - r/3, p.y - r/3, 1, p.x, p.y, r);
-      grad.addColorStop(0, "#94a3b8");
-      grad.addColorStop(1, "#1e293b");
+      grad.addColorStop(0, "oklch(0.8 0.1 190)");
+      grad.addColorStop(1, "oklch(0.3 0.05 250)");
 
       ctx.beginPath();
       ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
@@ -119,7 +119,7 @@ export function DHView3D({ frames }: Props) {
       // Cap
       ctx.beginPath();
       ctx.arc(p.x, p.y, r * 0.7, 0, Math.PI * 2);
-      ctx.fillStyle = i === frames.length - 1 ? "#0ea5e9" : "#334155";
+      ctx.fillStyle = i === frames.length - 1 ? "oklch(0.75 0.22 190)" : "oklch(0.4 0.05 250)";
       ctx.fill();
     });
 
@@ -128,12 +128,12 @@ export function DHView3D({ frames }: Props) {
       const p = project(originOf(f));
       
       // Joint Label
-      ctx.fillStyle = "rgba(15, 23, 42, 0.8)";
+      ctx.fillStyle = "oklch(0.75 0.22 190 / 0.1)";
       ctx.beginPath();
       ctx.roundRect(p.x - 12, p.y - 30, 24, 14, 3);
       ctx.fill();
       
-      ctx.fillStyle = "#fff";
+      ctx.fillStyle = "oklch(0.75 0.22 190)";
       ctx.font = "bold 9px JetBrains Mono";
       ctx.textAlign = "center";
       ctx.fillText(`J${i+1}`, p.x, p.y - 20);

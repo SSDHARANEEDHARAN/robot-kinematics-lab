@@ -115,16 +115,16 @@ export function ArmView2D({
           <g>
             <circle
               r={maxReach}
-              className="fill-zone/8 stroke-zone/45"
+              className="fill-primary/5 stroke-primary/20"
               strokeWidth={1.5}
-              strokeDasharray="0"
+              strokeDasharray="4 4"
             />
             {minReach > 1 && (
               <circle
                 r={minReach}
-                className="fill-background stroke-zone/35"
+                className="fill-background stroke-primary/10"
                 strokeWidth={1.2}
-                strokeDasharray="5 5"
+                strokeDasharray="2 2"
               />
             )}
           </g>
