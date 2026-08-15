@@ -165,10 +165,9 @@
 
 @utility glass-card {
   background-color: var(--card);
-  border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   backdrop-filter: blur(16px);
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
   transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   position: relative;
   overflow: hidden;
@@ -177,23 +176,8 @@
 @utility lab-card {
   @apply glass-card;
   &:hover {
-    transform: translateY(-6px) scale(1.015);
-    box-shadow: 0 25px 30px -5px rgb(0 0 0 / 0.15), 0 12px 15px -6px rgb(0 0 0 / 0.1);
-    border-color: var(--primary);
-  }
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, transparent 45%, var(--primary) 50%, transparent 55%);
-    background-size: 300% 300%;
-    opacity: 0;
-    transition: opacity 0.6s, background-position 0.6s;
-    pointer-events: none;
-  }
-  &:hover::before {
-    opacity: 0.1;
-    background-position: 100% 100%;
+    transform: translateY(-4px);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.05);
   }
 }
 
@@ -207,8 +191,8 @@
 
 @utility lab-input {
   width: 100%;
-  border: 2px solid var(--border);
-  border-radius: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   background-color: var(--background);
   padding: 0.5rem 0.75rem;
   font-size: 0.95rem;
@@ -219,14 +203,14 @@
 }
 
 .lab-input:focus {
-  border-color: var(--foreground);
+  border-color: var(--primary);
   background-color: var(--muted);
 }
 
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
-  height: 6px;
+  height: 4px;
   border-radius: 999px;
   background: var(--color-secondary);
   outline: none;
@@ -235,29 +219,18 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   border-radius: 999px;
   background: var(--color-primary);
-  border: 4px solid var(--color-background);
-  box-shadow: 0 0 15px var(--color-primary);
+  border: 2px solid var(--color-background);
+  box-shadow: 0 0 10px var(--color-primary);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
-  box-shadow: 0 0 20px var(--color-primary);
-}
-
-input[type="range"]::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border: 4px solid var(--color-background);
-  border-radius: 999px;
-  background: var(--color-primary);
-  box-shadow: 0 0 15px var(--color-primary);
-  cursor: pointer;
+  transform: scale(1.1);
 }
 
 @utility scrollbar-hide {
@@ -267,3 +240,135 @@ input[type="range"]::-moz-range-thumb {
     display: none;
   }
 }
+
+/* From Uiverse.io by SchawnnahJ */
+.loader-before8 {
+ position: relative;
+ width: 2.5em;
+ height: 2.5em;
+ transform: rotate(165deg);
+}
+
+.loader-before8:before, .loader-before8:after {
+ content: "";
+ position: absolute;
+ top: 50%;
+ left: 50%;
+ display: block;
+ width: 0.5em;
+ height: 0.5em;
+ border-radius: 0.25em;
+ transform: translate(-50%, -50%);
+}
+
+.loader-before8:before {
+ animation: before8 2s infinite;
+}
+
+.loader-before8:after {
+ animation: after6 2s infinite;
+}
+
+@keyframes before8 {
+ 0% {
+  width: 0.5em;
+  box-shadow: 1em -0.5em rgba(225, 20, 98, 0.75), -1em 0.5em rgba(111, 202, 220, 0.75);
+ }
+
+ 35% {
+  width: 2.5em;
+  box-shadow: 0 -0.5em rgba(225, 20, 98, 0.75), 0 0.5em rgba(111, 202, 220, 0.75);
+ }
+
+ 70% {
+  width: 0.5em;
+  box-shadow: -1em -0.5em rgba(225, 20, 98, 0.75), 1em 0.5em rgba(111, 202, 220, 0.75);
+ }
+
+ 100% {
+  box-shadow: 1em -0.5em rgba(225, 20, 98, 0.75), -1em 0.5em rgba(111, 202, 220, 0.75);
+ }
+}
+
+@keyframes after6 {
+ 0% {
+  height: 0.5em;
+  box-shadow: 0.5em 1em rgba(61, 184, 143, 0.75), -0.5em -1em rgba(233, 169, 32, 0.75);
+ }
+
+ 35% {
+  height: 2.5em;
+  box-shadow: 0.5em 0 rgba(61, 184, 143, 0.75), -0.5em 0 rgba(233, 169, 32, 0.75);
+ }
+
+ 70% {
+  height: 0.5em;
+  box-shadow: 0.5em -1em rgba(61, 184, 143, 0.75), -0.5em 1em rgba(233, 169, 32, 0.75);
+ }
+
+ 100% {
+  box-shadow: 0.5em 1em rgba(61, 184, 143, 0.75), -0.5em -1em rgba(233, 169, 32, 0.75);
+ }
+}
+
+/* From Uiverse.io by Vosoone */
+.main-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.loader-vosoone {
+  width: 100%;
+  max-width: 800px;
+}
+
+.trace-bg {
+  stroke: #333;
+  stroke-width: 1.8;
+  fill: none;
+}
+
+.trace-flow {
+  stroke-width: 1.8;
+  fill: none;
+  stroke-dasharray: 40 400;
+  stroke-dashoffset: 438;
+  filter: drop-shadow(0 0 6px currentColor);
+  animation: flow 3s cubic-bezier(0.5, 0, 0.9, 1) infinite;
+}
+
+.yellow {
+  stroke: #ffea00;
+  color: #ffea00;
+}
+.blue {
+  stroke: #00ccff;
+  color: #00ccff;
+}
+.green {
+  stroke: #00ff15;
+  color: #00ff15;
+}
+.purple {
+  stroke: #9900ff;
+  color: #9900ff;
+}
+.red {
+  stroke: #ff3300;
+  color: #ff3300;
+}
+
+@keyframes flow {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.chip-text {
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
