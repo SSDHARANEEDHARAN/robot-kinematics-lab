@@ -987,7 +987,7 @@ function KinematicsLab() {
                 <QuizPanel lengths={activeLengths} angles={planarAngles} onSetTarget={(t) => { setMode("IK"); setTarget(t); }} />
               </Section>
 
-              <Section title="Lessons" collapsible defaultOpen={false}>
+              <Section title="Interactive Learning" collapsible defaultOpen={true}>
                 <LessonPanel state={lessonState} activeId={lessonId} onSelect={selectLesson} completed={completed} />
               </Section>
 
