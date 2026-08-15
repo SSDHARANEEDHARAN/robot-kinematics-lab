@@ -203,7 +203,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       // Safety Warning Stripes (Yellow/Black)
       ctx.save();
       ctx.clip();
-      ctx.fillStyle = "#FACC15"; // Safety Yellow
+      ctx.fillStyle = "white";
       for (let j = -hr; j < hr; j += 8) {
         if (Math.floor(j / 8) % 2 === 0) {
           ctx.fillRect(-hw/2, j, hw, 4);
@@ -216,13 +216,13 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       ctx.stroke();
 
       // Accented central actuator hub
-      ctx.fillStyle = "#1e293b"; // Dark steel
+      ctx.fillStyle = "black";
       ctx.beginPath();
       ctx.ellipse(0, 0, hw * 0.4, hr * 0.8, 0, 0, Math.PI * 2);
       ctx.fill();
       
       // Aluminum bolt detail
-      ctx.fillStyle = "#cbd5e1";
+      ctx.fillStyle = "white";
       ctx.beginPath();
       ctx.arc(0, 0, hw * 0.15, 0, Math.PI * 2);
       ctx.fill();
