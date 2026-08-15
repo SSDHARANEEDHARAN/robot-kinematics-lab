@@ -27,8 +27,8 @@ export function IKWalkthrough({ target, lengths, angles, unit, elbowUp, onStepSe
   const cos2 = (d2 - l1 * l1 - l2 * l2) / (2 * l1 * l2);
   
   // Solve both solutions
-  const solUp = solveIK(target, lengths, true);
-  const solDown = solveIK(target, lengths, false);
+  const solUp = solveIK(lengths, target, true);
+  const solDown = solveIK(lengths, target, false);
   
   const u = (deg: number) => (unit === "deg" ? `${deg.toFixed(1)}°` : `${deg2rad(deg).toFixed(3)}`);
 
