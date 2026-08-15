@@ -45,6 +45,7 @@ import {
 import { generateReachabilityHeatmap, type JointLimits, isLimitViolated } from "@/lib/kinematics";
 
 
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
