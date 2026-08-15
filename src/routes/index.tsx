@@ -807,6 +807,7 @@ function KinematicsLab() {
                     limits={jointLimits}
                     angles={planarAngles}
                     interactive={true}
+                    collisions={collisionResult}
                   />
                 </div>
               )}
