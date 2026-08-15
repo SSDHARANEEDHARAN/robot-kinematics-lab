@@ -298,7 +298,7 @@ function KinematicsLab() {
 
 
   const velocity = useMemo(() => {
-    if (!showVelocity || mode === "DH") return undefined;
+    if (!showVelocity || mode === "DH" || linkCount > 2) return undefined;
     const J = jacobian;
     const j0 = J[0];
     const j1 = J[1];
