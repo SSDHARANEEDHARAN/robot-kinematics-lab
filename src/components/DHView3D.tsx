@@ -13,12 +13,12 @@ type Props = {
 
 // Colors based on a premium industrial design: Slate and Bright Orange
 const LINK_COLORS = [
-  "#2C3E50", // Dark Slate Blue
-  "#E74C3C", // Industrial Red
-  "#2C3E50", // Dark Slate Blue
-  "#E74C3C", // Industrial Red
-  "#2C3E50",
-  "#E74C3C",
+  "#2c3e50", // Dark Slate Blue
+  "#e74c3c", // Industrial Red
+  "#27ae60", // Green
+  "#8e44ad", // Purple
+  "#2980b9", // Blue
+  "#e67e22", // Orange
 ];
 
 export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = [], linkCount = 2, showAxes = true }: Props) {
@@ -101,22 +101,32 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       const py = project({ x: pos.x + yAxis.x * axisSize, y: pos.y + yAxis.y * axisSize, z: pos.z + yAxis.z * axisSize });
       const pz = project({ x: pos.x + zAxis.x * axisSize, y: pos.y + zAxis.y * axisSize, z: pos.z + zAxis.z * axisSize });
 
-      const drawLine = (to: {x: number, y: number}, color: string) => {
+      const drawArrow = (to: {x: number, y: number}, color: string) => {
         ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
+        ctx.fillStyle = color;
+        ctx.lineWidth = 1.5;
         ctx.beginPath(); 
         ctx.moveTo(p.x, p.y); 
         ctx.lineTo(to.x, to.y); 
         ctx.stroke();
+        
+        // Arrow head
+        const ang = Math.atan2(to.y - p.y, to.x - p.x);
+        ctx.beginPath();
+        ctx.moveTo(to.x, to.y);
+        ctx.lineTo(to.x - 6 * Math.cos(ang - 0.5), to.y - 6 * Math.sin(ang - 0.5));
+        ctx.lineTo(to.x - 6 * Math.cos(ang + 0.5), to.y - 6 * Math.sin(ang + 0.5));
+        ctx.closePath();
+        ctx.fill();
       };
 
-      drawLine(px, "#EF4444"); // X
-      drawLine(py, "#22C55E"); // Y
-      drawLine(pz, "#3B82F6"); // Z
+      drawArrow(px, "#e74c3c"); // X - Red
+      drawArrow(py, "#2ecc71"); // Y - Green
+      drawArrow(pz, "#3498db"); // Z - Blue
     };
 
-    // Grid Floor: Dark Factory Floor Grid
-    ctx.strokeStyle = "var(--grid)";
+    // Grid Floor: Light Technical Grid
+    ctx.strokeStyle = "rgba(0,0,0,0.05)";
     ctx.lineWidth = 1;
     for(let i = -10; i <= 10; i++) {
         const p1 = project({x: i*60, y: -600, z: 0});
@@ -151,13 +161,12 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
         pa.x + nx * lw, pa.y + ny * lw,
         pa.x - nx * lw, pa.y - ny * lw
       );
-      grad.addColorStop(0, "white");
-      grad.addColorStop(0.3, linkColor);
-      grad.addColorStop(0.7, linkColor);
-      grad.addColorStop(1, "black");
+      grad.addColorStop(0, "rgba(255,255,255,0.3)");
+      grad.addColorStop(0.5, linkColor);
+      grad.addColorStop(1, "rgba(0,0,0,0.2)");
       
       ctx.strokeStyle = grad;
-      ctx.lineWidth = lw;
+      ctx.lineWidth = lw * 0.8;
       ctx.lineCap = "round";
       ctx.beginPath();
       ctx.moveTo(pa.x, pa.y);
@@ -165,17 +174,16 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       ctx.stroke();
       
       // Glossy highlight
-      ctx.strokeStyle = "rgba(255,255,255,0.2)";
-      ctx.lineWidth = lw * 0.2;
+      ctx.strokeStyle = "rgba(255,255,255,0.4)";
+      ctx.lineWidth = lw * 0.15;
       ctx.beginPath();
-      ctx.moveTo(pa.x + nx * lw * 0.3, pa.y + ny * lw * 0.3);
-      ctx.lineTo(pb.x + nx * lw * 0.3, pb.y + ny * lw * 0.3);
+      ctx.moveTo(pa.x + nx * lw * 0.25, pa.y + ny * lw * 0.25);
+      ctx.lineTo(pb.x + nx * lw * 0.25, pb.y + ny * lw * 0.25);
       ctx.stroke();
       ctx.restore();
 
-      // Premium Mechanical Joint
-      const hr = r * 2.5; // Slightly larger for "cup" feel
-      const hw = r * 2.0;
+      // Clean Mechanical Joint: Industrial Cylindrical Joint
+      const hr = r * 1.8; 
       const frameA = effectiveFrames[i] as Mat4;
       const zAxis = axisOf(frameA, 2);
       const projZ = project({x: a.x + zAxis.x, y: a.y + zAxis.y, z: a.z + zAxis.z});
@@ -185,42 +193,28 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       ctx.translate(pa.x, pa.y);
       ctx.rotate(jointAngle);
       
-      // Joint Housing: Spherical/Cup Shape
-      const hGrad = ctx.createRadialGradient(0, 0, hr * 0.2, 0, 0, hr);
-      hGrad.addColorStop(0, "#444");
-      hGrad.addColorStop(0.7, "#222");
-      hGrad.addColorStop(1, "#000");
-      
-      ctx.fillStyle = hGrad;
-      
-      // Draw the "Cup" base
-      ctx.beginPath();
-      ctx.arc(0, 0, hr, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Industrial Inner Detail (Actuator)
-      ctx.fillStyle = i % 2 === 0 ? "#E74C3C" : "#F1C40F"; // Alternating Red/Yellow details
-      ctx.beginPath();
-      ctx.arc(0, 0, hr * 0.6, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Glossy Overlay for the Sphere
-      const gloss = ctx.createRadialGradient(-hr*0.3, -hr*0.3, 0, -hr*0.3, -hr*0.3, hr);
-      gloss.addColorStop(0, "rgba(255,255,255,0.2)");
-      gloss.addColorStop(1, "rgba(0,0,0,0)");
-      ctx.fillStyle = gloss;
+      // Joint Base Cylinder
+      ctx.fillStyle = "#bdc3c7";
       ctx.beginPath();
       ctx.arc(0, 0, hr, 0, Math.PI * 2);
       ctx.fill();
       
-      // Bolts around the hub
-      ctx.fillStyle = "#FFF";
-      for(let b=0; b<8; b++) {
-          const ba = (b/8) * Math.PI * 2;
-          ctx.beginPath();
-          ctx.arc(Math.cos(ba)*hr*0.8, Math.sin(ba)*hr*0.8, 2, 0, Math.PI*2);
-          ctx.fill();
-      }
+      // Internal Detail
+      ctx.strokeStyle = "#7f8c8d";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Industrial Inner Detail (Rotating Part)
+      ctx.fillStyle = linkColor;
+      ctx.beginPath();
+      ctx.arc(0, 0, hr * 0.7, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Hub Cap Detail
+      ctx.fillStyle = "rgba(255,255,255,0.4)";
+      ctx.beginPath();
+      ctx.arc(-hr*0.2, -hr*0.2, hr*0.15, 0, Math.PI * 2);
+      ctx.fill();
       
       ctx.restore();
 
@@ -242,17 +236,20 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
     if (eeFrame) {
       const eePos = originOf(eeFrame as Mat4);
       const pee = project(eePos);
-      const eer = 15 * currentBaseScale;
+      const eer = 12 * currentBaseScale;
       
       ctx.save();
       ctx.translate(pee.x, pee.y);
-      ctx.fillStyle = "#FACC15"; // Safety Yellow End Effector
+      ctx.fillStyle = "#3498db"; // Blue End Effector Sphere
       ctx.beginPath();
       ctx.arc(0, 0, eer, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = "#1e293b";
-      ctx.lineWidth = 2;
-      ctx.stroke();
+      
+      //EE Highlight
+      ctx.fillStyle = "rgba(255,255,255,0.4)";
+      ctx.beginPath();
+      ctx.arc(-eer*0.3, -eer*0.3, eer*0.3, 0, Math.PI * 2);
+      ctx.fill();
       ctx.restore();
 
       if (showAxes) drawAxes(eePos, eeFrame as Mat4, 50);
