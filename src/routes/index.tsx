@@ -399,14 +399,14 @@ function KinematicsLab() {
         </div>
       </header>
 
-      <div className="grid gap-5 xl:grid-cols-[280px_minmax(0,1fr)_340px]">
+      <div className="grid gap-5 xl:grid-cols-[280px_minmax(0,1fr)_340px] xl:h-[750px]">
         {/* ---------- Left: popups ---------- */}
-        <aside className="space-y-3">
-          <div className="relative">
+        <aside className="flex h-full flex-col gap-3 overflow-hidden">
+          <div className="flex flex-1 flex-col overflow-hidden">
             <div className="w-full rounded-xl border border-border bg-card/50 px-4 py-3 text-xs font-black uppercase tracking-widest text-primary">
               Robot Settings
             </div>
-            <div className="mt-2 w-full max-h-[75vh] overflow-y-auto rounded-xl border border-border bg-card shadow-lg scrollbar-hide">
+            <div className="mt-2 flex-1 overflow-y-auto rounded-xl border border-border bg-card shadow-lg scrollbar-hide">
               <div className="lab-card border-none shadow-none">
                 <Section title="Mode">
                   <SegButton
@@ -555,7 +555,7 @@ function KinematicsLab() {
         </aside>
 
         {/* ---------- Center: viewport ---------- */}
-        <section className="lab-card overflow-hidden">
+        <section className="lab-card flex h-full flex-col overflow-hidden">
           <div className="flex flex-wrap items-start justify-between gap-4 px-5 py-5">
             <div>
               <h2 className="text-lg font-extrabold tracking-tight text-foreground">
@@ -564,7 +564,7 @@ function KinematicsLab() {
               <p className="text-sm text-muted-foreground">{headline.sub}</p>
             </div>
           </div>
-          <div className="h-[640px] border-t border-border bg-panel overflow-hidden relative">
+          <div className="relative flex-1 overflow-hidden border-t border-border bg-panel">
              {/* Realistic fixed simulation area */}
             {mode === "DH" ? (
               <div className="flex h-full w-full">
@@ -600,7 +600,7 @@ function KinematicsLab() {
         </section>
 
         {/* ---------- Right: readouts + tools ---------- */}
-        <aside className="space-y-4">
+        <aside className="flex h-full flex-col gap-4 overflow-hidden">
           <div className="grid grid-cols-2 gap-3">
             <Stat label="End X" value={(mode === "DH" ? dhEnd.x : end.x).toFixed(1)} />
             <Stat label="End Y" value={(mode === "DH" ? dhEnd.y : end.y).toFixed(1)} />
@@ -608,7 +608,7 @@ function KinematicsLab() {
             <Stat label="Error" value={(mode === "IK" ? ik.error : 0).toFixed(1)} />
           </div>
 
-          <div className="lab-card flex flex-col h-[600px] overflow-hidden">
+          <div className="lab-card flex flex-1 flex-col overflow-hidden">
             <div className="border-b border-border px-3 py-3">
               <SegButton
                 options={TABS.map((t) => ({ value: t.value, label: t.label }))}
