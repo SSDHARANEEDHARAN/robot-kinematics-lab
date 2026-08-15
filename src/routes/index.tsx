@@ -550,11 +550,7 @@ function KinematicsLab() {
           <p className="text-xl font-black uppercase tracking-tighter text-foreground">
             Precision Lab V3
           </p>
-          <p className="text-[7px] font-bold uppercase tracking-[0.1em] text-muted-foreground opacity-30 select-none max-w-xs mt-1">
-            '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
-            <br />
-            Add an interactive lesson mode that guides me through IK and FK steps for the robot arm. remove footer complet only keep header as of now
-          </p>
+          {/* Instruction string removed per user request */}
         </div>
 
         <div className="flex items-center gap-4">
