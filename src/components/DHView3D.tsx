@@ -116,8 +116,8 @@ export function DHView3D({ frames, activeStep }: Props) {
         ctx.beginPath(); ctx.moveTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y); ctx.stroke();
     }
 
-    // Draw origin axes at base
-    drawAxes({x: 0, y: 0, z: 0}, [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1], 50);
+    // Draw origin axes at base with arrows - matching reference
+    drawAxes({x: 0, y: 0, z: 0}, [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1], 60, true);
 
     // Links and Joints
     for (let i = 0; i < frames.length - 1; i++) {
