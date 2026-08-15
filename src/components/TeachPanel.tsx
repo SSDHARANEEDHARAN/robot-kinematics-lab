@@ -1,4 +1,10 @@
 import type { Waypoint } from "@/lib/lab";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function TeachPanel({
   waypoints,
@@ -37,15 +43,31 @@ export function TeachPanel({
   const jog = "rounded-lg bg-secondary px-3 py-2 text-[10px] font-bold text-foreground hover:bg-foreground hover:text-background transition-all active:scale-95";
   
   return (
-    <div className="space-y-6">
-      <div>
-        <h4 className="lab-label mb-3">Demo Programs</h4>
-        <div className="grid grid-cols-3 gap-2">
-          <button className={btn} onClick={() => onRunDemo("pick")}>Pick & Place</button>
-          <button className={btn} onClick={() => onRunDemo("round")}>Arounding</button>
-          <button className={btn} onClick={() => onRunDemo("dance")}>Dancing</button>
+    <TooltipProvider>
+      <div className="space-y-6">
+        <div>
+          <h4 className="lab-label mb-3">Demo Programs</h4>
+          <div className="grid grid-cols-3 gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button className={btn} onClick={() => onRunDemo("pick")}>Pick & Place</button>
+              </TooltipTrigger>
+              <TooltipContent><p>Simulate a pick-and-place sequence</p></TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button className={btn} onClick={() => onRunDemo("round")}>Arounding</button>
+              </TooltipTrigger>
+              <TooltipContent><p>Follow a circular trajectory path</p></TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button className={btn} onClick={() => onRunDemo("dance")}>Dancing</button>
+              </TooltipTrigger>
+              <TooltipContent><p>Demonstrate joint-space synchronized movement</p></TooltipContent>
+            </Tooltip>
+          </div>
         </div>
-      </div>
 
       <div>
         <h4 className="lab-label mb-3">Joint jog (FK)</h4>
@@ -70,17 +92,34 @@ export function TeachPanel({
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 pt-2">
-        <button className="rounded-lg bg-foreground px-4 py-2 text-xs font-black uppercase tracking-widest text-background transition-all hover:opacity-90 active:scale-95" onClick={onTeach}>
-          Teach P{waypoints.length + 1}
-        </button>
-        <button className="rounded-lg border border-border px-4 py-2 text-xs font-black uppercase tracking-widest transition-all hover:bg-secondary" onClick={playing ? onStop : onPlay}>
-          {playing ? "Stop" : "Play"}
-        </button>
-        <button className="rounded-lg border border-border px-4 py-2 text-xs font-black uppercase tracking-widest transition-all hover:bg-secondary" onClick={onClear}>
-          Clear
-        </button>
-      </div>
+        <div className="flex flex-wrap gap-2 pt-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button className="rounded-lg bg-foreground px-4 py-2 text-xs font-black uppercase tracking-widest text-background transition-all hover:opacity-90 active:scale-95" onClick={onTeach}>
+                Teach P{waypoints.length + 1}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent><p>Save the current robot pose as a waypoint</p></TooltipContent>
+          </Tooltip>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button className="rounded-lg border border-border px-4 py-2 text-xs font-black uppercase tracking-widest transition-all hover:bg-secondary" onClick={playing ? onStop : onPlay}>
+                {playing ? "Stop" : "Play"}
+              </button>
+            </TooltipTrigger>
+            <TooltipContent><p>{playing ? "Stop program execution" : "Execute the recorded waypoint sequence"}</p></TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button className="rounded-lg border border-border px-4 py-2 text-xs font-black uppercase tracking-widest transition-all hover:bg-secondary" onClick={onClear}>
+                Clear
+              </button>
+            </TooltipTrigger>
+            <TooltipContent><p>Delete all recorded waypoints</p></TooltipContent>
+          </Tooltip>
+        </div>
 
       <div className="rounded-xl bg-secondary/30 p-4 font-mono text-[10px] space-y-2">
         {waypoints.length === 0 ? (
@@ -97,6 +136,7 @@ export function TeachPanel({
           ))
         )}
       </div>
-    </div>
+      </div>
+    </TooltipProvider>
   );
 }
