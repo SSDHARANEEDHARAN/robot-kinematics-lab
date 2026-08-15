@@ -6,16 +6,6 @@
 
 /*
  * Design system definition.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
  */
 
 @theme inline {
@@ -72,33 +62,33 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(0.976 0.005 250);
-  --foreground: oklch(0.16 0.02 260);
+  --radius: 0.75rem;
+  --background: oklch(0.985 0.002 240);
+  --foreground: oklch(0.12 0.01 240);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.16 0.02 260);
+  --card-foreground: oklch(0.12 0.01 240);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.16 0.02 260);
-  --primary: oklch(0.55 0.21 262);
+  --popover-foreground: oklch(0.12 0.01 240);
+  --primary: oklch(0.52 0.16 260); /* Sophisticated laboratory blue */
   --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.955 0.008 250);
-  --secondary-foreground: oklch(0.28 0.03 260);
-  --muted: oklch(0.962 0.006 250);
-  --muted-foreground: oklch(0.53 0.03 258);
-  --accent: oklch(0.95 0.02 255);
-  --accent-foreground: oklch(0.28 0.03 260);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 247.858);
-  --border: oklch(0.915 0.01 250);
-  --input: oklch(0.915 0.01 250);
-  --ring: oklch(0.55 0.21 262);
-  --brand: oklch(0.62 0.13 172);
-  --panel: oklch(0.985 0.004 250);
-  --link-1: oklch(0.2 0.01 260);
-  --link-2: oklch(0.58 0.22 25);
-  --link-3: oklch(0.68 0.15 162);
-  --grid: oklch(0.92 0.02 255);
-  --zone: oklch(0.62 0.16 262);
+  --secondary: oklch(0.96 0.005 240);
+  --secondary-foreground: oklch(0.3 0.02 240);
+  --muted: oklch(0.96 0.005 240);
+  --muted-foreground: oklch(0.5 0.02 240);
+  --accent: oklch(0.94 0.01 250);
+  --accent-foreground: oklch(0.3 0.02 240);
+  --destructive: oklch(0.55 0.22 25);
+  --destructive-foreground: oklch(0.98 0.01 25);
+  --border: oklch(0.93 0.005 240);
+  --input: oklch(0.93 0.005 240);
+  --ring: oklch(0.52 0.16 260);
+  --brand: oklch(0.58 0.14 180); /* Industrial cyan */
+  --panel: oklch(0.99 0.001 240);
+  --link-1: oklch(0.15 0.01 240);
+  --link-2: oklch(0.55 0.2 25);
+  --link-3: oklch(0.65 0.15 175);
+  --grid: oklch(0.94 0.01 240);
+  --zone: oklch(0.6 0.12 260 / 0.1);
 
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -135,11 +125,6 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: oklch(0.208 0.042 265.755);
   --sidebar-foreground: oklch(0.984 0.003 247.858);
   --sidebar-primary: oklch(0.488 0.243 264.376);
@@ -158,6 +143,12 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    background-image: radial-gradient(
+      120% 80% at 50% -10%,
+      oklch(0.96 0.02 260) 0%,
+      transparent 60%
+    );
+    background-attachment: fixed;
   }
 }
 
@@ -165,50 +156,46 @@
   html {
     font-family: var(--font-sans);
   }
-  body {
-    background-image: radial-gradient(
-      120% 80% at 50% -10%,
-      oklch(0.94 0.03 258) 0%,
-      transparent 60%
-    );
-    background-attachment: fixed;
-  }
 }
 
 @utility lab-card {
   background-color: var(--color-card);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  box-shadow: 0 1px 2px oklch(0.2 0.03 260 / 0.05), 0 8px 24px oklch(0.2 0.03 260 / 0.05);
+  border-radius: var(--radius-2xl);
+  box-shadow: 0 1px 3px oklch(0.12 0.01 240 / 0.02), 0 12px 32px oklch(0.12 0.01 240 / 0.04);
+  transition: all 0.2s ease;
 }
 
 @utility lab-label {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--color-foreground);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
 }
 
 @utility lab-input {
   width: 100%;
   border: 1px solid var(--color-input);
-  border-radius: var(--radius-md);
-  background-color: var(--color-card);
-  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-secondary);
+  padding: 0.625rem 0.875rem;
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--color-foreground);
   outline: none;
+  transition: all 0.2s ease;
 }
 .lab-input:focus {
-  border-color: var(--color-ring);
-  box-shadow: 0 0 0 3px oklch(0.55 0.21 262 / 0.15);
+  border-color: var(--color-primary);
+  background-color: var(--color-card);
+  box-shadow: 0 0 0 4px oklch(0.52 0.16 260 / 0.08);
 }
 
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
-  height: 6px;
+  height: 4px;
   border-radius: 999px;
   background: var(--color-secondary);
   outline: none;
@@ -216,17 +203,24 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border-radius: 999px;
   background: var(--color-primary);
+  border: 3px solid var(--color-card);
+  box-shadow: 0 2px 4px oklch(0 0 0 / 0.1);
   cursor: pointer;
+  transition: transform 0.1s ease;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
 }
 input[type="range"]::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
-  border: none;
+  width: 18px;
+  height: 18px;
+  border: 3px solid var(--color-card);
   border-radius: 999px;
   background: var(--color-primary);
+  box-shadow: 0 2px 4px oklch(0 0 0 / 0.1);
   cursor: pointer;
 }
