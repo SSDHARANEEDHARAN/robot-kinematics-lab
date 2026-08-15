@@ -802,7 +802,7 @@ function KinematicsLab() {
         </aside>
 
       <div className="flex-1 min-h-[500px] xl:h-full order-1 xl:order-2">
-        <section className="lab-card flex h-full flex-col overflow-hidden border-2 border-foreground border-t-8 border-t-foreground shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
+        <section className="lab-card flex h-full flex-col overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500">
           <div className="flex flex-wrap items-start justify-between gap-4 px-5 py-5 bg-background border-b-2 border-foreground">
             <div>
               <h2 className="text-lg font-extrabold tracking-tight text-foreground">
