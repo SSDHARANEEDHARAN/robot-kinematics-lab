@@ -122,6 +122,8 @@ function KinematicsLab() {
     { min: -150, max: 150 },
     { min: -150, max: 150 },
     { min: -150, max: 150 },
+    { min: -150, max: 150 },
+    { min: -150, max: 150 },
   ]);
 
 
