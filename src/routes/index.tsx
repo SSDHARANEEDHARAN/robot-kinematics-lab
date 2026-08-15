@@ -377,6 +377,7 @@ function KinematicsLab() {
               PRESENT BY THARANEETHARAN SS
             </p>
           </div>
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           <SegButton
             options={[
