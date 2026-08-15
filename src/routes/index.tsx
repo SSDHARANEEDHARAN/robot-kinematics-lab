@@ -15,7 +15,8 @@ import {
   SliderRow,
   Stat,
 } from "@/components/LabControls";
-import { LESSONS, LessonPanel, type Lesson } from "@/components/LessonPanel";
+import { LessonPanel } from "@/components/LessonPanel";
+import { LESSONS, type Lesson } from "@/lib/lessons";
 import { QuizPanel } from "@/components/QuizPanel";
 import { TeachPanel } from "@/components/TeachPanel";
 import { IKWalkthrough } from "@/components/IKWalkthrough";

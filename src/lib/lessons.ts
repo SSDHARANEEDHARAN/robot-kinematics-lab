@@ -50,7 +50,11 @@ export const LESSONS: Lesson[] = [
       "Forward Kinematics (FK) calculates the end position from joint angles.",
       "Switch to FK mode and adjust J2 to exactly 90°.",
     ],
-    check: (s) => s.mode === "FK" && Math.abs(s.angles[1] - 90) < 1,
+    check: (s) => {
+      const j2 = s.angles[1];
+      if (j2 === undefined) return false;
+      return s.mode === "FK" && Math.abs(j2 - 90) < 1;
+    },
   },
   {
     id: "l4",
@@ -60,6 +64,11 @@ export const LESSONS: Lesson[] = [
       "The 'inner dead zone' is a region the robot cannot reach.",
       "This happens when the distance is less than |L1 - L2|.",
     ],
-    check: (s) => Math.hypot(s.target.x, s.target.y) < Math.abs(s.lengths[0] - s.lengths[1]),
+    check: (s) => {
+      const l1 = s.lengths[0];
+      const l2 = s.lengths[1];
+      if (l1 === undefined || l2 === undefined) return false;
+      return Math.hypot(s.target.x, s.target.y) < Math.abs(l1 - l2);
+    },
   },
 ];

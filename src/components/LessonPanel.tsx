@@ -1,4 +1,4 @@
-import { LessonState, LESSONS, type Lesson } from "./LessonPanel";
+import { LESSONS, type Lesson, type LessonState } from "@/lib/lessons";
 
 export function LessonPanel({
   state,
@@ -11,13 +11,13 @@ export function LessonPanel({
   onSelect: (l: Lesson) => void;
   completed: Record<string, boolean>;
 }) {
-  const active = LESSONS.find((l) => l.id === activeId) ?? LESSONS[0]!;
+  const active = LESSONS.find((l: Lesson) => l.id === activeId) ?? LESSONS[0]!;
   const passed = active.check(state);
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap gap-1.5">
-        {LESSONS.map((l) => (
+        {LESSONS.map((l: Lesson) => (
           <button
             key={l.id}
             onClick={() => onSelect(l)}
@@ -36,7 +36,7 @@ export function LessonPanel({
 
       <div className="space-y-2">
         <h4 className="text-lg font-black uppercase tracking-tight text-foreground">{active.title}</h4>
-        {active.body.map((p, i) => (
+        {active.body.map((p: string, i: number) => (
           <p key={i} className="font-mono text-[11px] leading-relaxed text-muted-foreground">
             {p}
           </p>
