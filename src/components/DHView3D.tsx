@@ -41,7 +41,10 @@ export function DHView3D({ frames, activeStep }: Props) {
     const sy = Math.sin(cam.yaw);
     const cp = Math.cos(cam.pitch);
     const sp = Math.sin(cam.pitch);
-    const scale = (Math.min(w, h) / 480) * cam.zoom;
+    
+    // Base scale adjusted by viewport size and user zoom
+    const baseScale = Math.min(w, h) / 480;
+    const scale = baseScale * cam.zoom;
 
     const j1Pos = originOf(frames[0] as Mat4);
     const ctr = { x: j1Pos.x, y: j1Pos.y, z: j1Pos.z };
@@ -65,13 +68,14 @@ export function DHView3D({ frames, activeStep }: Props) {
 
     const drawAxes = (pos: Vec3, frame: Mat4, size = 30, isBase = false) => {
       const p = project(pos);
+      const axisSize = size * baseScale;
       const xAxis = axisOf(frame, 0);
       const yAxis = axisOf(frame, 1);
       const zAxis = axisOf(frame, 2);
 
-      const px = project({ x: pos.x + xAxis.x * size, y: pos.y + xAxis.y * size, z: pos.z + xAxis.z * size });
-      const py = project({ x: pos.x + yAxis.x * size, y: pos.y + yAxis.y * size, z: pos.z + yAxis.z * size });
-      const pz = project({ x: pos.x + zAxis.x * size, y: pos.y + zAxis.y * size, z: pos.z + zAxis.z * size });
+      const px = project({ x: pos.x + xAxis.x * axisSize, y: pos.y + xAxis.y * axisSize, z: pos.z + xAxis.z * axisSize });
+      const py = project({ x: pos.x + yAxis.x * axisSize, y: pos.y + yAxis.y * axisSize, z: pos.z + yAxis.z * axisSize });
+      const pz = project({ x: pos.x + zAxis.x * axisSize, y: pos.y + zAxis.y * axisSize, z: pos.z + zAxis.z * axisSize });
 
       const drawArrow = (from: {x: number, y: number}, to: {x: number, y: number}, color: string) => {
         ctx.strokeStyle = color;
@@ -126,7 +130,7 @@ export function DHView3D({ frames, activeStep }: Props) {
       const pb = project(b);
 
       const isHighlighted = activeStep !== undefined && i < activeStep;
-      const r = 13 - i * 1.2;
+      const r = (13 - i * 1.2) * baseScale;
 
       // --- Link body: glossy orange rod with cylindrical shading ---
       const ang = Math.atan2(pb.y - pa.y, pb.x - pa.x);
@@ -245,7 +249,7 @@ export function DHView3D({ frames, activeStep }: Props) {
     const eePos = originOf(frames[frames.length - 1] as Mat4);
     const pee = project(eePos);
     ctx.beginPath();
-    ctx.arc(pee.x, pee.y, 10, 0, Math.PI * 2);
+    ctx.arc(pee.x, pee.y, 10 * baseScale, 0, Math.PI * 2);
     ctx.fillStyle = "#3498DB";
     ctx.fill();
     ctx.strokeStyle = "rgba(0,0,0,0.3)";
