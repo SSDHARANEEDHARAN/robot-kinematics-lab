@@ -15,12 +15,12 @@ type Props = {
 
 // Colors based on the uploaded reference image
 const LINK_COLORS = [
-  "#2C3E50", // J1: Dark grey/black base link
-  "#C0392B", // J2: Red rod link
-  "#2C3E50", // J3: Dark grey rod link
-  "#8E44AD", // J4: Purple (optional)
-  "#2980B9", // J5: Blue (optional)
-  "#27AE60", // J6: Green (optional)
+  "#1A2B3C", // J1: Deep Dark Blue
+  "#E74C3C", // J2: Vibrant Red
+  "#1A2B3C", // J3: Deep Dark Blue
+  "#E74C3C", // J4: Vibrant Red
+  "#1A2B3C", // J5: Deep Dark Blue
+  "#E74C3C", // J6: Vibrant Red
 ];
 
 
