@@ -173,8 +173,12 @@
   border: none;
 }
 
+@variant dark (&:is(.dark *));
+
 @utility glass-card {
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
+  @variant dark {
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
+  }
 }
 
 @utility lab-card {
@@ -186,8 +190,10 @@
 }
 
 @utility lab-card {
-  &:hover {
-    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.6);
+  @variant dark {
+    &:hover {
+      box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.6);
+    }
   }
 }
 
