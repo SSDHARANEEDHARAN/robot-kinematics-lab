@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { axisOf, originOf, type Mat4, type Vec3 } from "@/lib/kinematics";
+import { axisOf, originOf, type Mat4, type Vec3, deg2rad } from "@/lib/kinematics";
 import { GhostButton } from "./LabControls";
-
 
 type Props = { 
   frames: Mat4[];
@@ -36,15 +35,12 @@ export function DHView3D({ frames, activeStep }: Props) {
     const sp = Math.sin(cam.pitch);
     const scale = (Math.min(w, h) / 480) * cam.zoom;
 
-    const pts = frames.map(originOf);
-    const ctr = {
-      x: pts.reduce((a, b) => a + b.x, 0) / pts.length,
-      y: pts.reduce((a, b) => a + b.y, 0) / pts.length,
-      z: 0,
-    };
+    // Fixed J1 location means we don't center the whole robot, we keep J1 near bottom
+    const j1Pos = originOf(frames[0] as Mat4);
+    const ctr = { x: j1Pos.x, y: j1Pos.y, z: j1Pos.z };
 
     const project = (p0: Vec3) => {
-      const p = { x: p0.x - ctr.x, y: p0.y - ctr.y, z: p0.z };
+      const p = { x: p0.x - ctr.x, y: p0.y - ctr.y, z: p0.z - ctr.z };
       const x1 = p.x * cy - p.y * sy;
       const y1 = p.x * sy + p.y * cy;
       const z1 = p.z;
@@ -59,20 +55,45 @@ export function DHView3D({ frames, activeStep }: Props) {
       };
     };
 
+    const drawJointIndicator = (p: { x: number, y: number }, angle: number, label: string, isHighlighted: boolean) => {
+      const r = 30 * cam.zoom;
+      ctx.beginPath();
+      ctx.strokeStyle = isHighlighted ? "oklch(0.55 0.15 200)" : "oklch(0.5 0.05 250 / 0.3)";
+      ctx.setLineDash([2, 2]);
+      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Arrow showing angle
+      const rad = deg2rad(angle);
+      const ax = p.x + Math.cos(rad) * r;
+      const ay = p.y + Math.sin(rad) * r;
+      
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(ax, ay);
+      ctx.strokeStyle = isHighlighted ? "oklch(0.55 0.15 200)" : "oklch(0.5 0.05 250 / 0.5)";
+      ctx.stroke();
+
+      // Arrow head
+      ctx.save();
+      ctx.translate(ax, ay);
+      ctx.rotate(rad);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(-6, -3);
+      ctx.lineTo(-6, 3);
+      ctx.closePath();
+      ctx.fillStyle = isHighlighted ? "oklch(0.55 0.15 200)" : "oklch(0.5 0.05 250 / 0.5)";
+      ctx.fill();
+      ctx.restore();
+    };
+
     const drawCylinder = (a: Vec3, b: Vec3, radius: number, color: string) => {
       const pa = project(a);
       const pb = project(b);
       
-      // Shadow Link
-      ctx.strokeStyle = "rgba(0,0,0,0.1)";
-      ctx.lineWidth = radius * 2.5;
-      ctx.lineCap = "round";
-      ctx.beginPath();
-      ctx.moveTo(pa.x, pa.y + 4);
-      ctx.lineTo(pb.x, pb.y + 4);
-      ctx.stroke();
-
-      // Main Link
+      // Industrial link body
       ctx.strokeStyle = color;
       ctx.lineWidth = radius * 2;
       ctx.lineCap = "round";
@@ -81,106 +102,74 @@ export function DHView3D({ frames, activeStep }: Props) {
       ctx.lineTo(pb.x, pb.y);
       ctx.stroke();
 
-      // Highlight for "Realistic" look
-      ctx.strokeStyle = "rgba(255,255,255,0.2)";
-      ctx.lineWidth = radius;
+      // Metallic highlight
+      ctx.strokeStyle = "rgba(255,255,255,0.15)";
+      ctx.lineWidth = radius * 0.8;
       ctx.beginPath();
-      ctx.moveTo(pa.x - radius/4, pa.y - radius/4);
-      ctx.lineTo(pb.x - radius/4, pb.y - radius/4);
+      ctx.moveTo(pa.x - radius/3, pa.y - radius/3);
+      ctx.lineTo(pb.x - radius/3, pb.y - radius/3);
       ctx.stroke();
     };
 
-    // Realistic Floor
-    ctx.fillStyle = "var(--color-secondary)";
-    ctx.beginPath();
-    ctx.ellipse(w/2, h/2 + 180, 250 * cam.zoom, 100 * cam.zoom, 0, 0, Math.PI * 2);
-    ctx.fill();
+    // Realistic Floor/Base Grid
+    ctx.strokeStyle = "oklch(0.5 0.05 250 / 0.1)";
+    ctx.lineWidth = 1;
+    for(let i = -5; i <= 5; i++) {
+        const p1 = project({x: i*50, y: -250, z: 0});
+        const p2 = project({x: i*50, y: 250, z: 0});
+        ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+        const p3 = project({x: -250, y: i*50, z: 0});
+        const p4 = project({x: 250, y: i*50, z: 0});
+        ctx.beginPath(); ctx.moveTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y); ctx.stroke();
+    }
 
     // Links (Realistic Robot Body)
     for (let i = 0; i < frames.length - 1; i++) {
       const a = originOf(frames[i] as Mat4);
       const b = originOf(frames[i + 1] as Mat4);
       
-      const isLink1Step = activeStep !== undefined && activeStep >= 1 && activeStep <= 4;
-      const isLink2Step = activeStep !== undefined && activeStep >= 2 && activeStep <= 4;
-      const isHighlighted = (i === 0 && isLink1Step) || (i === 1 && isLink2Step);
-
+      const isHighlighted = activeStep !== undefined && i < activeStep;
       const color = isHighlighted ? "oklch(0.55 0.15 200)" : (LINK_COLORS[i % LINK_COLORS.length] || "#475569");
-      drawCylinder(a, b, (14 - i * 1.5) * (isHighlighted ? 1.3 : 1), color);
+      
+      // Realistic joint housings
+      const pa = project(a);
+      const r = (18 - i * 1.8) * (isHighlighted ? 1.1 : 1);
+      ctx.beginPath();
+      ctx.arc(pa.x, pa.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = "oklch(0.2 0.05 250)";
+      ctx.fill();
+
+      drawCylinder(a, b, (12 - i * 1.5) * (isHighlighted ? 1.2 : 1), color);
     }
 
-    // Joint Housings (Realistic motors)
+    // Annotations & Angle Arrows
     frames.forEach((f, i) => {
       const p = project(originOf(f));
+      const row = (f as any)._dhRow; // Attempt to get row for angle
+      // Use index based highlight
+      const isHighlighted = activeStep === i;
       
-      const isJoint2 = i === 1; 
-      const isJoint1 = i === 0; 
-      const isJoint2Highlighted = activeStep !== undefined && activeStep >= 2 && isJoint2;
-      const isJoint1Highlighted = activeStep !== undefined && activeStep >= 4 && isJoint1;
-      const isHighlighted = isJoint1Highlighted || isJoint2Highlighted;
+      // J1 fixed location highlight
+      if (i === 0) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = "oklch(0.55 0.15 200)";
+        ctx.fill();
+        ctx.font = "bold 10px JetBrains Mono";
+        ctx.fillText("FIXED J1 BASE", p.x + 10, p.y + 20);
+      }
 
-      const r = (18 - i * 1.8) * (isHighlighted ? 1.25 : 1);
+      // Draw angle arrow indicator
+      const angle = (f as any).theta ?? 0;
+      drawJointIndicator(p, angle, `J${i+1}`, isHighlighted);
       
-      // Housing gradient
-      const grad = ctx.createRadialGradient(p.x - r/3, p.y - r/3, 1, p.x, p.y, r);
-      grad.addColorStop(0, "oklch(0.65 0.1 200)");
-      grad.addColorStop(1, "oklch(0.8 0.05 250)");
-
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = grad;
-      ctx.fill();
-      
-      // Cap
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, r * 0.7, 0, Math.PI * 2);
-      ctx.fillStyle = i === frames.length - 1 ? "oklch(0.55 0.15 200)" : "oklch(0.85 0.05 250)";
-      ctx.fill();
-    });
-
-    // Measurement Overlays (3D)
-    frames.forEach((f, i) => {
-      const p = project(originOf(f));
-      
-      // Joint Label
-      ctx.fillStyle = "oklch(0.55 0.15 200 / 0.1)";
-      ctx.beginPath();
-      ctx.roundRect(p.x - 12, p.y - 30, 24, 14, 3);
-      ctx.fill();
-      
-      ctx.fillStyle = "oklch(0.55 0.15 200)";
+      ctx.fillStyle = isHighlighted ? "oklch(0.55 0.15 200)" : "oklch(0.5 0.05 250)";
       ctx.font = "bold 9px JetBrains Mono";
       ctx.textAlign = "center";
-      ctx.fillText(`J${i+1}`, p.x, p.y - 20);
-
-      // Link length indicator
-      if (i < frames.length - 1) {
-        const nextP = project(originOf(frames[i+1] as Mat4));
-        const midX = (p.x + nextP.x) / 2;
-        const midY = (p.y + nextP.y) / 2;
-        
-        ctx.fillStyle = "var(--color-card)";
-        ctx.beginPath();
-        ctx.arc(midX, midY, 8, 0, Math.PI * 2);
-        ctx.fill();
-        
-        ctx.fillStyle = "var(--color-foreground)";
-        ctx.globalAlpha = 0.6;
-        ctx.font = "700 8px JetBrains Mono";
-        const row = frames[i+1] ? (frames[i+1] as any)._dhRow : null; // We don't have easy access to lengths here without props
-        // Instead, just show Euclidean distance for measurement
-        const d = Math.sqrt(
-          Math.pow(originOf(frames[i+1] as Mat4).x - originOf(frames[i] as Mat4).x, 2) +
-          Math.pow(originOf(frames[i+1] as Mat4).y - originOf(frames[i] as Mat4).y, 2) +
-          Math.pow(originOf(frames[i+1] as Mat4).z - originOf(frames[i] as Mat4).z, 2)
-        );
-        ctx.fillText(Math.round(d).toString(), midX, midY + 3);
-        ctx.globalAlpha = 1.0;
-      }
+      ctx.fillText(`J${i+1}`, p.x, p.y - 45);
     });
 
-  }, [frames, cam]);
-
+  }, [frames, cam, activeStep]);
 
   return (
     <div className="relative h-full w-full">
@@ -205,7 +194,6 @@ export function DHView3D({ frames, activeStep }: Props) {
         onPointerUp={() => (drag.current = null)}
         onPointerLeave={() => (drag.current = null)}
         onWheel={(e) => {
-          // Internal scroll for zoom
           setCam((c) => ({ ...c, zoom: Math.max(0.3, Math.min(3, c.zoom - e.deltaY * 0.001)) }));
           e.preventDefault();
         }}
@@ -215,15 +203,14 @@ export function DHView3D({ frames, activeStep }: Props) {
           Reset View
         </GhostButton>
       </div>
-      <div className="absolute top-4 right-4 rounded-lg bg-card/80 p-2 text-[10px] font-bold shadow-sm backdrop-blur-sm">
-        <div className="text-muted-foreground uppercase tracking-widest mb-1">End Effector</div>
-        <div className="text-foreground">
-          X: {originOf(frames[frames.length - 1] as Mat4).x.toFixed(1)}<br/>
-          Y: {originOf(frames[frames.length - 1] as Mat4).y.toFixed(1)}<br/>
-          Z: {originOf(frames[frames.length - 1] as Mat4).z.toFixed(1)}
+      <div className="absolute top-4 right-4 rounded-xl border border-border bg-card/80 p-3 text-[10px] font-bold shadow-xl backdrop-blur-md">
+        <div className="text-primary uppercase tracking-[0.2em] mb-2 font-black">Industrial Kinematics</div>
+        <div className="text-foreground/70 space-y-1">
+          <div>X: {originOf(frames[frames.length - 1] as Mat4).x.toFixed(1)}</div>
+          <div>Y: {originOf(frames[frames.length - 1] as Mat4).y.toFixed(1)}</div>
+          <div>Z: {originOf(frames[frames.length - 1] as Mat4).z.toFixed(1)}</div>
         </div>
       </div>
     </div>
   );
 }
-

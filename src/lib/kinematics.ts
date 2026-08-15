@@ -86,8 +86,15 @@ export function dhChain(rows: DHRow[]): Mat4[] {
   const frames: Mat4[] = [identity()];
   let t = identity();
   for (const row of rows) {
-    t = mul(t, dhMatrix(row));
-    frames.push(t);
+    const m = dhMatrix(row);
+    t = mul(t, m);
+    // Attach raw row data for visualization
+    const frame = [...t] as any;
+    frame.theta = row.theta;
+    frame.d = row.d;
+    frame.a = row.a;
+    frame.alpha = row.alpha;
+    frames.push(frame);
   }
   return frames;
 }
