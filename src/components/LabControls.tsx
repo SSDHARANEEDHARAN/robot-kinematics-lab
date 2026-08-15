@@ -17,7 +17,7 @@ export function Section({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="border-b border-border last:border-b-0">
+    <div className="border-b-2 border-foreground last:border-b-0">
       <div 
         className={`flex items-center justify-between px-5 py-4 ${collapsible ? 'cursor-pointer hover:bg-muted/30' : ''}`}
         onClick={() => collapsible && setIsOpen(!isOpen)}
