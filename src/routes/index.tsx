@@ -644,7 +644,24 @@ function KinematicsLab() {
                   </>
                 ) : (
                   <>
-                    <Section title="Links">
+                    <Section title="Validation Stats" collapsible defaultOpen>
+                      <div className="grid grid-cols-2 gap-3">
+                        <Stat label="FK POS X" value={`${Math.round(ikFkConsistency?.fkPos.x ?? 0)}mm`} />
+                        <Stat label="FK POS Y" value={`${Math.round(ikFkConsistency?.fkPos.y ?? 0)}mm`} />
+                        <Stat label="POS ERROR" value={`${(ikFkConsistency?.error ?? 0).toFixed(1)}mm`} />
+                        <Stat 
+                          label="STATUS" 
+                          value={ikFkConsistency?.limitViolated ? "LIMIT!" : (ikFkConsistency?.match ? "VALID" : "DRIFT")} 
+                        />
+                      </div>
+                      {ikFkConsistency?.limitViolated && (
+                        <div className="mt-2 rounded border border-red-200 bg-red-50 p-2 text-[10px] font-bold uppercase tracking-wider text-red-600">
+                          Joint Limit Violation
+                        </div>
+                      )}
+                    </Section>
+
+                    <Section title="Links" collapsible defaultOpen={false}>
                       <SegButton
                         stacked
                         options={[
@@ -655,7 +672,7 @@ function KinematicsLab() {
                         onChange={(v) => setLinkCount(Number(v))}
                       />
                     </Section>
-                    <Section title="Link Lengths" aside="px">
+                    <Section title="Link Lengths" aside="px" collapsible defaultOpen={false}>
                       <div className="grid grid-cols-2 gap-3">
                         <NumberField label="L1" value={lengths[0] ?? 0} onChange={(v) => setLength(0, v)} />
                         <NumberField label="L2" value={lengths[1] ?? 0} onChange={(v) => setLength(1, v)} />
@@ -665,14 +682,14 @@ function KinematicsLab() {
                       </div>
                     </Section>
                     {mode === "FK" ? (
-                      <Section title="Joint Angles">
+                      <Section title="Joint Angles" collapsible>
                         <div className="space-y-2.5">
                           {Array.from({ length: linkCount }).map((_, i) => (
                             <SliderRow
                               key={i}
                               label={`theta ${i + 1}`}
-                              min={-180}
-                              max={180}
+                              min={jointLimits[i]?.min ?? -180}
+                              max={jointLimits[i]?.max ?? 180}
                               value={angles[i] ?? 0}
                               onChange={(v) => setAngle(i, v)}
                             />
@@ -680,7 +697,7 @@ function KinematicsLab() {
                         </div>
                       </Section>
                     ) : (
-                      <Section title="Target">
+                      <Section title="Target" collapsible>
                         <div className="grid grid-cols-2 gap-3">
                           <NumberField
                             label="X"
@@ -695,29 +712,8 @@ function KinematicsLab() {
                         </div>
                       </Section>
                     )}
-                    <Section title="Presets">
-                      <div className="grid grid-cols-2 gap-2">
-                        <GhostButton onClick={() => setAngles([0,0,0])}>Reset</GhostButton>
-                      </div>
-                    </Section>
-
-                    <Section title="Display Settings" collapsible>
-                      <div className="flex flex-col gap-3">
-                        <label className="flex items-center gap-2">
-                          <input type="checkbox" checked={showAxes} onChange={e => setShowAxes(e.target.checked)} />
-                          <span className="text-xs">Show Joint Axes</span>
-                        </label>
-                        <label className="flex items-center gap-2">
-                          <input type="checkbox" checked={showHeatmap} onChange={e => setShowHeatmap(e.target.checked)} />
-                          <span className="text-xs">Show Reach Heatmap</span>
-                        </label>
-                        <GhostButton onClick={() => exportPresetReport(preset, { error: ik.error, reachable: ik.reachable })}>
-                          Export PDF Report
-                        </GhostButton>
-                      </div>
-                    </Section>
-
-                    <Section title="Joint Limits" collapsible>
+                    
+                    <Section title="Joint Limits" collapsible defaultOpen={false}>
                       <div className="flex flex-col gap-4">
                         {[0, 1, 2].slice(0, linkCount).map(i => (
                           <div key={i} className="space-y-2">
@@ -734,11 +730,25 @@ function KinematicsLab() {
                               value={jointLimits[i]?.max ?? 180} 
                               onChange={v => setJointLimits(prev => prev.map((l, k) => k === i ? { ...l, max: v } : l))} 
                             />
-                            {isLimitViolated(planarAngles[i] ?? 0, jointLimits[i]!) && (
-                              <div className="text-[9px] font-bold text-destructive animate-pulse uppercase">Limit Violated!</div>
-                            )}
                           </div>
                         ))}
+                      </div>
+                    </Section>
+
+                    <Section title="Environment" collapsible defaultOpen={false}>
+                      <div className="flex flex-col gap-3">
+                        <label className="flex items-center gap-2">
+                          <input type="checkbox" checked={showAxes} onChange={e => setShowAxes(e.target.checked)} />
+                          <span className="text-xs">Show Joint Axes</span>
+                        </label>
+                        <label className="flex items-center gap-2">
+                          <input type="checkbox" checked={showHeatmap} onChange={e => setShowHeatmap(e.target.checked)} />
+                          <span className="text-xs">Show Heatmap</span>
+                        </label>
+                        <GhostButton onClick={() => setAngles([0,0,0])}>Reset Pose</GhostButton>
+                        <GhostButton onClick={() => exportPresetReport(preset, ikFkConsistency)}>
+                          Export PDF
+                        </GhostButton>
                       </div>
                     </Section>
 
