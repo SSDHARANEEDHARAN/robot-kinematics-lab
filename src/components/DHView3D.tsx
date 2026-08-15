@@ -143,7 +143,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       const ny = Math.sin(ang + Math.PI / 2);
       const lw = r * 2.0;
       
-      const linkColor = LINK_COLORS[i % LINK_COLORS.length];
+      const linkColor = LINK_COLORS[i % LINK_COLORS.length] || "#7F8C8D";
 
       ctx.save();
       // Material shading
