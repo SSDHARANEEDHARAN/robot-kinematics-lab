@@ -88,7 +88,7 @@ export function DHView3D({ frames }: Props) {
     };
 
     // Realistic Floor
-    ctx.fillStyle = "#f1f5f9";
+    ctx.fillStyle = "var(--color-secondary)";
     ctx.beginPath();
     ctx.ellipse(w/2, h/2 + 180, 250 * cam.zoom, 100 * cam.zoom, 0, 0, Math.PI * 2);
     ctx.fill();
