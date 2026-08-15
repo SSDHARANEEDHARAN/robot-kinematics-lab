@@ -836,7 +836,7 @@ function KinematicsLab() {
 
         {/* ---------- Right: readouts + tools ---------- */}
         <aside className="flex h-full flex-col gap-4 overflow-hidden">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 divide-y-0">
             <Stat label="End X" value={(mode === "DH" ? dhEnd.x : end.x).toFixed(1)} />
             <Stat label="End Y" value={(mode === "DH" ? dhEnd.y : end.y).toFixed(1)} />
             {mode === "DH" && <Stat label="End Z" value={dhEnd.z.toFixed(1)} />}
