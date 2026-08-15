@@ -54,7 +54,7 @@ export function SegButton({
 }) {
   return (
     <div
-      className={`gap-1 rounded-lg bg-secondary p-1 ${stacked ? "grid grid-cols-1" : "grid grid-flow-col auto-cols-fr"}`}
+      className={`gap-1 rounded-none border-2 border-foreground bg-background p-1 ${stacked ? "grid grid-cols-1" : "grid grid-flow-col auto-cols-fr"}`}
     >
       {options.map((o) => (
         <button
