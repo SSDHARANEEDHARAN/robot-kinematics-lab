@@ -38,7 +38,10 @@ import {
   uid,
   type Preset,
   type Waypoint,
+  exportPresetReport,
 } from "@/lib/lab";
+import { generateReachabilityHeatmap, type JointLimits, isLimitViolated } from "@/lib/kinematics";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -192,10 +195,29 @@ function KinematicsLab() {
   };
 
   /* ---------- kinematics ---------- */
-  const ik = useMemo(
-    () => ik2d(activeLengths, target, elbowUp, angles[2] ?? 0),
-    [activeLengths.join(), target.x, target.y, elbowUp, angles[2]],
-  );
+  const ik = useMemo(() => {
+    const res = ik2d(activeLengths, target, elbowUp, angles[2] ?? 0);
+    // Apply joint limits to IK result
+    const limitedAngles = res.angles.map((a, i) => {
+      const limit = jointLimits[i];
+      if (!limit) return a;
+      return Math.min(limit.max, Math.max(limit.min, a));
+    });
+    
+    // Check if limits were violated
+    const violates = res.angles.some((a, i) => {
+      const limit = jointLimits[i];
+      return limit ? isLimitViolated(a, limit) : false;
+    });
+
+    return { 
+      ...res, 
+      angles: limitedAngles, 
+      limitViolation: violates,
+      originalAngles: res.angles 
+    };
+  }, [activeLengths.join(), target.x, target.y, elbowUp, angles[2], jointLimits]);
+
   const ikGhost = useMemo(
     () => ik2d(activeLengths, target, !elbowUp, angles[2] ?? 0),
     [activeLengths.join(), target.x, target.y, elbowUp, angles[2]],
@@ -222,10 +244,22 @@ function KinematicsLab() {
   const manipulability = Math.abs(det2x2(jacobian));
   const isSingular = manipulability < 5000;
 
-  const workspace = useMemo(
-    () => (showWorkspace ? workspaceSweep(activeLengths) : []),
-    [activeLengths.join(), showWorkspace],
+  const heatmap = useMemo(
+    () => (showHeatmap ? generateReachabilityHeatmap(activeLengths, 15) : []),
+    [activeLengths.join(), showHeatmap],
   );
+
+  const ikFkConsistency = useMemo(() => {
+    if (mode === "DH") return null;
+    const fkPos = points[points.length - 1] ?? { x: 0, y: 0 };
+    const dist = Math.hypot(fkPos.x - target.x, fkPos.y - target.y);
+    return {
+      match: dist < 1.0,
+      error: dist,
+      fkPos
+    };
+  }, [points, target, mode]);
+
 
   const velocity = useMemo(() => {
     if (!showVelocity || mode === "DH") return undefined;
