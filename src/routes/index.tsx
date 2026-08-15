@@ -832,7 +832,80 @@ function KinematicsLab() {
 
           <div className="lab-card flex flex-1 flex-col overflow-hidden">
             <div className="flex-1 overflow-y-auto scrollbar-hide">
-              <Section title="Math Formulas" collapsible>
+              {/* Validation & Settings Panel */}
+              <Section title="Validation & Settings" collapsible defaultOpen>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <Stat label="FK POS X" value={`${Math.round(ikFkConsistency?.fkPos.x ?? 0)}mm`} />
+                    <Stat label="FK POS Y" value={`${Math.round(ikFkConsistency?.fkPos.y ?? 0)}mm`} />
+                    <Stat label="POS ERROR" value={`${(ikFkConsistency?.error ?? 0).toFixed(1)}mm`} />
+                    <Stat 
+                      label="STATUS" 
+                      value={ikFkConsistency?.limitViolated ? "LIMIT!" : (ikFkConsistency?.match ? "VALID" : "DRIFT")} 
+                    />
+                  </div>
+                  {ikFkConsistency?.limitViolated && (
+                    <div className="rounded border border-red-200 bg-red-50 p-2 text-[10px] font-bold uppercase tracking-wider text-red-600">
+                      Joint Limit Violation Detected
+                    </div>
+                  )}
+
+                  <div className="space-y-4 border-t border-border pt-4">
+                    <SliderRow
+                      label="Links"
+                      min={1}
+                      max={3}
+                      value={linkCount}
+                      onChange={(v) => {
+                        setLinkCount(v);
+                        if (v > lengths.length) setLengths([...lengths, 80]);
+                      }}
+                    />
+                    {activeLengths.map((l, i) => (
+                      <SliderRow
+                        key={i}
+                        label={`L${i + 1} (mm)`}
+                        min={20}
+                        max={200}
+                        value={l}
+                        onChange={(v) => setLength(i, v)}
+                      />
+                    ))}
+                    {mode === "FK" &&
+                      activeLengths.map((_, i) => (
+                        <SliderRow
+                          key={i}
+                          label={`J${i + 1} (°)`}
+                          min={jointLimits[i]?.min ?? -180}
+                          max={jointLimits[i]?.max ?? 180}
+                          value={angles[i] ?? 0}
+                          onChange={(v) => setAngle(i, v)}
+                        />
+                      ))}
+                    
+                    {/* Joint Limits Config */}
+                    <div className="space-y-3">
+                      <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Limit Configuration</h4>
+                      {activeLengths.map((_, i) => (
+                        <div key={i} className="grid grid-cols-2 gap-2">
+                          <NumberField 
+                            label={`J${i+1} Min`} 
+                            value={jointLimits[i]?.min ?? -180} 
+                            onChange={(v) => setJointLimits(l => l.map((lim, k) => k === i ? {...lim, min: v} : lim))} 
+                          />
+                          <NumberField 
+                            label={`J${i+1} Max`} 
+                            value={jointLimits[i]?.max ?? 180} 
+                            onChange={(v) => setJointLimits(l => l.map((lim, k) => k === i ? {...lim, max: v} : lim))} 
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </Section>
+
+              <Section title="Math Formulas" collapsible defaultOpen={false}>
                 <div className="space-y-3">
                    {mode === "FK" && <FKFormula lengths={activeLengths} angles={planarAngles} unit={unit} end={end} />}
                    {mode === "IK" && <IKFormula lengths={activeLengths} target={target} angles={ik.angles} unit={unit} reachable={ik.reachable} />}
