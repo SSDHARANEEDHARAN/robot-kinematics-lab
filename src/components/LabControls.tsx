@@ -150,9 +150,9 @@ export function GhostButton({ children, onClick }: { children: ReactNode; onClic
 
 export function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="lab-card px-4 py-3 border-l-4 border-l-yellow-400">
+    <div className="lab-card px-4 py-3 border-l-8 border-l-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
       <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">{label}</div>
-      <div className="mt-1 text-2xl font-black tabular-nums tracking-tight text-primary drop-shadow-none">{value}</div>
+      <div className="mt-1 text-2xl font-black tabular-nums tracking-tight text-foreground drop-shadow-none">{value}</div>
     </div>
   );
 }
