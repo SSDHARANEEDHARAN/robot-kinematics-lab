@@ -915,6 +915,77 @@ function KinematicsLab() {
                   </Card>
                 </div>
               )}
+
+              {tab === "industrial" && (
+                <div className="space-y-4">
+                  <h3 className="text-base font-extrabold text-foreground">Industrial Scenarios</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Apply your kinematics knowledge to real-world industrial tasks.
+                  </p>
+                  <div className="grid grid-cols-1 gap-3">
+                    <button
+                      className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:bg-secondary/50"
+                      onClick={() => {
+                        setMode("IK");
+                        setWaypoints([
+                          { id: "p1", x: 100, y: 50, angles: [0, 0], move: "MOVJ", spd: 50 },
+                          { id: "p2", x: 150, y: 50, angles: [0, 0], move: "MOVL", spd: 50 },
+                          { id: "p3", x: 150, y: 0, angles: [0, 0], move: "MOVL", spd: 50 },
+                          { id: "p4", x: 100, y: 0, angles: [0, 0], move: "MOVL", spd: 50 },
+                        ]);
+                        setTab("teach");
+                      }}
+                    >
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-link-1/10 text-link-1">
+                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="text-sm font-bold">Palletizing Cycle</div>
+                        <div className="text-[10px] text-muted-foreground">
+                          Box pick & place simulation using MOVL
+                        </div>
+                      </div>
+                    </button>
+
+                    <button
+                      className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:bg-secondary/50"
+                      onClick={() => {
+                        setMode("IK");
+                        setWaypoints([
+                          { id: "w1", x: 80, y: 40, angles: [0, 0], move: "MOVJ", spd: 30 },
+                          { id: "w2", x: 120, y: 60, angles: [0, 0], move: "MOVL", spd: 20 },
+                          { id: "w3", x: 160, y: 40, angles: [0, 0], move: "MOVL", spd: 20 },
+                        ]);
+                        setTab("teach");
+                      }}
+                    >
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-link-2/10 text-link-2">
+                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13 10V3L4 14h7v7l9-11h-7z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="text-sm font-bold">Arc Welding</div>
+                        <div className="text-[10px] text-muted-foreground">
+                          Continuous path tracking with precision speed
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
