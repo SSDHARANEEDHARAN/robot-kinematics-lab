@@ -198,7 +198,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       ctx.stroke();
 
       // Accented core
-      ctx.fillStyle = linkColor;
+      ctx.fillStyle = linkColor || "#3b82f6";
       ctx.fillRect(-hw * 0.2, -hr * 0.7, hw * 0.4, hr * 1.4);
       
       ctx.restore();
