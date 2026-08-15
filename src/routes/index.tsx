@@ -399,7 +399,7 @@ function KinematicsLab() {
           />
           <button
             onClick={share}
-            className="rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground"
+            className="rounded-lg bg-primary px-4 py-2 text-xs font-black uppercase tracking-widest text-primary-foreground shadow-[0_0_20px_oklch(0.75_0.22_190_/_0.4)] transition-all hover:scale-105 active:scale-95"
           >
             {shareMsg || "Share preset"}
           </button>
@@ -416,7 +416,7 @@ function KinematicsLab() {
         {/* ---------- Left: popups ---------- */}
         <aside className="space-y-3">
           <div className="group relative">
-            <button className="flex w-full items-center justify-between rounded-xl border border-border bg-card px-4 py-3 text-sm font-bold transition-all hover:border-brand hover:text-brand">
+            <button className="flex w-full items-center justify-between rounded-xl border border-border bg-card/50 px-4 py-3 text-xs font-black uppercase tracking-widest transition-all hover:border-primary hover:text-primary hover:shadow-[0_0_15px_oklch(0.75_0.22_190_/_0.2)]">
               <span>Robot Settings</span>
               <span className="text-xs opacity-50">▼</span>
             </button>
