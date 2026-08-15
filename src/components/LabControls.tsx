@@ -161,13 +161,13 @@ export function Stat({ label, value }: { label: string; value: string }) {
 
 export function Card({ title, children }: { title?: string; children: ReactNode }) {
   return (
-    <div className="lab-card group/card">
+    <div className="lab-card group/card bg-white shadow-xl">
       {title && (
-        <div className="bg-secondary/30 px-5 py-3 backdrop-blur-sm">
-          <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/70">{title}</h3>
+        <div className="bg-secondary/10 px-6 py-4 backdrop-blur-sm border-b border-border/50">
+          <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-foreground/80">{title}</h3>
         </div>
       )}
-      <div className="p-5">{children}</div>
+      <div className="p-6">{children}</div>
     </div>
   );
 }
