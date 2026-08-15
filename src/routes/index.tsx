@@ -584,12 +584,13 @@ function KinematicsLab() {
             </div>
             <div className="mt-0 flex-1 overflow-y-auto rounded-b-xl border border-t-0 border-border/50 bg-card/50 backdrop-blur-xl shadow-xl scrollbar-hide">
               <div className="border-none shadow-none divide-y border-border/10">
-                <Section title="Mode">
+                <Section title="Robot Operation Mode">
                   <SegButton
+                    stacked
                     options={[
-                      { value: "IK", label: "IK" },
-                      { value: "FK", label: "FK" },
-                      { value: "DH", label: "DH" },
+                      { value: "IK", label: "Inverse Kinematics (IK)" },
+                      { value: "FK", label: "Forward Kinematics (FK)" },
+                      { value: "DH", label: "DH Parameters (DH)" },
                     ]}
                     value={mode}
                     onChange={(v) => setMode(v as Mode)}
