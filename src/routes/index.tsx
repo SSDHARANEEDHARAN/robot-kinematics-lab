@@ -656,8 +656,28 @@ function KinematicsLab() {
                 activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
               />
 
-              
-            </div>
+              {mode === "IK" && !pathMode && !playing && (
+                <div className="absolute inset-0 pointer-events-none">
+                  <ArmView2D
+                    points={points}
+                    lengths={activeLengths}
+                    showZone={showZone}
+                    target={target}
+                    onTargetChange={setTarget}
+                    ghostPoints={showGhost ? ghostPoints : undefined}
+                    trace={showTrace ? trace : undefined}
+                    path={waypoints.map((w) => w.target)}
+                    workspace={workspace}
+                    velocity={velocity}
+                    unit={unit}
+                    activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
+                    limits={[{ min: -150, max: 150 }, { min: -150, max: 150 }, { min: -180, max: 180 }]}
+                    angles={planarAngles}
+                    interactive={true}
+                  />
+                </div>
+              )}
+
 
           </div>
         </section>

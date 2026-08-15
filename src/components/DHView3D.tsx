@@ -3,11 +3,11 @@ import { axisOf, originOf, type Mat4, type Vec3, deg2rad, type Vec2, fk2d } from
 import { GhostButton } from "./LabControls";
 
 type Props = { 
-  frames?: Mat4[];
-  activeStep?: number;
+  frames?: Mat4[] | undefined;
+  activeStep?: number | undefined;
   // Planar support
   mode?: string;
-  planarPoints?: Vec2[];
+  planarPoints?: Vec2[] | undefined;
   linkCount?: number;
 };
 
