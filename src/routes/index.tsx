@@ -390,12 +390,6 @@ function KinematicsLab() {
             value={unit}
             onChange={(v) => setUnit(v as "deg" | "rad")}
           />
-          <button
-            onClick={share}
-            className="rounded-lg bg-primary px-4 py-2 text-xs font-black uppercase tracking-widest text-primary-foreground shadow-sm transition-all hover:scale-105 active:scale-95"
-          >
-            {shareMsg || "Share preset"}
-          </button>
           <div className="lab-card flex items-center gap-2 px-4 py-3">
             <span className="h-2.5 w-2.5 rounded-full bg-link-3" />
             <span className="text-sm font-semibold text-foreground">
