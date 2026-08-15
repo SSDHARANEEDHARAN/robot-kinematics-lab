@@ -154,7 +154,7 @@ export function ArmView2D({
           );
         })}
 
-        {/* joints */}
+        {/* joints & angle arrows */}
         {points.map((p, i) => {
           const isJoint2 = i === 1; 
           const isJoint1 = i === 0; 
@@ -162,15 +162,49 @@ export function ArmView2D({
           const isJoint1Highlighted = activeStep !== undefined && activeStep >= 4 && isJoint1;
           const isHighlighted = isJoint1Highlighted || isJoint2Highlighted;
 
+          // Calculate angle for arrow (relative to previous link or world for J1)
+          let angle = 0;
+          if (i === 0) {
+            angle = 0; // World reference
+          } else {
+            // Simple visual approximation of the joint's current rotation for the arrow
+            const q = points[i];
+            const prev = points[i-1];
+            if (q && prev) {
+               angle = Math.atan2(q.y - prev.y, q.x - prev.x);
+            }
+          }
+
+          const arrowLen = 25;
+          const arrowX = p.x + Math.cos(angle) * arrowLen;
+          const arrowY = p.y + Math.sin(angle) * arrowLen;
+
           return (
-            <circle
-              key={i}
-              cx={r1(p.x)}
-              cy={r1(p.y)}
-              r={isHighlighted ? 10 : (i === 0 ? 8 : 7)}
-              className={isHighlighted ? "fill-primary stroke-primary" : (i === 0 ? "fill-primary stroke-primary" : "fill-card stroke-primary")}
-              strokeWidth={2.5}
-            />
+            <g key={i}>
+              {/* Angle Indicator Arrow */}
+              <line 
+                x1={p.x} y1={p.y} x2={arrowX} y2={arrowY}
+                className={isHighlighted ? "stroke-primary" : "stroke-muted-foreground/30"}
+                strokeWidth={2}
+                strokeDasharray="2 2"
+              />
+              <path 
+                d={`M ${arrowX} ${arrowY} l -5 -2 l 0 4 z`}
+                transform={`rotate(${(angle * 180) / Math.PI}, ${arrowX}, ${arrowY})`}
+                className={isHighlighted ? "fill-primary" : "fill-muted-foreground/30"}
+              />
+
+              <circle
+                cx={r1(p.x)}
+                cy={r1(p.y)}
+                r={isHighlighted ? 10 : (i === 0 ? 8 : 7)}
+                className={isHighlighted ? "fill-primary stroke-primary" : (i === 0 ? "fill-primary stroke-primary" : "fill-card stroke-primary")}
+                strokeWidth={2.5}
+              />
+              {i === 0 && (
+                <text x={p.x + 15} y={p.y - 15} className="fill-primary text-[8px] font-black uppercase tracking-tighter" transform="scale(1,-1)">FIXED J1</text>
+              )}
+            </g>
           );
         })}
 
