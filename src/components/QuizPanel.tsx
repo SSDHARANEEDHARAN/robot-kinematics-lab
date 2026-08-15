@@ -99,10 +99,11 @@ export function QuizPanel({
           </button>
         )}
         {result && (
-          <div className="rounded-lg border border-border p-2 font-mono text-xs">
-            <div>error: {result.error.toFixed(2)} px</div>
-            <div>time: {result.secs.toFixed(1)} s</div>
-            <div className="font-bold text-primary">score: {result.score}/100</div>
+          <div className="border-2 border-foreground p-3 font-mono text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+            <div className="mb-1 uppercase font-black tracking-widest opacity-50 text-[9px]">Last Result</div>
+            <div>Error: {result.error.toFixed(2)} px</div>
+            <div>Time: {result.secs.toFixed(1)} s</div>
+            <div className="mt-2 text-lg font-black text-foreground">Score: {result.score}/100</div>
           </div>
         )}
         {history.length > 0 && (
