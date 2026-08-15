@@ -128,7 +128,7 @@ export function DHView3D({ frames }: Props) {
       const p = project(originOf(f));
       
       // Joint Label
-      ctx.fillStyle = "oklch(0.75 0.22 190 / 0.1)";
+      ctx.fillStyle = "oklch(0.55 0.15 200 / 0.1)";
       ctx.beginPath();
       ctx.roundRect(p.x - 12, p.y - 30, 24, 14, 3);
       ctx.fill();
