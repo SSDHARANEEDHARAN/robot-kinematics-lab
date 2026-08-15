@@ -149,7 +149,8 @@ export function DHView3D({ frames }: Props) {
         ctx.arc(midX, midY, 8, 0, Math.PI * 2);
         ctx.fill();
         
-        ctx.fillStyle = "#475569";
+        ctx.fillStyle = "var(--color-foreground)";
+        ctx.globalAlpha = 0.6;
         ctx.font = "700 8px JetBrains Mono";
         const row = frames[i+1] ? (frames[i+1] as any)._dhRow : null; // We don't have easy access to lengths here without props
         // Instead, just show Euclidean distance for measurement
@@ -159,6 +160,7 @@ export function DHView3D({ frames }: Props) {
           Math.pow(originOf(frames[i+1] as Mat4).z - originOf(frames[i] as Mat4).z, 2)
         );
         ctx.fillText(Math.round(d).toString(), midX, midY + 3);
+        ctx.globalAlpha = 1.0;
       }
     });
 
