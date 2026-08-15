@@ -784,7 +784,7 @@ function KinematicsLab() {
         </aside>
 
         {/* ---------- Center: viewport ---------- */}
-        <section className="lab-card flex h-full flex-col overflow-hidden border-t-4 border-t-yellow-400 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)]">
+        <section className="lab-card flex h-full flex-col overflow-hidden border-2 border-slate-900 border-t-8 border-t-yellow-400 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <div className="flex flex-wrap items-start justify-between gap-4 px-5 py-5 bg-slate-50/50 border-b-2 border-slate-900/10">
             <div>
               <h2 className="text-lg font-extrabold tracking-tight text-foreground">
