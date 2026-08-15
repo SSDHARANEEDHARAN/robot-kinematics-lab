@@ -608,7 +608,7 @@ function KinematicsLab() {
             <Stat label="Error" value={(mode === "IK" ? ik.error : 0).toFixed(1)} />
           </div>
 
-          <div className="lab-card overflow-hidden">
+          <div className="lab-card flex flex-col h-[600px] overflow-hidden">
             <div className="border-b border-border px-3 py-3">
               <SegButton
                 options={TABS.map((t) => ({ value: t.value, label: t.label }))}
@@ -616,7 +616,7 @@ function KinematicsLab() {
                 onChange={(v) => setTab(v as Tab)}
               />
             </div>
-            <div className="px-4 py-4 max-h-[600px] overflow-y-auto scrollbar-hide">
+            <div className="flex-1 overflow-y-auto px-4 py-4 scrollbar-hide">
               {tab === "math" && (
                 <div className="space-y-3">
                    {mode === "FK" && <FKFormula lengths={activeLengths} angles={planarAngles} unit={unit} end={end} />}
@@ -644,9 +644,9 @@ function KinematicsLab() {
               )}
               {tab === "quiz" && <QuizPanel lengths={activeLengths} angles={planarAngles} onSetTarget={(t) => { setMode("IK"); setTarget(t); }} />}
               {tab === "lessons" && <LessonPanel state={lessonState} activeId={lessonId} onSelect={selectLesson} completed={completed} />}
-              {tab === "ai" && <div className="h-[400px]"><AIPanel state={{ mode, target, lengths: activeLengths, angles: planarAngles, reachable: ik.reachable, ikError: ik.error }} /></div>}
+              {tab === "ai" && <AIPanel state={{ mode, target, lengths: activeLengths, angles: planarAngles, reachable: ik.reachable, ikError: ik.error }} />}
               {tab === "walkthrough" && (
-                <div className="h-[500px]">
+                <div className="h-full">
                   {mode === "IK" ? (
                     <IKWalkthrough 
                       target={target} 
@@ -663,6 +663,8 @@ function KinematicsLab() {
                   )}
                 </div>
               )}
+            </div>
+          </div>
               {tab === "progress" && (
                 <div className="space-y-4">
                   <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Robotics Mastery</h4>
