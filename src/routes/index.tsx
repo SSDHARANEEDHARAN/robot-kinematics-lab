@@ -832,6 +832,7 @@ function KinematicsLab() {
             </div>
           </div>
         </section>
+      </div>
 
 
         {/* ---------- Right: readouts + tools ---------- */}
