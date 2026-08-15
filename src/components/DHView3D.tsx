@@ -24,6 +24,7 @@ const LINK_COLORS = [
 export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = [], linkCount = 2 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [cam, setCam] = useState({ yaw: -0.9, pitch: 0.5, zoom: 1.2 });
+  const [baseScale, setBaseScale] = useState(1);
   const drag = useRef<{ x: number; y: number } | null>(null);
 
   // Convert 2D points to 3D frames for consistent rendering if in IK/FK mode
@@ -31,10 +32,12 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
     if (mode === "DH") return frames;
     
     // Create Mat4 frames from 2D points
+    // In planar mode, J1 is at (0,0), J2 is at planarPoints[1], etc.
+    // We treat 2D (x,y) as 3D (x,z) to make the robot stand up
     return planarPoints.map((p, i) => {
-      const m = [1, 0, 0, p.x, 0, 1, 0, p.y, 0, 0, 1, 0, 0, 0, 0, 1];
-      // Tag with some DH-like properties for the axis renderer
-      return m;
+      // Rotation matrix for planar arm standing on XZ plane
+      // Identity for now as we're just mapping coordinates
+      return [1, 0, 0, p.x, 0, 1, 0, 0, 0, 0, 1, p.y, 0, 0, 0, 1];
     });
   }, [mode, frames, planarPoints]);
 
@@ -59,8 +62,9 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
     const sp = Math.sin(cam.pitch);
     
     // Base scale adjusted by viewport size and user zoom
-    const baseScale = Math.min(w, h) / 480;
-    const scale = baseScale * cam.zoom;
+    const currentBaseScale = Math.min(w, h) / 480;
+    setBaseScale(currentBaseScale);
+    const scale = currentBaseScale * cam.zoom;
 
     const j1Pos = effectiveFrames.length > 0 ? originOf(effectiveFrames[0] as Mat4) : { x: 0, y: 0, z: 0 };
     const ctr = { x: j1Pos.x, y: j1Pos.y, z: j1Pos.z };
