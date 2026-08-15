@@ -794,7 +794,7 @@ function KinematicsLab() {
           <div className="relative flex-1 overflow-hidden border-t border-border bg-panel">
              {/* Realistic fixed simulation area */}
             <div className="relative h-full w-full">
-              {(mode as string === "DH" || (mode as string !== "DH" && linkCount > 3)) ? (
+              {mode === "DH" ? (
                 <DHView3D 
                   mode={mode}
                   frames={mode === "DH" ? frames : undefined}
