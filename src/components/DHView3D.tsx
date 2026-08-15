@@ -170,34 +170,51 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       const isHighlighted = activeStep !== undefined && i < activeStep;
       const r = (13 - i * 1.2) * currentBaseScale;
 
-      // --- Link body: glossy orange rod with cylindrical shading ---
+      // --- Link body: realistic cylinders based on reference image ---
       const ang = Math.atan2(pb.y - pa.y, pb.x - pa.x);
       const nx = Math.cos(ang + Math.PI / 2);
       const ny = Math.sin(ang + Math.PI / 2);
-      const lw = r * 2;
-      const grad = ctx.createLinearGradient(
-        pa.x + nx * lw * 0.5, pa.y + ny * lw * 0.5,
-        pa.x - nx * lw * 0.5, pa.y - ny * lw * 0.5,
-      );
-      grad.addColorStop(0, "#8a3505");
-      grad.addColorStop(0.28, "#e4620d");
-      grad.addColorStop(0.48, "#ff9a3c");
-      grad.addColorStop(0.62, "#ffd7ac");
-      grad.addColorStop(0.85, "#e0650f");
-      grad.addColorStop(1, "#a03e06");
+      const lw = r * 2.2;
+      
+      // Determine color based on link index to match reference
+      // J1: Black/Dark Grey, J2: Red, etc.
+      const linkColor = LINK_COLORS[i] || "#7F8C8D";
 
       ctx.save();
-      ctx.shadowColor = "rgba(0,0,0,0.28)";
-      ctx.shadowBlur = 12;
-      ctx.shadowOffsetY = 5;
-      ctx.strokeStyle = grad;
+      // Drop shadow for 3D depth
+      ctx.shadowColor = "rgba(0,0,0,0.35)";
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetY = 6;
+      
+      // Basic cylinder body
+      ctx.fillStyle = linkColor;
+      
+      // Simple cylindrical shading (darker on bottom)
+      const cylinderGrad = ctx.createLinearGradient(
+        pa.x + nx * lw * 0.5, pa.y + ny * lw * 0.5,
+        pa.x - nx * lw * 0.5, pa.y - ny * lw * 0.5
+      );
+      cylinderGrad.addColorStop(0, linkColor);
+      cylinderGrad.addColorStop(0.5, linkColor);
+      cylinderGrad.addColorStop(1, "rgba(0,0,0,0.3)"); // Darken bottom side
+      
+      ctx.strokeStyle = cylinderGrad;
       ctx.lineWidth = lw;
-      ctx.lineCap = "butt";
+      ctx.lineCap = "round";
       ctx.beginPath();
       ctx.moveTo(pa.x, pa.y);
       ctx.lineTo(pb.x, pb.y);
       ctx.stroke();
+      
+      // Top specular highlight (white streak)
+      ctx.strokeStyle = "rgba(255,255,255,0.2)";
+      ctx.lineWidth = lw * 0.2;
+      ctx.beginPath();
+      ctx.moveTo(pa.x + nx * lw * 0.2, pa.y + ny * lw * 0.2);
+      ctx.lineTo(pb.x + nx * lw * 0.2, pb.y + ny * lw * 0.2);
+      ctx.stroke();
       ctx.restore();
+
 
       // specular streak along the rod
       ctx.save();
