@@ -240,7 +240,7 @@ export function ArmView2D({
 
         <circle cx={r1(end.x)} cy={r1(end.y)} r={6} className="fill-primary" />
         <g transform={`translate(${r1(end.x) + 12}, ${r1(end.y) + 12}) scale(1,-1)`}>
-          <rect x={-5} y={-24} width={85} height={32} rx={6} className="fill-primary shadow-[0_0_15px_oklch(0.75_0.22_190_/_0.4)]" />
+          <rect x={-5} y={-24} width={85} height={32} rx={6} className="fill-primary" />
           <text x={4} y={-8} fontSize={9} fontWeight={900} className="fill-primary-foreground">
             EE: {Math.round(end.x)}, {Math.round(end.y)}
           </text>
