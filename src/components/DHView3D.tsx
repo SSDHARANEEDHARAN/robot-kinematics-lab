@@ -161,13 +161,12 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
         pa.x + nx * lw, pa.y + ny * lw,
         pa.x - nx * lw, pa.y - ny * lw
       );
-      grad.addColorStop(0, "white");
-      grad.addColorStop(0.3, linkColor);
-      grad.addColorStop(0.7, linkColor);
-      grad.addColorStop(1, "black");
+      grad.addColorStop(0, "rgba(255,255,255,0.3)");
+      grad.addColorStop(0.5, linkColor);
+      grad.addColorStop(1, "rgba(0,0,0,0.2)");
       
       ctx.strokeStyle = grad;
-      ctx.lineWidth = lw;
+      ctx.lineWidth = lw * 0.8;
       ctx.lineCap = "round";
       ctx.beginPath();
       ctx.moveTo(pa.x, pa.y);
@@ -175,11 +174,11 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       ctx.stroke();
       
       // Glossy highlight
-      ctx.strokeStyle = "rgba(255,255,255,0.2)";
-      ctx.lineWidth = lw * 0.2;
+      ctx.strokeStyle = "rgba(255,255,255,0.4)";
+      ctx.lineWidth = lw * 0.15;
       ctx.beginPath();
-      ctx.moveTo(pa.x + nx * lw * 0.3, pa.y + ny * lw * 0.3);
-      ctx.lineTo(pb.x + nx * lw * 0.3, pb.y + ny * lw * 0.3);
+      ctx.moveTo(pa.x + nx * lw * 0.25, pa.y + ny * lw * 0.25);
+      ctx.lineTo(pb.x + nx * lw * 0.25, pb.y + ny * lw * 0.25);
       ctx.stroke();
       ctx.restore();
 
