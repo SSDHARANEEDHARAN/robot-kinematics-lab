@@ -120,26 +120,31 @@
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
   }
-}
 
-@layer base {
   html {
     font-family: var(--font-sans);
   }
 }
 
-@utility lab-card {
+@utility glass-card {
   background-color: var(--color-card);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-2xl);
-  box-shadow: 0 1px 3px oklch(0.12 0.01 240 / 0.02), 0 12px 32px oklch(0.12 0.01 240 / 0.04);
-  transition: all 0.2s ease;
+  backdrop-filter: blur(24px);
+  box-shadow: 
+    0 4px 24px -1px oklch(0 0 0 / 0.2),
+    inset 0 0 0 1px oklch(1 0 0 / 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@utility lab-card {
+  @apply glass-card;
 }
 
 @utility lab-label {
-  font-size: 0.875rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-muted-foreground);
 }
@@ -156,41 +161,46 @@
   outline: none;
   transition: all 0.2s ease;
 }
+
 .lab-input:focus {
   border-color: var(--color-primary);
-  background-color: var(--color-card);
-  box-shadow: 0 0 0 4px oklch(0.52 0.16 260 / 0.08);
+  background-color: var(--color-muted);
+  box-shadow: 0 0 0 4px oklch(0.75 0.22 190 / 0.15);
 }
 
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
-  height: 4px;
+  height: 6px;
   border-radius: 999px;
   background: var(--color-secondary);
   outline: none;
 }
+
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 999px;
   background: var(--color-primary);
-  border: 3px solid var(--color-card);
-  box-shadow: 0 2px 4px oklch(0 0 0 / 0.1);
+  border: 4px solid oklch(0.18 0.03 250);
+  box-shadow: 0 0 15px oklch(0.75 0.22 190 / 0.5);
   cursor: pointer;
-  transition: transform 0.1s ease;
+  transition: all 0.2s ease;
 }
+
 input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.1);
+  transform: scale(1.2);
+  box-shadow: 0 0 20px oklch(0.75 0.22 190 / 0.8);
 }
+
 input[type="range"]::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  border: 3px solid var(--color-card);
+  width: 20px;
+  height: 20px;
+  border: 4px solid oklch(0.18 0.03 250);
   border-radius: 999px;
   background: var(--color-primary);
-  box-shadow: 0 2px 4px oklch(0 0 0 / 0.1);
+  box-shadow: 0 0 15px oklch(0.75 0.22 190 / 0.5);
   cursor: pointer;
 }
