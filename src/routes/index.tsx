@@ -568,10 +568,10 @@ function KinematicsLab() {
         {/* ---------- Left: popups ---------- */}
         <aside className="flex flex-col gap-3 overflow-hidden h-[500px] xl:h-full order-2 xl:order-1">
           <div className="flex flex-1 flex-col overflow-hidden">
-            <div className="w-full rounded-t-xl border-2 border-foreground bg-foreground px-4 py-3 text-xs font-black uppercase tracking-widest text-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+            <div className="w-full border-2 border-foreground bg-foreground px-4 py-3 text-xs font-black uppercase tracking-widest text-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
               Robot Settings
             </div>
-            <div className="mt-0 flex-1 overflow-y-auto rounded-b-xl border-2 border-t-0 border-foreground bg-card shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] scrollbar-hide">
+            <div className="mt-0 flex-1 overflow-y-auto border-2 border-t-0 border-foreground bg-card shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] scrollbar-hide">
               <div className="lab-card border-none shadow-none divide-y-2 divide-slate-900/5">
                 <Section title="Mode">
                   <SegButton
