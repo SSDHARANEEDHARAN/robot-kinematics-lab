@@ -312,7 +312,7 @@ export function ArmView2D({
           );
         })}
 
-        <circle cx={r1(end.x)} cy={r1(end.y)} r={8} className="fill-foreground stroke-background" strokeWidth={2} />
+        <circle cx={r1(end.x)} cy={r1(end.y)} r={8} className="fill-primary stroke-background shadow-lg animate-pulse" strokeWidth={2} />
       </g>
     </svg>
   );
