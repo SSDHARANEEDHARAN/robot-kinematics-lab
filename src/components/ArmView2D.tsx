@@ -16,7 +16,7 @@ type Props = {
   workspace?: Vec2[] | undefined;
   velocity?: Vec2 | undefined;
   unit?: "deg" | "rad";
-  activeStep?: number;
+  activeStep?: number | undefined;
 };
 
 const r1 = (n: number) => Math.round(n * 1000) / 1000;
