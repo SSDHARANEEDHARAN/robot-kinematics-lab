@@ -928,10 +928,38 @@ function KinematicsLab() {
                       onClick={() => {
                         setMode("IK");
                         setWaypoints([
-                          { id: "p1", x: 100, y: 50, angles: [0, 0], move: "MOVJ", spd: 50 },
-                          { id: "p2", x: 150, y: 50, angles: [0, 0], move: "MOVL", spd: 50 },
-                          { id: "p3", x: 150, y: 0, angles: [0, 0], move: "MOVL", spd: 50 },
-                          { id: "p4", x: 100, y: 0, angles: [0, 0], move: "MOVL", spd: 50 },
+                          {
+                            id: "p1",
+                            name: "Pick",
+                            target: { x: 100, y: 50 },
+                            angles: [0, 0],
+                            move: "MOVJ",
+                            spd: 50,
+                          },
+                          {
+                            id: "p2",
+                            name: "Lift",
+                            target: { x: 150, y: 50 },
+                            angles: [0, 0],
+                            move: "MOVL",
+                            spd: 50,
+                          },
+                          {
+                            id: "p3",
+                            name: "Drop",
+                            target: { x: 150, y: 0 },
+                            angles: [0, 0],
+                            move: "MOVL",
+                            spd: 50,
+                          },
+                          {
+                            id: "p4",
+                            name: "Return",
+                            target: { x: 100, y: 0 },
+                            angles: [0, 0],
+                            move: "MOVL",
+                            spd: 50,
+                          },
                         ]);
                         setTab("teach");
                       }}
@@ -959,9 +987,30 @@ function KinematicsLab() {
                       onClick={() => {
                         setMode("IK");
                         setWaypoints([
-                          { id: "w1", x: 80, y: 40, angles: [0, 0], move: "MOVJ", spd: 30 },
-                          { id: "w2", x: 120, y: 60, angles: [0, 0], move: "MOVL", spd: 20 },
-                          { id: "w3", x: 160, y: 40, angles: [0, 0], move: "MOVL", spd: 20 },
+                          {
+                            id: "w1",
+                            name: "Approach",
+                            target: { x: 80, y: 40 },
+                            angles: [0, 0],
+                            move: "MOVJ",
+                            spd: 30,
+                          },
+                          {
+                            id: "w2",
+                            name: "Weld Start",
+                            target: { x: 120, y: 60 },
+                            angles: [0, 0],
+                            move: "MOVL",
+                            spd: 20,
+                          },
+                          {
+                            id: "w3",
+                            name: "Weld End",
+                            target: { x: 160, y: 40 },
+                            angles: [0, 0],
+                            move: "MOVL",
+                            spd: 20,
+                          },
                         ]);
                         setTab("teach");
                       }}
