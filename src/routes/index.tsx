@@ -522,7 +522,7 @@ function KinematicsLab() {
 
   const selectLesson = (l: Lesson) => {
     setLessonId(l.id);
-    if (l.setup?.mode) setMode(l.setup.mode as Mode);
+    if (l.setup?.mode) setMode(l.setup.mode as any);
     if (l.setup?.linkCount) setLinkCount(l.setup.linkCount);
   };
 
