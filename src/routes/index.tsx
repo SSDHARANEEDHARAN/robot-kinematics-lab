@@ -648,33 +648,14 @@ function KinematicsLab() {
           <div className="relative flex-1 overflow-hidden border-t border-border bg-panel">
              {/* Realistic fixed simulation area */}
             <div className="relative h-full w-full">
-              {mode === "DH" ? (
-                <DHView3D 
-                  mode={mode}
-                  frames={frames}
-                  planarPoints={points}
-                  linkCount={linkCount}
-                  activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
-                />
-              ) : (
-                <ArmView2D
-                  points={points}
-                  lengths={activeLengths}
-                  showZone={showZone}
-                  target={mode === "IK" ? target : null}
-                  onTargetChange={mode === "IK" && !pathMode && !playing ? setTarget : undefined}
-                  ghostPoints={mode === "IK" && showGhost ? ghostPoints : undefined}
-                  trace={showTrace ? trace : undefined}
-                  path={waypoints.map((w) => w.target)}
-                  workspace={workspace}
-                  velocity={velocity}
-                  unit={unit}
-                  activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
-                  limits={[{ min: -150, max: 150 }, { min: -150, max: 150 }, { min: -180, max: 180 }]}
-                  angles={planarAngles}
-                  interactive={true}
-                />
-              )}
+              <DHView3D 
+                mode={mode}
+                frames={mode === "DH" ? frames : undefined}
+                planarPoints={mode !== "DH" ? points : undefined}
+                linkCount={mode === "DH" ? jointCount : linkCount}
+                activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
+              />
+
               
             </div>
 

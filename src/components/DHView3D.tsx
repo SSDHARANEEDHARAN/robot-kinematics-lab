@@ -35,9 +35,18 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
     // In planar mode, J1 is at (0,0), J2 is at planarPoints[1], etc.
     // We treat 2D (x,y) as 3D (x,z) to make the robot stand up
     return planarPoints.map((p, i) => {
-      // Rotation matrix for planar arm standing on XZ plane
-      // Identity for now as we're just mapping coordinates
-      return [1, 0, 0, p.x, 0, 1, 0, 0, 0, 0, 1, p.y, 0, 0, 0, 1];
+      // Create a transformation matrix for each joint in the planar arm
+      // We map 2D (x, y) to 3D (x, 0, z) and handle link rotation for J2 and J3
+      const angle = i > 0 ? Math.atan2(planarPoints[i].y - planarPoints[i-1].y, planarPoints[i].x - planarPoints[i-1].x) : 0;
+      const c = Math.cos(angle);
+      const s = Math.sin(angle);
+      
+      return [
+        c, 0, s, p.x,
+        0, 1, 0, 0,
+        -s, 0, c, p.y,
+        0, 0, 0, 1
+      ];
     });
   }, [mode, frames, planarPoints]);
 
