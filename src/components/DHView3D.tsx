@@ -187,9 +187,9 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       
       // Joint Housing: Brushed Aluminum "Hub" with Warning Stripes
       const hGrad = ctx.createLinearGradient(0, -hr, 0, hr);
-      hGrad.addColorStop(0, "#f1f5f9"); // Bright aluminum
-      hGrad.addColorStop(0.5, "#94a3b8"); // Brushed mid
-      hGrad.addColorStop(1, "#475569"); // Dark base
+      hGrad.addColorStop(0, "white");
+      hGrad.addColorStop(0.5, "#999999");
+      hGrad.addColorStop(1, "black");
       
       ctx.fillStyle = hGrad;
       
