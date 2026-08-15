@@ -13,12 +13,12 @@ type Props = {
 
 // Colors based on a premium industrial design: Slate and Bright Orange
 const LINK_COLORS = [
-  "#334155", // Slate 700
-  "#F97316", // Orange 500
-  "#475569", // Slate 600
-  "#FB923C", // Orange 400
-  "#64748B", // Slate 500
-  "#FDBA74", // Orange 300
+  "#CBD5E1", // Aluminum (Slate 300)
+  "#FACC15", // Safety Yellow (Yellow 400)
+  "#94A3B8", // Brushed Steel (Slate 400)
+  "#EAB308", // Industrial Gold (Yellow 500)
+  "#64748B", // Dark Aluminum (Slate 500)
+  "#CA8A04", // Warning Amber (Yellow 600)
 ];
 
 export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = [], linkCount = 2, showAxes = true }: Props) {
