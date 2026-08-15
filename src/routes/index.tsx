@@ -189,7 +189,6 @@ function KinematicsLab() {
 
   const velocity = useMemo(() => {
     if (!showVelocity || mode === "DH") return undefined;
-    // Example: unit joint velocities [1, 1]
     const J = jacobian;
     const j0 = J[0];
     const j1 = J[1];
@@ -204,9 +203,6 @@ function KinematicsLab() {
   const maxReach = activeLengths.reduce((a, b) => a + b, 0);
   const minReach = mode === "IK" ? Math.abs((activeLengths[0] ?? 0) - (activeLengths[1] ?? 0)) : 0;
   const dhReach = dhRows.reduce((s, r) => s + Math.abs(r.a) + Math.abs(r.d), 0);
-
-  const outputAngles =
-    mode === "DH" ? dhRows.map((r) => r.theta) : planarAngles.concat(linkCount < 3 ? [0] : []);
 
   const setLength = (i: number, v: number) => setLengths((l) => l.map((x, k) => (k === i ? v : x)));
   const setAngle = (i: number, v: number) => setAngles((a) => a.map((x, k) => (k === i ? v : x)));
@@ -329,13 +325,6 @@ function KinematicsLab() {
             sub: `${jointCount}-joint DH chain — Drag to rotate, scroll to zoom`,
           };
 
-  const solverText =
-    mode === "IK"
-      ? "Analytic inverse kinematics"
-      : mode === "FK"
-        ? "Forward kinematics"
-        : "Forward kinematics using DH convention (3D)";
-
   return (
     <main className="min-h-screen px-4 pb-16 pt-6 md:px-8">
       <header className="mb-5 flex flex-wrap items-start justify-between gap-4">
@@ -429,233 +418,114 @@ function KinematicsLab() {
                       </div>
                       <p className="mt-2 text-sm text-muted-foreground">Add joints from 2 to 6</p>
                     </Section>
-                <div className="flex items-center justify-center gap-0 rounded-lg border border-border">
-                  <button
-                    className="px-4 py-2 text-lg font-bold text-primary"
-                    onClick={() => setJointCount((c) => Math.max(2, c - 1))}
-                  >
-                    -
-                  </button>
-                  <span className="min-w-12 border-x border-border px-4 py-2 text-center text-lg font-extrabold">
-                    {jointCount}
-                  </span>
-                  <button
-                    className="px-4 py-2 text-lg font-bold text-primary"
-                    onClick={() => setJointCount((c) => Math.min(6, c + 1))}
-                  >
-                    +
-                  </button>
-                </div>
-                <p className="mt-2 text-sm text-muted-foreground">Add joints from 2 to 6</p>
-              </Section>
 
-              <Section title="DH Parameters" aside="Standard DH">
-                <div className="grid grid-cols-[18px_repeat(4,1fr)] gap-1.5 text-center">
-                  <span className="text-xs font-bold text-muted-foreground">#</span>
-                  {["θ", "d", "a", "α"].map((h) => (
-                    <span key={h} className="text-xs font-bold text-muted-foreground">
-                      {h}
-                    </span>
-                  ))}
-                  {dhRows.map((r, i) => (
-                    <Fragment key={i}>
-                      <span className="self-center text-xs font-bold text-primary">{i + 1}</span>
-                      {(["theta", "d", "a", "alpha"] as const).map((k) => (
-                        <input
-                          key={`${i}-${k}`}
-                          type="number"
-                          value={r[k]}
-                          onChange={(e) => setDhCell(i, k, Number(e.target.value))}
-                          className={`lab-input px-1 text-center text-sm ${k === "theta" ? "text-primary" : ""}`}
-                        />
-                      ))}
-                    </Fragment>
-                  ))}
-                </div>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  theta = joint variable. d, a, alpha = fixed constants.
-                </p>
-              </Section>
+                    <Section title="DH Parameters" aside="Standard DH">
+                      <div className="grid grid-cols-[18px_repeat(4,1fr)] gap-1.5 text-center">
+                        <span className="text-xs font-bold text-muted-foreground">#</span>
+                        {["θ", "d", "a", "α"].map((h) => (
+                          <span key={h} className="text-xs font-bold text-muted-foreground">
+                            {h}
+                          </span>
+                        ))}
+                        {dhRows.map((r, i) => (
+                          <Fragment key={i}>
+                            <span className="self-center text-xs font-bold text-primary">{i + 1}</span>
+                            {(["theta", "d", "a", "alpha"] as const).map((k) => (
+                              <input
+                                key={`${i}-${k}`}
+                                type="number"
+                                value={r[k]}
+                                onChange={(e) => setDhCell(i, k, Number(e.target.value))}
+                                className={`lab-input px-1 text-center text-sm ${k === "theta" ? "text-primary" : ""}`}
+                              />
+                            ))}
+                          </Fragment>
+                        ))}
+                      </div>
+                    </Section>
 
-              <Section title="Joint Angles">
-                <div className="space-y-2.5">
-                  {dhRows.map((r, i) => (
-                    <SliderRow
-                      key={i}
-                      label={`theta ${i + 1}`}
-                      min={-180}
-                      max={180}
-                      value={r.theta}
-                      onChange={(v) => setDhCell(i, "theta", v)}
-                    />
-                  ))}
-                </div>
-              </Section>
+                    <Section title="Joint Angles">
+                      <div className="space-y-2.5">
+                        {dhRows.map((r, i) => (
+                          <SliderRow
+                            key={i}
+                            label={`theta ${i + 1}`}
+                            min={-180}
+                            max={180}
+                            value={r.theta}
+                            onChange={(v) => setDhCell(i, "theta", v)}
+                          />
+                        ))}
+                      </div>
+                    </Section>
 
-              <Section title="Presets">
-                <div className="grid grid-cols-2 gap-2">
-                  <GhostButton onClick={() => setDh(DEFAULT_DH)}>Home</GhostButton>
-                  <GhostButton
-                    onClick={() =>
-                      setDh((rows) =>
-                        rows.map((r, i) => ({ ...r, theta: [30, -40, 60, 0, -50, 20][i] ?? 0 })),
-                      )
-                    }
-                  >
-                    Reach
-                  </GhostButton>
-                  <GhostButton
-                    onClick={() =>
-                      setDh((rows) =>
-                        rows.map((r, i) => ({ ...r, theta: [0, -90, 120, 0, -30, 0][i] ?? 0 })),
-                      )
-                    }
-                  >
-                    Fold
-                  </GhostButton>
-                  <GhostButton onClick={() => setDh(DEFAULT_DH)}>Reset</GhostButton>
-                </div>
-              </Section>
-            </>
-          ) : (
-            <>
-              <Section title="Links">
-                <SegButton
-                  stacked
-                  options={[
-                    { value: "2", label: "2 Links" },
-                    { value: "3", label: "3 Links" },
-                  ]}
-                  value={String(linkCount)}
-                  onChange={(v) => setLinkCount(Number(v))}
-                />
-              </Section>
-
-              <Section title="Link Lengths" aside="px">
-                <div className="grid grid-cols-2 gap-3">
-                  <NumberField label="L1" value={lengths[0] ?? 0} onChange={(v) => setLength(0, v)} />
-                  <NumberField label="L2" value={lengths[1] ?? 0} onChange={(v) => setLength(1, v)} />
-                  {linkCount > 2 && (
-                    <NumberField label="L3" value={lengths[2] ?? 0} onChange={(v) => setLength(2, v)} />
-                  )}
-                </div>
-              </Section>
-
-              {mode === "FK" ? (
-                <Section title="Joint Angles">
-                  <div className="space-y-2.5">
-                    {Array.from({ length: linkCount }).map((_, i) => (
-                      <SliderRow
-                        key={i}
-                        label={`theta ${i + 1}`}
-                        min={-180}
-                        max={180}
-                        value={angles[i] ?? 0}
-                        onChange={(v) => setAngle(i, v)}
+                    <Section title="Presets">
+                      <div className="grid grid-cols-2 gap-2">
+                        <GhostButton onClick={() => setDh(DEFAULT_DH)}>Home</GhostButton>
+                        <GhostButton onClick={() => setDh(DEFAULT_DH)}>Reset</GhostButton>
+                      </div>
+                    </Section>
+                  </>
+                ) : (
+                  <>
+                    <Section title="Links">
+                      <SegButton
+                        stacked
+                        options={[
+                          { value: "2", label: "2 Links" },
+                          { value: "3", label: "3 Links" },
+                        ]}
+                        value={String(linkCount)}
+                        onChange={(v) => setLinkCount(Number(v))}
                       />
-                    ))}
-                  </div>
-                </Section>
-              ) : (
-                <Section
-                  title="Target"
-                  aside={
-                    <button
-                      className="font-semibold text-primary"
-                      onClick={() => setTarget({ x: 0, y: 0 })}
-                    >
-                      Center
-                    </button>
-                  }
-                >
-                  <div className="grid grid-cols-2 gap-3">
-                    <NumberField
-                      label="X"
-                      value={target.x}
-                      onChange={(v) => setTarget((t) => ({ ...t, x: v }))}
-                    />
-                    <NumberField
-                      label="Y"
-                      value={target.y}
-                      onChange={(v) => setTarget((t) => ({ ...t, y: v }))}
-                    />
-                  </div>
-                  <div className="mt-3">
-                    <SegButton
-                      options={[
-                        { value: "down", label: "Elbow down" },
-                        { value: "up", label: "Elbow up" },
-                      ]}
-                      value={elbowUp ? "up" : "down"}
-                      onChange={(v) => setElbowUp(v === "up")}
-                    />
-                  </div>
-                </Section>
-              )}
-
-              <Section title="Experiment Tools">
-                <div className="space-y-3">
-                  <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <input
-                      type="checkbox"
-                      checked={showWorkspace}
-                      onChange={(e) => setShowWorkspace(e.target.checked)}
-                      className="h-4 w-4 accent-[var(--color-primary)]"
-                    />
-                    Workspace Sweep
-                  </label>
-                  <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <input
-                      type="checkbox"
-                      checked={showVelocity}
-                      onChange={(e) => setShowVelocity(e.target.checked)}
-                      className="h-4 w-4 accent-[var(--color-primary)]"
-                    />
-                    Velocity Vectors
-                  </label>
-                </div>
-              </Section>
-
-
-              <Section title="Presets">
-                <div className="grid grid-cols-2 gap-2">
-                  <GhostButton
-                    onClick={() => {
-                      setAngles([20, 20, 10]);
-                      setTarget({ x: 120, y: 90 });
-                    }}
-                  >
-                    Inspect
-                  </GhostButton>
-                  <GhostButton
-                    onClick={() => {
-                      setAngles([10, 5, 0]);
-                      setTarget({ x: maxReach - 10, y: 0 });
-                    }}
-                  >
-                    Reach
-                  </GhostButton>
-                  <GhostButton
-                    onClick={() => {
-                      setAngles([90, 150, -120]);
-                      setTarget({ x: 40, y: 40 });
-                    }}
-                  >
-                    Fold
-                  </GhostButton>
-                  <GhostButton
-                    onClick={() => {
-                      setAngles([0, 0, 0]);
-                      setTarget({ x: 100, y: 30 });
-                      setLengths([120, 100, 80]);
-                    }}
-                  >
-                    Reset
-                  </GhostButton>
-                </div>
-              </Section>
-            </>
-                </div>
+                    </Section>
+                    <Section title="Link Lengths" aside="px">
+                      <div className="grid grid-cols-2 gap-3">
+                        <NumberField label="L1" value={lengths[0] ?? 0} onChange={(v) => setLength(0, v)} />
+                        <NumberField label="L2" value={lengths[1] ?? 0} onChange={(v) => setLength(1, v)} />
+                        {linkCount > 2 && (
+                          <NumberField label="L3" value={lengths[2] ?? 0} onChange={(v) => setLength(2, v)} />
+                        )}
+                      </div>
+                    </Section>
+                    {mode === "FK" ? (
+                      <Section title="Joint Angles">
+                        <div className="space-y-2.5">
+                          {Array.from({ length: linkCount }).map((_, i) => (
+                            <SliderRow
+                              key={i}
+                              label={`theta ${i + 1}`}
+                              min={-180}
+                              max={180}
+                              value={angles[i] ?? 0}
+                              onChange={(v) => setAngle(i, v)}
+                            />
+                          ))}
+                        </div>
+                      </Section>
+                    ) : (
+                      <Section title="Target">
+                        <div className="grid grid-cols-2 gap-3">
+                          <NumberField
+                            label="X"
+                            value={target.x}
+                            onChange={(v) => setTarget((t) => ({ ...t, x: v }))}
+                          />
+                          <NumberField
+                            label="Y"
+                            value={target.y}
+                            onChange={(v) => setTarget((t) => ({ ...t, y: v }))}
+                          />
+                        </div>
+                      </Section>
+                    )}
+                    <Section title="Presets">
+                      <div className="grid grid-cols-2 gap-2">
+                        <GhostButton onClick={() => setAngles([0,0,0])}>Reset</GhostButton>
+                      </div>
+                    </Section>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -670,53 +540,9 @@ function KinematicsLab() {
               </h2>
               <p className="text-sm text-muted-foreground">{headline.sub}</p>
             </div>
-            {mode !== "DH" && (
-              <div className="flex flex-wrap items-center gap-4">
-                <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                  <input
-                    type="checkbox"
-                    checked={showZone}
-                    onChange={(e) => setShowZone(e.target.checked)}
-                    className="h-4 w-4 accent-[var(--color-primary)]"
-                  />
-                  Reach zone
-                </label>
-                <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                  <input
-                    type="checkbox"
-                    checked={showTrace}
-                    onChange={(e) => {
-                      setShowTrace(e.target.checked);
-                      if (!e.target.checked) setTrace([]);
-                    }}
-                    className="h-4 w-4 accent-[var(--color-primary)]"
-                  />
-                  Trace
-                </label>
-                {mode === "IK" && (
-                  <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <input
-                      type="checkbox"
-                      checked={showGhost}
-                      onChange={(e) => setShowGhost(e.target.checked)}
-                      className="h-4 w-4 accent-[var(--color-primary)]"
-                    />
-                    Other solution
-                  </label>
-                )}
-                <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                  <input
-                    type="checkbox"
-                    checked={pathMode}
-                    onChange={(e) => setPathMode(e.target.checked)}
-                    className="h-4 w-4 accent-[var(--color-primary)]"
-                  />
-                  Draw path
-                </label>
-              </div>
-            )}
           </div>
-          <div className="h-[560px] border-t border-border bg-panel">
+          <div className="h-[560px] border-t border-border bg-panel overflow-hidden relative">
+             {/* Realistic fixed simulation area */}
             {mode === "DH" ? (
               <DHView3D frames={frames} />
             ) : (
@@ -731,58 +557,9 @@ function KinematicsLab() {
                 path={waypoints.map((w) => w.target)}
                 workspace={workspace}
                 velocity={velocity}
-                onPathPoint={
-                  pathMode && !playing
-                    ? (p) =>
-                        setWaypoints((w) => {
-                          const last = w[w.length - 1];
-                          if (last && Math.hypot(last.target.x - p.x, last.target.y - p.y) < 25)
-                            return w;
-                          const sol = ik2d(activeLengths, p, elbowUp, angles[2] ?? 0);
-                          return [
-                            ...w,
-                            {
-                              id: uid(),
-                              name: `P${w.length + 1}`,
-                              angles: sol.angles,
-                              target: p,
-                              move: "MOVL" as const,
-                              spd: 50,
-                            },
-                          ];
-                        })
-                    : undefined
-                }
               />
             )}
           </div>
-          {mode !== "DH" && (
-            <div className="flex flex-wrap items-center gap-2 border-t border-border px-5 py-3">
-              <button
-                className="rounded-lg bg-primary px-3 py-2 text-sm font-bold text-primary-foreground disabled:opacity-40"
-                disabled={waypoints.length === 0}
-                onClick={() => setPlaying((p) => !p)}
-              >
-                {playing ? "Stop" : "Play trajectory"}
-              </button>
-              <button
-                className="rounded-lg border border-border px-3 py-2 text-sm font-semibold"
-                onClick={() => setWaypoints([])}
-              >
-                Clear path
-              </button>
-              <button
-                className="rounded-lg border border-border px-3 py-2 text-sm font-semibold"
-                onClick={() => setTrace([])}
-              >
-                Clear trace
-              </button>
-              <span className="text-xs text-muted-foreground">
-                {waypoints.length} point{waypoints.length === 1 ? "" : "s"} · MOVJ curves, MOVL runs
-                straight
-              </span>
-            </div>
-          )}
         </section>
 
         {/* ---------- Right: readouts + tools ---------- */}
@@ -792,12 +569,6 @@ function KinematicsLab() {
             <Stat label="End Y" value={(mode === "DH" ? dhEnd.y : end.y).toFixed(1)} />
             {mode === "DH" && <Stat label="End Z" value={dhEnd.z.toFixed(1)} />}
             <Stat label="Error" value={(mode === "IK" ? ik.error : 0).toFixed(1)} />
-            <Stat
-              label="Reach"
-              value={
-                mode === "DH" ? `0-${dhReach}` : `${Math.round(minReach)}-${Math.round(maxReach)}`
-              }
-            />
           </div>
 
           <div className="lab-card overflow-hidden">
@@ -808,39 +579,14 @@ function KinematicsLab() {
                 onChange={(v) => setTab(v as Tab)}
               />
             </div>
-            <div className="px-4 py-4">
+            <div className="px-4 py-4 max-h-[500px] overflow-y-auto">
               {tab === "math" && (
                 <div className="space-y-3">
-                  <h3 className="text-base font-extrabold text-foreground">
-                    {mode === "IK"
-                      ? "IK solve, step by step"
-                      : mode === "FK"
-                        ? "FK equations, live"
-                        : "DH matrix chain"}
-                  </h3>
-                  {mode === "FK" && (
-                    <FKFormula
-                      lengths={activeLengths}
-                      angles={planarAngles}
-                      unit={unit}
-                      end={end}
-                    />
-                  )}
-                  {mode === "IK" && (
-                    <IKFormula
-                      lengths={activeLengths}
-                      target={target}
-                      angles={ik.angles}
-                      unit={unit}
-                      reachable={ik.reachable}
-                    />
-                  )}
-                  {mode === "DH" && (
-                    <DHFormula frames={frames} step={dhStep} onStep={setDhStep} />
-                  )}
+                   {mode === "FK" && <FKFormula lengths={activeLengths} angles={planarAngles} unit={unit} end={end} />}
+                   {mode === "IK" && <IKFormula lengths={activeLengths} target={target} angles={ik.angles} unit={unit} reachable={ik.reachable} />}
+                   {mode === "DH" && <DHFormula frames={frames} step={dhStep} onStep={setDhStep} />}
                 </div>
               )}
-
               {tab === "teach" && (
                 <TeachPanel
                   waypoints={waypoints}
@@ -849,12 +595,8 @@ function KinematicsLab() {
                   jointCount={linkCount}
                   onTeach={teach}
                   onDelete={(id) => setWaypoints((w) => w.filter((x) => x.id !== id))}
-                  onSetMove={(id, m) =>
-                    setWaypoints((w) => w.map((x) => (x.id === id ? { ...x, move: m } : x)))
-                  }
-                  onSetSpeed={(id, s) =>
-                    setWaypoints((w) => w.map((x) => (x.id === id ? { ...x, spd: s } : x)))
-                  }
+                  onSetMove={(id, m) => setWaypoints((w) => w.map((x) => (x.id === id ? { ...x, move: m } : x)))}
+                  onSetSpeed={(id, s) => setWaypoints((w) => w.map((x) => (x.id === id ? { ...x, spd: s } : x)))}
                   onGoto={gotoWaypoint}
                   onPlay={() => setPlaying(true)}
                   onStop={() => setPlaying(false)}
@@ -863,269 +605,16 @@ function KinematicsLab() {
                   onJogCart={jogCart}
                 />
               )}
-
-              {tab === "quiz" && (
-                <QuizPanel
-                  lengths={activeLengths}
-                  angles={planarAngles}
-                  onSetTarget={(t) => {
-                    setMode("IK");
-                    setTarget(t);
-                  }}
-                />
-              )}
-
-              {tab === "lessons" && (
-                <LessonPanel
-                  state={lessonState}
-                  activeId={lessonId}
-                  onSelect={selectLesson}
-                  completed={completed}
-                />
-              )}
-
-              {tab === "ai" && (
-                <div className="h-[450px]">
-                  <AIPanel
-                    state={{
-                      mode,
-                      target,
-                      lengths: activeLengths,
-                      angles: planarAngles,
-                      reachable: ik.reachable,
-                      ikError: ik.error,
-                    }}
-                  />
-                </div>
-              )}
-
+              {tab === "quiz" && <QuizPanel lengths={activeLengths} angles={planarAngles} onSetTarget={(t) => { setMode("IK"); setTarget(t); }} />}
+              {tab === "lessons" && <LessonPanel state={lessonState} activeId={lessonId} onSelect={selectLesson} completed={completed} />}
+              {tab === "ai" && <div className="h-[400px]"><AIPanel state={{ mode, target, lengths: activeLengths, angles: planarAngles, reachable: ik.reachable, ikError: ik.error }} /></div>}
               {tab === "progress" && (
-                <div className="space-y-6">
-                  <div className="space-y-4">
-                    <h4 className="text-sm font-extrabold uppercase tracking-widest text-brand">
-                      Robotics Skill Level
-                    </h4>
-                    <div className="space-y-3">
-                      {[
-                        { label: "FK", value: 80, color: "bg-link-1" },
-                        { label: "IK", value: 60, color: "bg-link-2" },
-                        { label: "DH", value: 40, color: "bg-link-3" },
-                        { label: "Teaching", value: 50, color: "bg-brand" },
-                      ].map((s) => (
-                        <div key={s.label} className="space-y-1">
-                          <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider">
-                            <span>{s.label}</span>
-                            <span>{s.value}%</span>
-                          </div>
-                          <div className="h-2 w-full rounded-full bg-secondary overflow-hidden">
-                            <div
-                              className={`h-full ${s.color} transition-all duration-1000`}
-                              style={{ width: `${s.value}%` }}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <Card title="Activity Log">
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <div className="h-2 w-2 rounded-full bg-link-3" />
-                        <div className="flex-1">
-                          <p className="text-xs font-bold">Lesson 1 Completed</p>
-                          <p className="text-[10px] text-muted-foreground">2 minutes ago</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="h-2 w-2 rounded-full bg-link-2" />
-                        <div className="flex-1">
-                          <p className="text-xs font-bold">Quiz Score: 93%</p>
-                          <p className="text-[10px] text-muted-foreground">1 hour ago</p>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                </div>
-              )}
-
-              {tab === "industrial" && (
                 <div className="space-y-4">
-                  <h3 className="text-base font-extrabold text-foreground">Industrial Scenarios</h3>
-                  <p className="text-xs text-muted-foreground">
-                    Apply your kinematics knowledge to real-world industrial tasks.
-                  </p>
-                  <div className="grid grid-cols-1 gap-3">
-                    <button
-                      className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:bg-secondary/50"
-                      onClick={() => {
-                        setMode("IK");
-                        setWaypoints([
-                          {
-                            id: "p1",
-                            name: "Pick",
-                            target: { x: 100, y: 50 },
-                            angles: [0, 0],
-                            move: "MOVJ",
-                            spd: 50,
-                          },
-                          {
-                            id: "p2",
-                            name: "Lift",
-                            target: { x: 150, y: 50 },
-                            angles: [0, 0],
-                            move: "MOVL",
-                            spd: 50,
-                          },
-                          {
-                            id: "p3",
-                            name: "Drop",
-                            target: { x: 150, y: 0 },
-                            angles: [0, 0],
-                            move: "MOVL",
-                            spd: 50,
-                          },
-                          {
-                            id: "p4",
-                            name: "Return",
-                            target: { x: 100, y: 0 },
-                            angles: [0, 0],
-                            move: "MOVL",
-                            spd: 50,
-                          },
-                        ]);
-                        setTab("teach");
-                      }}
-                    >
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-link-1/10 text-link-1">
-                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                          />
-                        </svg>
-                      </div>
-                      <div>
-                        <div className="text-sm font-bold">Palletizing Cycle</div>
-                        <div className="text-[10px] text-muted-foreground">
-                          Box pick & place simulation using MOVL
-                        </div>
-                      </div>
-                    </button>
-
-                    <button
-                      className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:bg-secondary/50"
-                      onClick={() => {
-                        setMode("IK");
-                        setWaypoints([
-                          {
-                            id: "w1",
-                            name: "Approach",
-                            target: { x: 80, y: 40 },
-                            angles: [0, 0],
-                            move: "MOVJ",
-                            spd: 30,
-                          },
-                          {
-                            id: "w2",
-                            name: "Weld Start",
-                            target: { x: 120, y: 60 },
-                            angles: [0, 0],
-                            move: "MOVL",
-                            spd: 20,
-                          },
-                          {
-                            id: "w3",
-                            name: "Weld End",
-                            target: { x: 160, y: 40 },
-                            angles: [0, 0],
-                            move: "MOVL",
-                            spd: 20,
-                          },
-                        ]);
-                        setTab("teach");
-                      }}
-                    >
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-link-2/10 text-link-2">
-                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M13 10V3L4 14h7v7l9-11h-7z"
-                          />
-                        </svg>
-                      </div>
-                      <div>
-                        <div className="text-sm font-bold">Arc Welding</div>
-                        <div className="text-[10px] text-muted-foreground">
-                          Continuous path tracking with precision speed
-                        </div>
-                      </div>
-                    </button>
-                  </div>
+                  <h4 className="text-[10px] font-extrabold uppercase tracking-widest text-brand">Robotics Mastery</h4>
+                  <Stat label="Completed" value={`${Object.keys(completed).length}/${LESSONS.length}`} />
                 </div>
               )}
             </div>
-          </div>
-
-
-          {isSingular && mode === "IK" && (
-            <div className="animate-pulse rounded-xl bg-red-500/10 p-3 text-red-500">
-              <div className="flex items-center gap-2 font-extrabold uppercase tracking-widest">
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={3}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                  />
-                </svg>
-                Singularity Warning
-              </div>
-              <p className="mt-1 text-[10px] font-medium leading-tight">
-                Robot is near a singular configuration. One or more degrees of freedom are lost.
-                Math may become unstable.
-              </p>
-            </div>
-          )}
-
-          <div className="lab-card px-4 py-3">
-            <h3 className="mb-2 text-base font-extrabold text-foreground">Joint Output</h3>
-            <dl className="divide-y divide-border">
-              {outputAngles.map((a, i) => (
-                <div key={i} className="flex items-center justify-between py-2">
-                  <dt className="text-sm text-muted-foreground">theta {i + 1}</dt>
-                  <dd className="text-sm font-bold text-foreground">{fmtAngle(a, unit)}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-
-          {mode === "DH" && (
-            <div className="lab-card px-4 py-3">
-              <h3 className="mb-2 text-base font-extrabold text-foreground">
-                End-Effector Transform
-              </h3>
-              <div className="overflow-x-auto rounded-md bg-secondary p-3 font-mono text-xs">
-                {[0, 1, 2, 3].map((r) => (
-                  <div key={r} className="flex gap-4 whitespace-nowrap py-0.5">
-                    {[0, 1, 2, 3].map((c) => (
-                      <span key={c} className="w-12 text-right text-secondary-foreground">
-                        {((frames[frames.length - 1] as Mat4)[r * 4 + c] ?? 0).toFixed(2)}
-                      </span>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div className="lab-card px-4 py-3">
-            <h3 className="mb-1 text-base font-extrabold text-foreground">Solver</h3>
-            <p className="text-sm text-muted-foreground">{solverText}</p>
           </div>
         </aside>
       </div>
