@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { axisOf, originOf, type Mat4, type Vec3 } from "@/lib/kinematics";
+import { GhostButton } from "./LabControls";
+
 
 type Props = { frames: Mat4[] };
 
@@ -124,30 +126,47 @@ export function DHView3D({ frames }: Props) {
   }, [frames, cam]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="h-full w-full cursor-grab touch-none active:cursor-grabbing"
-      onPointerDown={(e) => {
-        drag.current = { x: e.clientX, y: e.clientY };
-        (e.target as Element).setPointerCapture?.(e.pointerId);
-      }}
-      onPointerMove={(e) => {
-        if (!drag.current) return;
-        const dx = e.clientX - drag.current.x;
-        const dy = e.clientY - drag.current.y;
-        drag.current = { x: e.clientX, y: e.clientY };
-        setCam((c) => ({
-          ...c,
-          yaw: c.yaw + dx * 0.01,
-          pitch: Math.max(-1.4, Math.min(1.4, c.pitch + dy * 0.01)),
-        }));
-      }}
-      onPointerUp={() => (drag.current = null)}
-      onPointerLeave={() => (drag.current = null)}
-      onWheel={(e) => {
-        // Internal scroll for zoom
-        setCam((c) => ({ ...c, zoom: Math.max(0.3, Math.min(3, c.zoom - e.deltaY * 0.001)) }));
-      }}
-    />
+    <div className="relative h-full w-full">
+      <canvas
+        ref={canvasRef}
+        className="h-full w-full cursor-grab touch-none active:cursor-grabbing"
+        onPointerDown={(e) => {
+          drag.current = { x: e.clientX, y: e.clientY };
+          (e.target as Element).setPointerCapture?.(e.pointerId);
+        }}
+        onPointerMove={(e) => {
+          if (!drag.current) return;
+          const dx = e.clientX - drag.current.x;
+          const dy = e.clientY - drag.current.y;
+          drag.current = { x: e.clientX, y: e.clientY };
+          setCam((c) => ({
+            ...c,
+            yaw: c.yaw + dx * 0.01,
+            pitch: Math.max(-1.4, Math.min(1.4, c.pitch + dy * 0.01)),
+          }));
+        }}
+        onPointerUp={() => (drag.current = null)}
+        onPointerLeave={() => (drag.current = null)}
+        onWheel={(e) => {
+          // Internal scroll for zoom
+          setCam((c) => ({ ...c, zoom: Math.max(0.3, Math.min(3, c.zoom - e.deltaY * 0.001)) }));
+          e.preventDefault();
+        }}
+      />
+      <div className="absolute bottom-4 right-4 flex gap-2">
+        <GhostButton onClick={() => setCam({ yaw: -0.9, pitch: 0.5, zoom: 1.2 })}>
+          Reset View
+        </GhostButton>
+      </div>
+      <div className="absolute top-4 right-4 rounded-lg bg-card/80 p-2 text-[10px] font-bold shadow-sm backdrop-blur-sm">
+        <div className="text-muted-foreground uppercase tracking-widest mb-1">End Effector</div>
+        <div className="text-foreground">
+          X: {originOf(frames[frames.length - 1] as Mat4).x.toFixed(1)}<br/>
+          Y: {originOf(frames[frames.length - 1] as Mat4).y.toFixed(1)}<br/>
+          Z: {originOf(frames[frames.length - 1] as Mat4).z.toFixed(1)}
+        </div>
+      </div>
+    </div>
   );
 }
+
