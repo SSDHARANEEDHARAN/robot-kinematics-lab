@@ -159,14 +159,20 @@
 
 @utility glass-card {
   background-color: var(--card);
-  border: 2px solid var(--border);
-  border-radius: 0;
-  box-shadow: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @utility lab-card {
   @apply glass-card;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    border-color: var(--primary);
+  }
 }
 
 @utility lab-label {
