@@ -169,15 +169,29 @@
   border-radius: var(--radius-xl);
   backdrop-filter: blur(12px);
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  position: relative;
+  overflow: hidden;
 }
 
 @utility lab-card {
   @apply glass-card;
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
     border-color: var(--primary);
+  }
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg, transparent, var(--primary), transparent);
+    opacity: 0;
+    transition: opacity 0.5s;
+    pointer-events: none;
+  }
+  &:hover::before {
+    opacity: 0.05;
   }
 }
 
