@@ -119,7 +119,7 @@ export function DHView3D({ frames }: Props) {
       // Cap
       ctx.beginPath();
       ctx.arc(p.x, p.y, r * 0.7, 0, Math.PI * 2);
-      ctx.fillStyle = i === frames.length - 1 ? "oklch(0.75 0.22 190)" : "oklch(0.4 0.05 250)";
+      ctx.fillStyle = i === frames.length - 1 ? "oklch(0.55 0.15 200)" : "oklch(0.85 0.05 250)";
       ctx.fill();
     });
 
