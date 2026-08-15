@@ -592,9 +592,9 @@ function KinematicsLab() {
       </header>
 
 
-      <div className="grid gap-8 grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[300px_minmax(0,1fr)_340px] xl:h-[750px]">
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[300px_minmax(0,1fr)_340px] xl:h-[750px]">
         {/* ---------- Left: popups ---------- */}
-        <aside className="flex flex-col gap-3 overflow-hidden h-[500px] xl:h-full order-2 xl:order-1">
+        <aside className="flex flex-col gap-6 overflow-hidden h-[500px] xl:h-full order-2 xl:order-1">
           <div className="flex flex-1 flex-col overflow-hidden">
             <div className="w-full rounded-t-xl border-none bg-foreground px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-background shadow-none">
               Robot Configuration
@@ -893,8 +893,8 @@ function KinematicsLab() {
 
 
         {/* ---------- Right: readouts + tools ---------- */}
-        <aside className="flex flex-col gap-4 overflow-hidden h-auto xl:h-full order-3 shadow-none">
-          <div className="grid grid-cols-2 gap-3 divide-y-0">
+        <aside className="flex flex-col gap-6 overflow-hidden h-auto xl:h-full order-3 shadow-none">
+          <div className="grid grid-cols-2 gap-3 shrink-0 divide-y-0">
             <Stat label="End X" value={(mode === "DH" ? dhEnd.x : end.x).toFixed(1)} />
             <Stat label="End Y" value={(mode === "DH" ? dhEnd.y : end.y).toFixed(1)} />
             {mode === "DH" && <Stat label="End Z" value={dhEnd.z.toFixed(1)} />}
