@@ -625,7 +625,7 @@ function KinematicsLab() {
                 onChange={(v) => setTab(v as Tab)}
               />
             </div>
-            <div className="px-4 py-4 max-h-[500px] overflow-y-auto">
+            <div className="px-4 py-4 max-h-[500px] overflow-y-auto scrollbar-hide">
               {tab === "math" && (
                 <div className="space-y-3">
                    {mode === "FK" && <FKFormula lengths={activeLengths} angles={planarAngles} unit={unit} end={end} />}
