@@ -9,7 +9,9 @@ type Props = {
   mode?: string;
   planarPoints?: Vec2[] | undefined;
   linkCount?: number;
+  showAxes?: boolean;
 };
+
 
 // Colors based on the uploaded reference image
 const LINK_COLORS = [
