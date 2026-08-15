@@ -133,7 +133,7 @@ export function DHView3D({ frames }: Props) {
       ctx.roundRect(p.x - 12, p.y - 30, 24, 14, 3);
       ctx.fill();
       
-      ctx.fillStyle = "oklch(0.75 0.22 190)";
+      ctx.fillStyle = "oklch(0.55 0.15 200)";
       ctx.font = "bold 9px JetBrains Mono";
       ctx.textAlign = "center";
       ctx.fillText(`J${i+1}`, p.x, p.y - 20);
