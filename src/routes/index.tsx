@@ -940,6 +940,7 @@ function KinematicsLab() {
                         max={200}
                         value={l}
                         onChange={(v) => setLength(i, v)}
+                        tooltip={`Set physical length of link ${i + 1}`}
                       />
                     ))}
                     {mode === "FK" &&
