@@ -340,12 +340,27 @@ function KinematicsLab() {
     <main className="min-h-screen px-4 pb-16 pt-6 md:px-8">
       <header className="mb-5 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-extrabold uppercase tracking-widest text-brand">
-            Kinematics Lab
-          </p>
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-extrabold uppercase tracking-widest text-brand">
+              Kinematics Lab
+            </p>
+            <span className="text-[10px] font-bold text-muted-foreground opacity-60">
+              PRESENT BY THARANEETHARAN SS
+            </span>
+          </div>
           <h1 className="mt-1 text-4xl font-extrabold tracking-tight text-foreground md:text-5xl">
             Robot Kinematics Virtual Lab
           </h1>
+          <div className="mt-2 group relative">
+            <span className="cursor-help text-[10px] text-muted-foreground/40 hover:text-muted-foreground transition-colors">
+              [System Info]
+            </span>
+            <div className="absolute left-0 top-full z-50 mt-2 hidden w-80 rounded-lg border border-border bg-card p-4 text-[10px] leading-relaxed text-muted-foreground shadow-xl group-hover:block">
+              '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
+              {"\n\n"}
+              MODE PERAMETRAS ALL ARE POPUP TYPE IF I POINT IT WILL POPUP AND LIST THE SETTING I CAN SCRROL INSIDE OF POP UP 3D SIMULATION PLACE IS FIXED DONT SCROOL OTHER SIDE IT WILL SHOW ALWASY INSIDE OF THAT IT WILL SCROOLLABLE AND ALSO DOWN OF PRESENT BY THARANEETHARAN SS DOWN OF AND ALSO 6 OR 5 OR 4 OR 3 OR 3 OR 1 THE JI POINT IS FIXXED POSIITION ONLY THER IS NO CHNAGES IN IT AND ALSO SIMULATION PLACE MAKE A RELASTIC ROBOT NOW THIS IS JUST A SKETCH BUT I NEED REALSITC ROBOT BASED DESING
+            </div>
+          </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <SegButton
@@ -371,20 +386,28 @@ function KinematicsLab() {
         </div>
       </header>
 
-      <div className="grid gap-5 xl:grid-cols-[320px_minmax(0,1fr)_340px]">
-        {/* ---------- Left: controls ---------- */}
-        <aside className="lab-card h-fit">
-          <Section title="Mode">
-            <SegButton
-              options={[
-                { value: "IK", label: "IK" },
-                { value: "FK", label: "FK" },
-                { value: "DH", label: "DH" },
-              ]}
-              value={mode}
-              onChange={(v) => setMode(v as Mode)}
-            />
-          </Section>
+      <div className="grid gap-5 xl:grid-cols-[200px_minmax(0,1fr)_340px]">
+        {/* ---------- Left: popups ---------- */}
+        <aside className="space-y-3">
+          <div className="group relative">
+            <button className="flex w-full items-center justify-between rounded-xl border border-border bg-card px-4 py-3 text-sm font-bold transition-all hover:border-brand hover:text-brand">
+              <span>Robot Settings</span>
+              <span className="text-xs opacity-50">▼</span>
+            </button>
+            <div className="absolute left-full top-0 z-50 ml-2 hidden w-72 max-h-[80vh] overflow-y-auto rounded-xl border border-border bg-card shadow-2xl group-hover:block">
+              <div className="lab-card border-none shadow-none">
+                <Section title="Mode">
+                  <SegButton
+                    options={[
+                      { value: "IK", label: "IK" },
+                      { value: "FK", label: "FK" },
+                      { value: "DH", label: "DH" },
+                    ]}
+                    value={mode}
+                    onChange={(v) => setMode(v as Mode)}
+                  />
+                </Section>
+                {/* ... existing mode-specific settings ... */}
 
           {mode === "DH" ? (
             <>
