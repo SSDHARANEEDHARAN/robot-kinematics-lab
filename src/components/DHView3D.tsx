@@ -284,8 +284,8 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
 
 
       // Frame axes at each joint
-      if (showAxes) {
-        drawAxes(a, frames[i] as Mat4, 34);
+      if (showAxes && effectiveFrames[i]) {
+        drawAxes(a, effectiveFrames[i] as Mat4, 34);
       }
     }
 
