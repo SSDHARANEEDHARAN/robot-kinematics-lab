@@ -455,10 +455,10 @@ function KinematicsLab() {
         <div>
           <div className="flex items-center gap-2">
             <p className="text-xl font-black uppercase tracking-[0.2em] text-foreground">
-              Kinematics Lab
+              '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
             </p>
             <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">
-              PRESENT BY THARANEETHARAN SS
+              KEEP 2D STYLE FOR 2 NAD 3
             </p>
           </div>
         </div>
@@ -648,37 +648,34 @@ function KinematicsLab() {
           <div className="relative flex-1 overflow-hidden border-t border-border bg-panel">
              {/* Realistic fixed simulation area */}
             <div className="relative h-full w-full">
-              <DHView3D 
-                mode={mode}
-                frames={frames}
-                planarPoints={points}
-                linkCount={linkCount}
-                activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
-              />
-              
-              {mode !== "DH" && (
-                <div className="absolute inset-0 pointer-events-none">
-                  {/* Invisible interactive layer for target dragging */}
-                  <div className="absolute inset-0 pointer-events-auto">
-                    <ArmView2D
-                      points={points}
-                      lengths={activeLengths}
-                      showZone={showZone}
-                      target={mode === "IK" ? target : null}
-                      onTargetChange={mode === "IK" && !pathMode && !playing ? setTarget : undefined}
-                      ghostPoints={mode === "IK" && showGhost ? ghostPoints : undefined}
-                      trace={showTrace ? trace : undefined}
-                      path={waypoints.map((w) => w.target)}
-                      workspace={workspace}
-                      velocity={velocity}
-                      unit={unit}
-                      activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
-                      limits={[{ min: -150, max: 150 }, { min: -150, max: 150 }, { min: -180, max: 180 }]}
-                      angles={planarAngles}
-                    />
-                  </div>
-                </div>
+              {mode === "DH" ? (
+                <DHView3D 
+                  mode={mode}
+                  frames={frames}
+                  planarPoints={points}
+                  linkCount={linkCount}
+                  activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
+                />
+              ) : (
+                <ArmView2D
+                  points={points}
+                  lengths={activeLengths}
+                  showZone={showZone}
+                  target={mode === "IK" ? target : null}
+                  onTargetChange={mode === "IK" && !pathMode && !playing ? setTarget : undefined}
+                  ghostPoints={mode === "IK" && showGhost ? ghostPoints : undefined}
+                  trace={showTrace ? trace : undefined}
+                  path={waypoints.map((w) => w.target)}
+                  workspace={workspace}
+                  velocity={velocity}
+                  unit={unit}
+                  activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
+                  limits={[{ min: -150, max: 150 }, { min: -150, max: 150 }, { min: -180, max: 180 }]}
+                  angles={planarAngles}
+                  interactive={true}
+                />
               )}
+              
             </div>
 
           </div>
