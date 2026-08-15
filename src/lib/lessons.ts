@@ -22,61 +22,51 @@ export type Lesson = {
 
 export const LESSONS: Lesson[] = [
   {
-    id: "l1",
-    title: "1. Reach the Point",
-    goal: "Set Target X to 200",
+    id: "fk-intro",
+    title: "1. Forward Kinematics (FK)",
+    goal: "Reach (X: 200, Y: 0) using joint angles",
     body: [
-      "Welcome to Kinematics.SelfStudy.",
-      "Inverse Kinematics (IK) calculates joint angles for a given target position.",
-      "Try dragging the target point to X: 200.",
+      "Forward Kinematics is the process of finding the end-effector position given the joint angles.",
+      "In this mode, you control the rotation of each joint directly.",
+      "Adjust the sliders to set Joint 1 to 0° and Joint 2 to 0° to stretch the arm horizontally.",
+    ],
+    setup: { mode: "FK", linkCount: 2 },
+    check: (s) => s.mode === "FK" && Math.abs(s.target.x - 200) < 5 && Math.abs(s.target.y) < 5,
+  },
+  {
+    id: "ik-intro",
+    title: "2. Inverse Kinematics (IK)",
+    goal: "Move target to (X: 100, Y: 100)",
+    body: [
+      "Inverse Kinematics is the process of finding the joint angles needed to reach a specific target position.",
+      "In this mode, you drag the target point (or use the crosshair), and the math calculates the angles.",
+      "Drag the end-effector to the coordinates (100, 100).",
     ],
     setup: { mode: "IK", linkCount: 2 },
-    check: (s) => Math.abs(s.target.x - 200) < 5,
+    check: (s) => s.mode === "IK" && Math.abs(s.target.x - 100) < 5 && Math.abs(s.target.y - 100) < 5,
   },
   {
-    id: "l2",
-    title: "2. Stretch Out",
-    goal: "Extend the arm to its full length",
+    id: "ik-elbow",
+    title: "3. Elbow Up/Down Solutions",
+    goal: "Achieve the target with a negative J2 angle",
     body: [
-      "The total reach is the sum of all link lengths.",
-      "Straighten the arm to reach the workspace boundary.",
+      "For a 2-link arm, there are usually two possible solutions for every reachable point (Elbow Up and Elbow Down).",
+      "Notice how the arm 'flips' when you move past certain points.",
+      "Try to position the arm such that the elbow (Joint 2) is bent upwards.",
     ],
-    setup: { mode: "IK" },
-    check: (s) => {
-      const max = s.lengths.reduce((a, b) => a + b, 0);
-      const d = Math.hypot(s.target.x, s.target.y);
-      return Math.abs(d - max) < 10;
-    },
+    setup: { mode: "IK", linkCount: 2 },
+    check: (s) => s.mode === "IK" && (s.angles[1] ?? 0) < -5,
   },
   {
-    id: "l3",
-    title: "3. The Elbow Angle",
-    goal: "Set J2 (Elbow) to 90 degrees",
+    id: "workspace-limits",
+    title: "4. Workspace & Singularities",
+    goal: "Move the arm to its maximum reach",
     body: [
-      "Forward Kinematics (FK) calculates the end position from joint angles.",
-      "Switch to FK mode and adjust J2 to exactly 90°.",
+      "The workspace is the set of all points the robot can reach.",
+      "A singularity occurs when the arm is fully extended or folded, losing a degree of freedom.",
+      "Move the target to the very edge of the circle (Distance = 200).",
     ],
-    setup: { mode: "FK" },
-    check: (s) => {
-      const j2 = s.angles[1];
-      if (j2 === undefined) return false;
-      return s.mode === "FK" && Math.abs(j2 - 90) < 1;
-    },
-  },
-  {
-    id: "l4",
-    title: "4. Dead Zone",
-    goal: "Move target inside the inner limit",
-    body: [
-      "The 'inner dead zone' is a region the robot cannot reach.",
-      "This happens when the distance is less than |L1 - L2|.",
-    ],
-    setup: { mode: "IK" },
-    check: (s) => {
-      const l1 = s.lengths[0];
-      const l2 = s.lengths[1];
-      if (l1 === undefined || l2 === undefined) return false;
-      return Math.hypot(s.target.x, s.target.y) < Math.abs(l1 - l2);
-    },
+    setup: { mode: "IK", linkCount: 2 },
+    check: (s) => Math.hypot(s.target.x, s.target.y) > 195,
   },
 ];
