@@ -120,6 +120,8 @@ function KinematicsLab() {
   const [completed, setCompleted] = useState<Record<string, boolean>>({});
   const [showVelocity, setShowVelocity] = useState(false);
   const [showAxes, setShowAxes] = useState(true);
+  const [showGrid, setShowGrid] = useState(true);
+  const [showAxesOverlay, setShowAxesOverlay] = useState(true);
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [jointLimits, setJointLimits] = useState<JointLimits[]>([
     { min: -180, max: 180 },
@@ -788,17 +790,22 @@ function KinematicsLab() {
                     <Section title="Environment" collapsible defaultOpen={false}>
                       <div className="flex flex-col gap-3">
                         <label className="flex items-center gap-2">
+                          <input type="checkbox" className="accent-foreground" checked={showGrid} onChange={e => setShowGrid(e.target.checked)} />
+                          <span className="text-xs font-bold uppercase tracking-widest">Show Grid</span>
+                        </label>
+                        <label className="flex items-center gap-2">
+                          <input type="checkbox" className="accent-foreground" checked={showAxesOverlay} onChange={e => setShowAxesOverlay(e.target.checked)} />
+                          <span className="text-xs font-bold uppercase tracking-widest">Show Global Origin</span>
+                        </label>
+                        <label className="flex items-center gap-2">
                           <input type="checkbox" className="accent-foreground" checked={showAxes} onChange={e => setShowAxes(e.target.checked)} />
-                          <span className="text-xs font-bold uppercase tracking-widest">Show Joint Axes</span>
+                          <span className="text-xs font-bold uppercase tracking-widest">Show Joint Frames</span>
                         </label>
                         <label className="flex items-center gap-2">
                           <input type="checkbox" className="accent-foreground" checked={showHeatmap} onChange={e => setShowHeatmap(e.target.checked)} />
                           <span className="text-xs font-bold uppercase tracking-widest">Show Heatmap</span>
                         </label>
                         <GhostButton onClick={() => setAngles([0,0,0])}>Reset Pose</GhostButton>
-                        <GhostButton onClick={() => exportPresetReport(preset, ikFkConsistency)}>
-                          Export PDF
-                        </GhostButton>
                       </div>
                     </Section>
 
@@ -829,6 +836,8 @@ function KinematicsLab() {
                   planarPoints={mode !== "DH" ? points : undefined}
                   linkCount={mode === "DH" ? jointCount : linkCount}
                   showAxes={showAxes}
+                  showGrid={showGrid}
+                  showAxesOverlay={showAxesOverlay}
                   activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
                 />
               ) : (
@@ -851,6 +860,9 @@ function KinematicsLab() {
                     angles={planarAngles}
                     interactive={true}
                     collisions={collisionResult}
+                    showGrid={showGrid}
+                    showAxesOverlay={showAxesOverlay}
+                    showJointAxes={showAxes}
                   />
                 </div>
               )}
