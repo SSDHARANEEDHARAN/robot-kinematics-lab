@@ -188,6 +188,8 @@ export function ArmView2D({
           const isLink1Step = activeStep !== undefined && activeStep >= 1 && activeStep <= 4;
           const isLink2Step = activeStep !== undefined && activeStep >= 2 && activeStep <= 4;
           const isHighlighted = (i === 0 && isLink1Step) || (i === 1 && isLink2Step);
+          
+          const isColliding = collisions?.pairs.some(pair => pair.includes(i));
 
           return (
             <line
@@ -196,13 +198,30 @@ export function ArmView2D({
               y1={r1(p.y)}
               x2={r1(q.x)}
               y2={r1(q.y)}
-              stroke="#1A252F" // Dark navy/black to match 3D links
+              stroke={isColliding ? "#ef4444" : "#1A252F"} // Red if colliding
               strokeWidth={isHighlighted ? 18 : 12}
-              strokeLinecap="butt" // Flat ends to match industrial style
+              strokeLinecap="butt"
               opacity={isHighlighted ? 1 : 0.9}
             />
           );
         })}
+
+        {/* collision markers */}
+        {collisions?.colliding && collisions.points.map((p, i) => (
+          <g key={`col-${i}`}>
+            <circle
+              cx={r1(p.x)}
+              cy={r1(p.y)}
+              r={8}
+              fill="none"
+              stroke="#ef4444"
+              strokeWidth={2}
+              className="animate-pulse"
+            />
+            <line x1={p.x - 6} y1={p.y - 6} x2={p.x + 6} y2={p.y + 6} stroke="#ef4444" strokeWidth={2} />
+            <line x1={p.x + 6} y1={p.y - 6} x2={p.x - 6} y2={p.y + 6} stroke="#ef4444" strokeWidth={2} />
+          </g>
+        ))}
 
         {/* joints & angle arrows */}
         {points.map((p, i) => {
