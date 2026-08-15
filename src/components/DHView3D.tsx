@@ -5,7 +5,7 @@ import { GhostButton } from "./LabControls";
 
 type Props = { frames: Mat4[] };
 
-const LINK_COLORS = ["#334155", "#475569", "#64748b", "#94a3b8", "#cbd5e1", "#e2e8f0"];
+const LINK_COLORS = ["oklch(0.3 0.05 250)", "oklch(0.4 0.05 250)", "oklch(0.5 0.05 250)", "oklch(0.6 0.05 250)", "oklch(0.7 0.05 250)", "oklch(0.8 0.05 250)"];
 
 export function DHView3D({ frames }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
