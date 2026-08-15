@@ -239,3 +239,11 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: 0 0 15px oklch(0.75 0.22 190 / 0.5);
   cursor: pointer;
 }
+
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
