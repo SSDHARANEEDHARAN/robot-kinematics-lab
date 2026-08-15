@@ -973,6 +973,113 @@ function KinematicsLab() {
                   completed={completed}
                 />
               )}
+
+              {tab === "ai" && (
+                <div className="h-[400px]">
+                  <AIPanel
+                    state={{
+                      mode,
+                      target,
+                      lengths: activeLengths,
+                      angles: planarAngles,
+                      reachable: ik.reachable,
+                      ikError: ik.error,
+                    }}
+                  />
+                </div>
+              )}
+
+              {tab === "progress" && (
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-extrabold uppercase tracking-widest text-brand">
+                      Robotics Skill Level
+                    </h4>
+                    <div className="space-y-3">
+                      {[
+                        { label: "FK", value: 80, color: "bg-link-1" },
+                        { label: "IK", value: 60, color: "bg-link-2" },
+                        { label: "DH", value: 40, color: "bg-link-3" },
+                        { label: "Teaching", value: 50, color: "bg-brand" },
+                      ].map((s) => (
+                        <div key={s.label} className="space-y-1">
+                          <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider">
+                            <span>{s.label}</span>
+                            <span>{s.value}%</span>
+                          </div>
+                          <div className="h-2 w-full rounded-full bg-secondary overflow-hidden">
+                            <div
+                              className={`h-full ${s.color} transition-all duration-1000`}
+                              style={{ width: `${s.value}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Card title="Activity Log">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="h-2 w-2 rounded-full bg-link-3" />
+                        <div className="flex-1">
+                          <p className="text-xs font-bold">Lesson 1 Completed</p>
+                          <p className="text-[10px] text-muted-foreground">2 minutes ago</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="h-2 w-2 rounded-full bg-link-2" />
+                        <div className="flex-1">
+                          <p className="text-xs font-bold">Quiz Score: 93%</p>
+                          <p className="text-[10px] text-muted-foreground">1 hour ago</p>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              )}
+
+                <TeachPanel
+                  waypoints={waypoints}
+                  playing={playing}
+                  activeIndex={activeIndex}
+                  jointCount={linkCount}
+                  onTeach={teach}
+                  onDelete={(id) => setWaypoints((w) => w.filter((x) => x.id !== id))}
+                  onSetMove={(id, m) =>
+                    setWaypoints((w) => w.map((x) => (x.id === id ? { ...x, move: m } : x)))
+                  }
+                  onSetSpeed={(id, s) =>
+                    setWaypoints((w) => w.map((x) => (x.id === id ? { ...x, spd: s } : x)))
+                  }
+                  onGoto={gotoWaypoint}
+                  onPlay={() => setPlaying(true)}
+                  onStop={() => setPlaying(false)}
+                  onClear={() => setWaypoints([])}
+                  onJogJoint={jogJoint}
+                  onJogCart={jogCart}
+                />
+              )}
+
+              {tab === "quiz" && (
+                <QuizPanel
+                  lengths={activeLengths}
+                  angles={planarAngles}
+                  onSetTarget={(t) => {
+                    setMode("IK");
+                    setTarget(t);
+                  }}
+                />
+              )}
+
+              {tab === "lessons" && (
+                <LessonPanel
+                  state={lessonState}
+                  activeId={lessonId}
+                  onSelect={selectLesson}
+                  completed={completed}
+                />
+              )}
             </div>
           </div>
 
