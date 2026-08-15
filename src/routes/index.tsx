@@ -92,8 +92,8 @@ const TABS: { value: Tab; label: string }[] = [
 function KinematicsLab() {
   const [mode, setMode] = useState<Mode>("IK");
   const [linkCount, setLinkCount] = useState(2);
-  const [lengths, setLengths] = useState([120, 100, 80]);
-  const [angles, setAngles] = useState([20, 20, 10]);
+  const [lengths, setLengths] = useState([120, 100, 80, 60]);
+  const [angles, setAngles] = useState([20, 20, 10, 0]);
   const [target, setTarget] = useState({ x: 100, y: 30 });
   const [elbowUp, setElbowUp] = useState(false);
   const [showZone, setShowZone] = useState(true);
@@ -119,6 +119,7 @@ function KinematicsLab() {
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [jointLimits, setJointLimits] = useState<JointLimits[]>([
     { min: -180, max: 180 },
+    { min: -150, max: 150 },
     { min: -150, max: 150 },
     { min: -150, max: 150 },
   ]);
@@ -289,7 +290,7 @@ function KinematicsLab() {
       error: dist,
       fkPos,
       limitViolated,
-      colliding: collisionResult.colliding
+      colliding: collisionResult.colliding,
     };
   }, [points, target, mode, planarAngles, jointLimits, collisionResult.colliding]);
 
@@ -674,6 +675,7 @@ function KinematicsLab() {
                         options={[
                           { value: "2", label: "2 Links" },
                           { value: "3", label: "3 Links" },
+                          { value: "4", label: "4 Links" },
                         ]}
                         value={String(linkCount)}
                         onChange={(v) => setLinkCount(Number(v))}
@@ -685,6 +687,9 @@ function KinematicsLab() {
                         <NumberField label="L2" value={lengths[1] ?? 0} onChange={(v) => setLength(1, v)} />
                         {linkCount > 2 && (
                           <NumberField label="L3" value={lengths[2] ?? 0} onChange={(v) => setLength(2, v)} />
+                        )}
+                        {linkCount > 3 && (
+                          <NumberField label="L4" value={lengths[3] ?? 0} onChange={(v) => setLength(3, v)} />
                         )}
                       </div>
                     </Section>
@@ -722,7 +727,7 @@ function KinematicsLab() {
                     
                     <Section title="Joint Limits" collapsible defaultOpen={false}>
                       <div className="flex flex-col gap-4">
-                        {[0, 1, 2].slice(0, linkCount).map(i => (
+                        {[0, 1, 2, 3].slice(0, linkCount).map(i => (
                           <div key={i} className="space-y-2">
                             <div className="text-[10px] font-bold uppercase text-muted-foreground">Joint J{i+1} Limits</div>
                             <SliderRow 
