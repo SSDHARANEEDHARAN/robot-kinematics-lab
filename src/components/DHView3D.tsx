@@ -6,7 +6,7 @@ type Props = {
   frames?: Mat4[];
   activeStep?: number | undefined;
   // Planar support
-  mode?: "IK" | "FK" | "DH";
+  mode?: string;
   planarPoints?: Vec2[];
   linkCount?: number;
 };
