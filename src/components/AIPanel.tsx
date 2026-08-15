@@ -44,7 +44,7 @@ export function AIPanel({ state }: Props) {
 
   return (
     <div className="flex h-full flex-col gap-4">
-      <div className="flex-1 space-y-4 overflow-y-auto pr-2" style={{ maxHeight: "400px" }}>
+      <div className="flex-1 space-y-4 overflow-y-auto pr-2 scrollbar-hide" style={{ maxHeight: "400px" }}>
         {messages.length === 0 && (
           <div className="rounded-xl border border-dashed border-border p-6 text-center">
             <p className="text-sm text-muted-foreground">
