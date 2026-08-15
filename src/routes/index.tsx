@@ -612,7 +612,7 @@ function KinematicsLab() {
                         >
                           -
                         </button>
-                        <span className="min-w-12 border-x-2 border-foreground px-4 py-2 text-center text-lg font-extrabold">
+                        <span className="min-w-12 border-x border-border px-4 py-2 text-center text-lg font-extrabold">
                           {jointCount}
                         </span>
                         <button
