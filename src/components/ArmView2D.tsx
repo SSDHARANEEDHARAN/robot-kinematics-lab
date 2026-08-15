@@ -126,21 +126,24 @@ export function ArmView2D({
         </g>
 
         {showZone && (
-          <g>
+          <g className="opacity-20 transition-opacity duration-700 hover:opacity-40">
             <circle
               r={maxReach}
-              fill="oklch(0.55 0.15 200 / 0.03)"
-              stroke="oklch(0.55 0.15 200 / 0.2)"
+              fill="var(--primary)"
+              fillOpacity={0.03}
+              stroke="var(--primary)"
               strokeWidth={1.5}
-              strokeDasharray="4 4"
+              strokeDasharray="8 8"
+              className="animate-[spin_60s_linear_infinite]"
             />
             {minReach > 1 && (
               <circle
                 r={minReach}
                 className="fill-background"
-                stroke="oklch(0.55 0.15 200 / 0.1)"
+                stroke="var(--primary)"
                 strokeWidth={1.2}
-                strokeDasharray="2 2"
+                strokeDasharray="4 4"
+                opacity={0.5}
               />
             )}
           </g>
