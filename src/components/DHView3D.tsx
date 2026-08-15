@@ -151,10 +151,10 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
         pa.x + nx * lw, pa.y + ny * lw,
         pa.x - nx * lw, pa.y - ny * lw
       );
-      grad.addColorStop(0, "#cbd5e1"); // Brushed Aluminum highlight
+      grad.addColorStop(0, "white");
       grad.addColorStop(0.3, linkColor);
       grad.addColorStop(0.7, linkColor);
-      grad.addColorStop(1, "#1e293b"); // Heavy shadow
+      grad.addColorStop(1, "black");
       
       ctx.strokeStyle = grad;
       ctx.lineWidth = lw;
