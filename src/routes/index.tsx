@@ -62,7 +62,7 @@ export const Route = createFileRoute("/")({
 });
 
 type Mode = "IK" | "FK" | "DH" | "EXPERIMENT";
-type Tab = "math" | "teach" | "quiz" | "lessons" | "ai" | "industrial" | "progress";
+type Tab = "math" | "teach" | "quiz" | "lessons" | "ai" | "industrial" | "progress" | "walkthrough";
 
 const DEFAULT_DH: DHRow[] = [
   { theta: 0, d: 80, a: 0, alpha: -90 },
@@ -75,6 +75,7 @@ const DEFAULT_DH: DHRow[] = [
 
 const TABS: { value: Tab; label: string }[] = [
   { value: "math", label: "Math" },
+  { value: "walkthrough", label: "Step-by-Step" },
   { value: "teach", label: "Teach" },
   { value: "quiz", label: "Quiz" },
   { value: "ai", label: "AI Tutor" },
