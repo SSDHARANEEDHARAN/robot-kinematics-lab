@@ -163,7 +163,7 @@
 
 @utility glass-card {
   background-color: var(--card);
-  border-radius: var(--radius-2xl);
+  border-radius: var(--radius-xl);
   backdrop-filter: blur(20px);
   box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
   transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -179,11 +179,11 @@
 @utility lab-card {
   @apply glass-card;
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.1);
     
     @variant dark {
-      box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 12px 30px -8px rgba(0, 0, 0, 0.6);
     }
   }
 }
@@ -194,6 +194,7 @@
   letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--color-muted-foreground);
+  line-height: 1;
 }
 
 @utility lab-input {

@@ -1,5 +1,11 @@
 import { useState, type ReactNode } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function Section({ 
   title, 
@@ -17,9 +23,9 @@ export function Section({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="transition-colors hover:bg-muted/5">
+    <div className="transition-colors hover:bg-muted/5 group/section">
       <div 
-        className={`flex items-center justify-between px-5 py-3 ${collapsible ? 'cursor-pointer' : ''}`}
+        className={`flex items-center justify-between px-5 py-3 ${collapsible ? 'cursor-pointer select-none' : ''}`}
         onClick={() => collapsible && setIsOpen(!isOpen)}
         role={collapsible ? "button" : undefined}
         tabIndex={collapsible ? 0 : undefined}
@@ -37,12 +43,12 @@ export function Section({
               {isOpen ? <ChevronDown size={14} className="rotate-0" /> : <ChevronRight size={14} className="-rotate-90" />}
             </span>
           )}
-          <h3 className="lab-label text-[10px] text-foreground/70">{title}</h3>
+          <h3 className="lab-label text-[10px] text-foreground/70 group-hover/section:text-foreground transition-colors">{title}</h3>
         </div>
-        {aside ? <span className="text-xs font-medium text-muted-foreground">{aside}</span> : null}
+        {aside ? <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">{aside}</span> : null}
       </div>
       {(!collapsible || isOpen) && (
-        <div className="px-5 pb-4">
+        <div className="px-5 pb-5">
           {children}
         </div>
       )}
@@ -122,6 +128,7 @@ export function SliderRow({
   max,
   onChange,
   ariaLabel,
+  tooltip,
 }: {
   label: string;
   value: number;
@@ -129,8 +136,9 @@ export function SliderRow({
   max: number;
   onChange: (v: number) => void;
   ariaLabel?: string;
+  tooltip?: string;
 }) {
-  return (
+  const input = (
     <div className="flex items-center gap-3">
       <span className="w-14 shrink-0 text-xs font-bold text-muted-foreground uppercase tracking-wider" id={`slider-label-${label}`}>
         {label}
@@ -154,10 +162,25 @@ export function SliderRow({
       />
     </div>
   );
+
+  if (!tooltip) return input;
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>{input}</div>
+        </TooltipTrigger>
+        <TooltipContent side="right">
+          <p>{tooltip}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
 }
 
-export function GhostButton({ children, onClick }: { children: ReactNode; onClick: () => void }) {
-  return (
+export function GhostButton({ children, onClick, tooltip }: { children: ReactNode; onClick: () => void; tooltip?: string }) {
+  const button = (
     <button
       type="button"
       onClick={onClick}
@@ -166,14 +189,29 @@ export function GhostButton({ children, onClick }: { children: ReactNode; onClic
       <span className="relative z-10">{children}</span>
     </button>
   );
+
+  if (!tooltip) return button;
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          {button}
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{tooltip}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
 }
 
 export function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="px-4 py-3 group relative overflow-hidden bg-secondary/20 rounded-xl" role="status" aria-label={`${label}: ${value}`}>
+    <div className="px-4 py-4 group relative overflow-hidden bg-secondary/20 rounded-xl transition-all duration-300 hover:bg-secondary/30" role="status" aria-label={`${label}: ${value}`}>
       <div className="relative z-10">
-        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{label}</div>
-        <div className="mt-1 text-2xl font-black tabular-nums tracking-tight text-foreground transition-transform duration-300 group-hover:scale-105">{value}</div>
+        <div className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/80">{label}</div>
+        <div className="mt-1 text-xl font-black tabular-nums tracking-tighter text-foreground transition-transform duration-300 group-hover:scale-105">{value}</div>
       </div>
     </div>
   );
@@ -181,13 +219,13 @@ export function Stat({ label, value }: { label: string; value: string }) {
 
 export function Card({ title, children }: { title?: string; children: ReactNode }) {
   return (
-    <div className="lab-card group/card shadow-none border-none">
+    <div className="lab-card group/card shadow-none border-none flex flex-col h-full">
       {title && (
-        <div className="bg-secondary/10 px-6 py-4 backdrop-blur-sm border-b border-border/50">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-foreground/80">{title}</h3>
+        <div className="bg-secondary/5 px-6 py-5 backdrop-blur-sm border-b border-border/50 shrink-0">
+          <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/70">{title}</h3>
         </div>
       )}
-      <div className="p-6">{children}</div>
+      <div className="p-6 flex-1 overflow-auto scrollbar-hide">{children}</div>
     </div>
   );
 }
