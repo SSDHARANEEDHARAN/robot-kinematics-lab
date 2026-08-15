@@ -336,64 +336,75 @@ function KinematicsLab() {
     setPlaying(false);
     setTrace([]);
     let demoPoints: Waypoint[] = [];
-    const baseAngles = [0, 0, 0];
+    
+    // Scale demo parameters based on joint count
+    // DH Mode uses jointCount, IK/FK use linkCount
+    const activeJoints = mode === "DH" ? jointCount : linkCount;
 
     if (type === "pick") {
-      // Pick and Place: Home -> Over Pick -> Pick -> Over Pick -> Over Place -> Place -> Over Place -> Home
       const pts = [
         { x: 150, y: 100, name: "Home" },
         { x: 100, y: -50, name: "Over Pick" },
         { x: 100, y: -80, name: "Pick" },
-        { x: 100, y: -50, name: "Clearance" },
-        { x: -100, y: -50, name: "Over Place" },
         { x: -100, y: -80, name: "Place" },
-        { x: -100, y: -50, name: "Clearance" },
         { x: 150, y: 100, name: "Home" },
       ];
       demoPoints = pts.map((p, i) => {
-        const sol = ik2d(activeLengths, p, false);
+        let anglesForPose: number[] = [];
+        if (mode === "DH") {
+           anglesForPose = new Array(jointCount).fill(0).map((_, j) => (j === 1 ? -30 : j === 2 ? 60 : 0));
+        } else {
+           anglesForPose = ik2d(activeLengths, p, false).angles;
+        }
         return {
           id: uid(),
           name: p.name,
-          angles: sol.angles,
+          angles: anglesForPose,
           target: p,
           move: i % 2 === 0 ? "MOVJ" : "MOVL",
           spd: 60,
         };
       });
     } else if (type === "round") {
-      // Arounding: A circular motion trace
-      for (let i = 0; i <= 360; i += 45) {
+      for (let i = 0; i <= 360; i += 90) {
         const rad = (i * Math.PI) / 180;
         const p = { x: 120 * Math.cos(rad), y: 120 * Math.sin(rad) };
-        const sol = ik2d(activeLengths, p, true);
+        let anglesForPose: number[] = [];
+        if (mode === "DH") {
+           anglesForPose = new Array(jointCount).fill(0).map((_, j) => (j === 0 ? i : 0));
+        } else {
+           anglesForPose = ik2d(activeLengths, p, true).angles;
+        }
         demoPoints.push({
           id: uid(),
           name: `R${i}`,
-          angles: sol.angles,
+          angles: anglesForPose,
           target: p,
           move: "MOVL",
           spd: 40,
         });
       }
     } else if (type === "dance") {
-      // Dancing: Rhythmic joint movements
       const patterns = [
-        [45, -45, 45],
-        [-45, 45, -45],
-        [90, 0, -90],
-        [0, 90, 0],
-        [-90, 0, 90],
-        [0, 0, 0],
+        new Array(activeJoints).fill(30),
+        new Array(activeJoints).fill(-30),
+        new Array(activeJoints).fill(0),
       ];
       demoPoints = patterns.map((p, i) => {
-        const pts = fk2d(activeLengths, p);
-        const last = pts[pts.length - 1] ?? { x: 0, y: 0 };
+        let targetPos = { x: 0, y: 0 };
+        if (mode === "DH") {
+           const f = dhChain(dhRows.map((r, k) => ({ ...r, theta: p[k] ?? 0 })));
+           const o = originOf(f[f.length - 1] as Mat4);
+           targetPos = { x: o.x, y: o.y };
+        } else {
+           const pts = fk2d(activeLengths, p);
+           targetPos = pts[pts.length - 1] ?? { x: 0, y: 0 };
+        }
         return {
           id: uid(),
           name: `Step ${i + 1}`,
           angles: p,
-          target: last,
+          target: targetPos,
           move: "MOVJ",
           spd: 80,
         };
