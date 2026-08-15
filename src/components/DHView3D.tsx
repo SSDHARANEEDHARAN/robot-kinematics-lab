@@ -311,18 +311,43 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       }
     }
 
-    // End Effector (Blue Sphere in reference)
+    // End Effector (Gripper Base/Tool)
     const eeFrame = effectiveFrames[effectiveFrames.length - 1];
-    const eePos = eeFrame ? originOf(eeFrame as Mat4) : { x: 0, y: 0, z: 0 };
-    const pee = project(eePos);
-    ctx.beginPath();
-    ctx.arc(pee.x, pee.y, 10 * currentBaseScale, 0, Math.PI * 2);
-    ctx.fillStyle = "#3498DB";
-    ctx.fill();
-    ctx.strokeStyle = "rgba(0,0,0,0.3)";
-    ctx.stroke();
-    if (showAxes && effectiveFrames.length > 0) {
-      drawAxes(eePos, effectiveFrames[effectiveFrames.length - 1] as Mat4, 35);
+    if (eeFrame) {
+      const eePos = originOf(eeFrame as Mat4);
+      const pee = project(eePos);
+      const zAxis = axisOf(eeFrame as Mat4, 2);
+      const projZ = project({x: eePos.x + zAxis.x, y: eePos.y + zAxis.y, z: eePos.z + zAxis.z});
+      const eeAngle = Math.atan2(projZ.y - pee.y, projZ.x - pee.x);
+      
+      ctx.save();
+      ctx.translate(pee.x, pee.y);
+      ctx.rotate(eeAngle);
+      
+      const eer = 12 * currentBaseScale;
+      
+      // Industrial End-Cap Tool Holder
+      const eeGrad = ctx.createLinearGradient(0, -eer, 0, eer);
+      eeGrad.addColorStop(0, "#3498DB");
+      eeGrad.addColorStop(1, "#2980B9");
+      
+      ctx.fillStyle = eeGrad;
+      ctx.beginPath();
+      ctx.roundRect(-eer, -eer, eer * 2, eer * 2, eer * 0.3);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(0,0,0,0.3)";
+      ctx.stroke();
+      
+      // Gripper fingers (Simple aesthetic representation)
+      ctx.fillStyle = "#2C3E50";
+      ctx.fillRect(eer * 0.5, -eer * 0.8, eer * 0.8, eer * 0.3);
+      ctx.fillRect(eer * 0.5, eer * 0.5, eer * 0.8, eer * 0.3);
+      
+      ctx.restore();
+
+      if (showAxes) {
+        drawAxes(eePos, eeFrame as Mat4, 40);
+      }
     }
 
 
