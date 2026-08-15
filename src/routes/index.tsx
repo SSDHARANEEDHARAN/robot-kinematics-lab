@@ -399,7 +399,7 @@ function KinematicsLab() {
           />
           <button
             onClick={share}
-            className="rounded-lg bg-primary px-4 py-2 text-xs font-black uppercase tracking-widest text-primary-foreground shadow-[0_0_20px_oklch(0.75_0.22_190_/_0.4)] transition-all hover:scale-105 active:scale-95"
+            className="rounded-lg bg-primary px-4 py-2 text-xs font-black uppercase tracking-widest text-primary-foreground shadow-sm transition-all hover:scale-105 active:scale-95"
           >
             {shareMsg || "Share preset"}
           </button>

@@ -112,7 +112,7 @@ export function GhostButton({ children, onClick }: { children: ReactNode; onClic
     <button
       type="button"
       onClick={onClick}
-      className="rounded-lg border border-border bg-secondary px-3 py-2 text-xs font-bold uppercase tracking-wider text-foreground transition-all hover:bg-primary hover:text-primary-foreground hover:shadow-[0_0_15px_oklch(0.75_0.22_190_/_0.3)] active:scale-95"
+      className="rounded-lg border border-border bg-secondary px-3 py-2 text-xs font-bold uppercase tracking-wider text-foreground transition-all hover:bg-primary hover:text-primary-foreground active:scale-95"
     >
       {children}
     </button>

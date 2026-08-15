@@ -108,8 +108,8 @@ export function DHView3D({ frames }: Props) {
       
       // Housing gradient
       const grad = ctx.createRadialGradient(p.x - r/3, p.y - r/3, 1, p.x, p.y, r);
-      grad.addColorStop(0, "oklch(0.8 0.1 190)");
-      grad.addColorStop(1, "oklch(0.3 0.05 250)");
+      grad.addColorStop(0, "oklch(0.65 0.1 200)");
+      grad.addColorStop(1, "oklch(0.8 0.05 250)");
 
       ctx.beginPath();
       ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
