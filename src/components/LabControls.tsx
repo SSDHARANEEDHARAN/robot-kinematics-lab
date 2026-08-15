@@ -133,7 +133,7 @@ export function Card({ title, children }: { title?: string; children: ReactNode 
     <div className="lab-card overflow-hidden">
       {title && (
         <div className="border-b border-border bg-panel/50 px-5 py-3">
-          <h3 className="text-sm font-extrabold uppercase tracking-widest text-brand">{title}</h3>
+          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">{title}</h3>
         </div>
       )}
       <div className="p-5">{children}</div>
