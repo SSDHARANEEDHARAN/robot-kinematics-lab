@@ -732,17 +732,39 @@ function KinematicsLab() {
           <div className="relative flex-1 overflow-hidden border-t border-border bg-panel">
              {/* Realistic fixed simulation area */}
             <div className="relative h-full w-full">
-              <DHView3D 
-                mode={mode}
-                frames={mode === "DH" ? frames : undefined}
-                planarPoints={mode !== "DH" ? points : undefined}
-                linkCount={mode === "DH" ? jointCount : linkCount}
-                showAxes={showAxes}
-                activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
-              />
+              {(mode === "DH" || (mode !== "DH" && linkCount > 3)) ? (
+                <DHView3D 
+                  mode={mode}
+                  frames={mode === "DH" ? frames : undefined}
+                  planarPoints={mode !== "DH" ? points : undefined}
+                  linkCount={mode === "DH" ? jointCount : linkCount}
+                  showAxes={showAxes}
+                  activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-panel">
+                   <ArmView2D
+                    points={points}
+                    lengths={activeLengths}
+                    showZone={showZone}
+                    target={target}
+                    onTargetChange={setTarget}
+                    ghostPoints={showGhost ? ghostPoints : undefined}
+                    trace={showTrace ? trace : undefined}
+                    path={waypoints.map((w) => w.target)}
+                    heatmap={heatmap}
+                    workspace={[]}
+                    velocity={velocity}
+                    unit={unit}
+                    activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
+                    limits={jointLimits}
+                    angles={planarAngles}
+                    interactive={true}
+                  />
+                </div>
+              )}
 
-
-              {mode === "IK" && !pathMode && !playing && (
+              {mode === "IK" && !pathMode && !playing && (mode === "DH" || linkCount > 3) && (
                 <div className="absolute inset-0 pointer-events-none">
                   <ArmView2D
                     points={points}
@@ -755,7 +777,6 @@ function KinematicsLab() {
                     path={waypoints.map((w) => w.target)}
                     heatmap={heatmap}
                     workspace={[]}
-
                     velocity={velocity}
                     unit={unit}
                     activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
@@ -763,10 +784,8 @@ function KinematicsLab() {
                     angles={planarAngles}
                     interactive={true}
                   />
-
                 </div>
               )}
-
             </div>
           </div>
         </section>
