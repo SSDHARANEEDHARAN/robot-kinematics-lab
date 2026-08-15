@@ -586,6 +586,11 @@ function KinematicsLab() {
                     value={mode}
                     onChange={(v) => setMode(v as Mode)}
                   />
+                  <div className="mt-4 flex flex-col gap-2">
+                    <GhostButton onClick={share}>
+                      {shareMsg || "Share Preset"}
+                    </GhostButton>
+                  </div>
                 </Section>
                 {mode === "DH" ? (
                   <>
