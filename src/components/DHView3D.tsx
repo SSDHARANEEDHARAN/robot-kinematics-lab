@@ -96,12 +96,11 @@ export function DHView3D({ frames, activeStep }: Props) {
         drawArrow(p, px, "#FF0000"); // X - Red
         drawArrow(p, pz, "#0000FF"); // Z - Blue
       } else {
-        // Just lines for internal axes to keep it clean
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = "#FF0000"; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(px.x, px.y); ctx.stroke();
-        ctx.strokeStyle = "#00FF00"; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(py.x, py.y); ctx.stroke();
-        ctx.strokeStyle = "#0000FF"; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(pz.x, pz.y); ctx.stroke();
+        drawArrow(p, px, "#E51400"); // X - Red arrow
+        drawArrow(p, py, "#1DB954"); // Y - Green arrow
+        drawArrow(p, pz, "#1436D6"); // Z - Blue arrow
       }
+
     };
 
     // Realistic Floor/Base Grid - matching the reference
