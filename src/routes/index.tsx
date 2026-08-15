@@ -267,11 +267,11 @@ function KinematicsLab() {
   const dhEnd = originOf(frames[frames.length - 1] as Mat4);
 
   const jacobian = useMemo(
-    () => jacobian2d(activeLengths, planarAngles),
-    [activeLengths.join(), planarAngles.join()],
+    () => (mode === "DH" || linkCount > 2) ? [[0,0],[0,0]] : jacobian2d(activeLengths, planarAngles),
+    [activeLengths.join(), planarAngles.join(), mode, linkCount],
   );
   const manipulability = Math.abs(det2x2(jacobian));
-  const isSingular = manipulability < 5000;
+  const isSingular = linkCount <= 2 && manipulability < 5000;
 
   const heatmap = useMemo(
     () => (showHeatmap ? generateReachabilityHeatmap(activeLengths, 15) : []),
