@@ -736,8 +736,10 @@ function KinematicsLab() {
                 frames={mode === "DH" ? frames : undefined}
                 planarPoints={mode !== "DH" ? points : undefined}
                 linkCount={mode === "DH" ? jointCount : linkCount}
+                showAxes={showAxes}
                 activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
               />
+
 
               {mode === "IK" && !pathMode && !playing && (
                 <div className="absolute inset-0 pointer-events-none">
