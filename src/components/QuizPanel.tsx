@@ -74,25 +74,25 @@ export function QuizPanel({
             </p>
             <div className="flex gap-2">
               <button
-                className="rounded-lg bg-primary px-3 py-2 text-sm font-bold text-primary-foreground"
+                className="border-2 border-foreground bg-foreground px-3 py-2 text-sm font-black uppercase tracking-widest text-background shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
                 onClick={submit}
               >
                 Submit
               </button>
               <button
-                className="rounded-lg border border-border px-3 py-2 text-sm font-semibold"
+                className="border-2 border-foreground bg-background px-3 py-2 text-sm font-black uppercase tracking-widest text-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
                 onClick={() => onSetTarget(challenge.target)}
               >
                 Show target
               </button>
-              <button className="rounded-lg border border-border px-3 py-2 text-sm font-semibold" onClick={start}>
+              <button className="border-2 border-foreground bg-background px-3 py-2 text-sm font-black uppercase tracking-widest text-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]" onClick={start}>
                 New
               </button>
             </div>
           </>
         ) : (
           <button
-            className="rounded-lg bg-primary px-3 py-2 text-sm font-bold text-primary-foreground"
+            className="border-2 border-foreground bg-foreground px-3 py-2 text-sm font-black uppercase tracking-widest text-background shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
             onClick={start}
           >
             Start challenge
