@@ -218,7 +218,7 @@ export function ArmView2D({
           return (
             <g key={`m${i}`} transform={`translate(${r1(mid.x)}, ${r1(mid.y)}) scale(1,-1)`}>
               <rect x={-20} y={-8} width={40} height={16} rx={4} className="fill-secondary/80" />
-              <text textAnchor="middle" dy={4} fontSize={9} fontWeight={900} className="fill-primary drop-shadow-[0_0_5px_oklch(0.75_0.22_190_/_0.3)]">
+              <text textAnchor="middle" dy={4} fontSize={9} fontWeight={900} className="fill-primary">
                 {Math.round(len)}
               </text>
             </g>
