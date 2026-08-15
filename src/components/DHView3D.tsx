@@ -273,7 +273,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
     const eePos = originOf(frames[frames.length - 1] as Mat4);
     const pee = project(eePos);
     ctx.beginPath();
-    ctx.arc(pee.x, pee.y, 10 * baseScale, 0, Math.PI * 2);
+    ctx.arc(pee.x, pee.y, 10 * currentBaseScale, 0, Math.PI * 2);
     ctx.fillStyle = "#3498DB";
     ctx.fill();
     ctx.strokeStyle = "rgba(0,0,0,0.3)";
