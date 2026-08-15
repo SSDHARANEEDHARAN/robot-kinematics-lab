@@ -4,7 +4,7 @@ import { GhostButton } from "./LabControls";
 
 type Props = { 
   frames?: Mat4[];
-  activeStep?: number | undefined;
+  activeStep?: number;
   // Planar support
   mode?: string;
   planarPoints?: Vec2[];
@@ -37,7 +37,8 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
     return planarPoints.map((p, i) => {
       // Create a transformation matrix for each joint in the planar arm
       // We map 2D (x, y) to 3D (x, 0, z) and handle link rotation for J2 and J3
-      const angle = i > 0 ? Math.atan2(planarPoints[i].y - planarPoints[i-1].y, planarPoints[i].x - planarPoints[i-1].x) : 0;
+      const pPrev = planarPoints[i - 1];
+      const angle = i > 0 && pPrev ? Math.atan2(p.y - pPrev.y, p.x - pPrev.x) : 0;
       const c = Math.cos(angle);
       const s = Math.sin(angle);
       
