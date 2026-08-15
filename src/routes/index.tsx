@@ -827,7 +827,7 @@ function KinematicsLab() {
                 </div>
               )}
 
-              {mode === "IK" && !pathMode && !playing && (mode as string === "DH" || linkCount > 3) && (
+              {mode === "IK" && !pathMode && !playing && mode === "DH" && (
                 <div className="absolute inset-0 pointer-events-none">
                   <ArmView2D
                     points={points}
