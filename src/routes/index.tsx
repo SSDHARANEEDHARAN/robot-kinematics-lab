@@ -113,8 +113,15 @@ function KinematicsLab() {
   const [lessonId, setLessonId] = useState(LESSONS[0]!.id);
   const [activeWalkthroughStep, setActiveWalkthroughStep] = useState(0);
   const [completed, setCompleted] = useState<Record<string, boolean>>({});
-  const [showWorkspace, setShowWorkspace] = useState(false);
   const [showVelocity, setShowVelocity] = useState(false);
+  const [showAxes, setShowAxes] = useState(true);
+  const [showHeatmap, setShowHeatmap] = useState(false);
+  const [jointLimits, setJointLimits] = useState<JointLimits[]>([
+    { min: -180, max: 180 },
+    { min: -150, max: 150 },
+    { min: -150, max: 150 },
+  ]);
+
 
   const activeLengths = lengths.slice(0, linkCount);
 
