@@ -3,7 +3,7 @@ import type { Vec2 } from "@/lib/kinematics";
 import { fmtAngle } from "@/lib/lab";
 
 
-const LINK_CLASSES = ["stroke-link-1", "stroke-link-2", "stroke-link-3"];
+const LINK_CLASSES = ["stroke-primary", "stroke-accent", "stroke-primary"];
 
 type Props = {
   points: Vec2[];
