@@ -48,6 +48,7 @@ export function ArmView2D({
   angles,
   interactive: forceInteractive,
   heatmap = [],
+  collisions,
 }: Props) {
 
   const svgRef = useRef<SVGSVGElement>(null);
