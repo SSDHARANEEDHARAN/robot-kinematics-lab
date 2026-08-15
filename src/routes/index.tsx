@@ -367,12 +367,12 @@ function KinematicsLab() {
       <header className="mb-5 flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <p className="text-sm font-extrabold uppercase tracking-widest text-brand">
+            <p className="text-xl font-black uppercase tracking-[0.2em] text-foreground drop-shadow-[0_0_10px_oklch(0.75_0.22_190_/_0.3)]">
               Kinematics Lab
             </p>
-            <span className="text-[10px] font-bold text-muted-foreground opacity-60">
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">
               PRESENT BY THARANEETHARAN SS
-            </span>
+            </p>
           </div>
           <h1 className="mt-1 text-4xl font-extrabold tracking-tight text-foreground md:text-5xl">
             Robot Kinematics Virtual Lab
