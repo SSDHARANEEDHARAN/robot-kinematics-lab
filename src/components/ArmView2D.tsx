@@ -297,7 +297,7 @@ export function ArmView2D({
                 cx={r1(p.x)}
                 cy={r1(p.y)}
                 r={isHighlighted ? 8 : (i === 0 ? 7 : 6)}
-                className={isHighlighted ? "fill-primary stroke-primary" : (i === 0 ? "fill-primary stroke-primary" : "fill-card stroke-primary")}
+                className={isHighlighted ? "fill-foreground stroke-foreground" : (i === 0 ? "fill-foreground stroke-foreground" : "fill-background stroke-foreground")}
                 strokeWidth={2}
               />
               {/* Limit Violation Warning */}
@@ -305,13 +305,13 @@ export function ArmView2D({
                 <circle cx={p.x} cy={p.y} r={isHighlighted ? 12 : 10} className="fill-none stroke-red-500" strokeWidth={2} />
               )}
               {i === 0 && (
-                <text x={p.x + 18} y={p.y - 18} className="fill-primary text-[10px] font-black uppercase tracking-widest" transform="scale(1,-1)">FIXED J1</text>
+                <text x={p.x + 18} y={p.y - 18} className="fill-foreground text-[10px] font-black uppercase tracking-widest" transform="scale(1,-1)">FIXED J1</text>
               )}
             </g>
           );
         })}
 
-        <circle cx={r1(end.x)} cy={r1(end.y)} r={8} className="fill-yellow-400 stroke-slate-900" strokeWidth={2} />
+        <circle cx={r1(end.x)} cy={r1(end.y)} r={8} className="fill-foreground stroke-background" strokeWidth={2} />
       </g>
     </svg>
   );
