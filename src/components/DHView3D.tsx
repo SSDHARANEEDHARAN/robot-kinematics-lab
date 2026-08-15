@@ -144,7 +144,7 @@ export function DHView3D({ frames }: Props) {
         const midX = (p.x + nextP.x) / 2;
         const midY = (p.y + nextP.y) / 2;
         
-        ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+        ctx.fillStyle = "var(--color-card)";
         ctx.beginPath();
         ctx.arc(midX, midY, 8, 0, Math.PI * 2);
         ctx.fill();
