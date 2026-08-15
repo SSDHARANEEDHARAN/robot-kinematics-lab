@@ -14,7 +14,6 @@ export function LessonPanel({
   completed: Record<string, boolean>;
 }) {
   const [showIntro, setShowIntro] = useState(true);
-  const active = LESSONS.find((l: Lesson) => l.id === activeId) ?? LESSONS[0]!;
   const passed = active.check(state);
 
   // Auto-complete lesson if check passes
