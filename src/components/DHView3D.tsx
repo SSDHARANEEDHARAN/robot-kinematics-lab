@@ -1,10 +1,14 @@
-import { useEffect, useRef, useState } from "react";
-import { axisOf, originOf, type Mat4, type Vec3, deg2rad } from "@/lib/kinematics";
+import { useEffect, useRef, useState, useMemo } from "react";
+import { axisOf, originOf, type Mat4, type Vec3, deg2rad, type Vec2, fk2d } from "@/lib/kinematics";
 import { GhostButton } from "./LabControls";
 
 type Props = { 
-  frames: Mat4[];
+  frames?: Mat4[];
   activeStep?: number | undefined;
+  // Planar support
+  mode?: "IK" | "FK" | "DH";
+  planarPoints?: Vec2[];
+  linkCount?: number;
 };
 
 // Colors based on the uploaded reference image
