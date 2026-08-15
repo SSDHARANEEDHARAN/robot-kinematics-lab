@@ -159,10 +159,10 @@ export function Stat({ label, value }: { label: string; value: string }) {
 
 export function Card({ title, children }: { title?: string; children: ReactNode }) {
   return (
-    <div className="lab-card overflow-hidden border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+    <div className="lab-card overflow-hidden border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
       {title && (
-        <div className="border-b-2 border-slate-900 bg-yellow-400 px-5 py-3">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-900">{title}</h3>
+        <div className="border-b-2 border-foreground bg-foreground px-5 py-3">
+          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-background">{title}</h3>
         </div>
       )}
       <div className="p-5">{children}</div>
