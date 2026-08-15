@@ -331,6 +331,79 @@ function KinematicsLab() {
     setTarget((t) => ({ ...t, [axis]: Math.round((t[axis] + delta) * 10) / 10 }));
   };
 
+  /* ---------- demo programs ---------- */
+  const runDemo = (type: "pick" | "round" | "dance") => {
+    setPlaying(false);
+    setTrace([]);
+    let demoPoints: Waypoint[] = [];
+    const baseAngles = [0, 0, 0];
+
+    if (type === "pick") {
+      // Pick and Place: Home -> Over Pick -> Pick -> Over Pick -> Over Place -> Place -> Over Place -> Home
+      const pts = [
+        { x: 150, y: 100, name: "Home" },
+        { x: 100, y: -50, name: "Over Pick" },
+        { x: 100, y: -80, name: "Pick" },
+        { x: 100, y: -50, name: "Clearance" },
+        { x: -100, y: -50, name: "Over Place" },
+        { x: -100, y: -80, name: "Place" },
+        { x: -100, y: -50, name: "Clearance" },
+        { x: 150, y: 100, name: "Home" },
+      ];
+      demoPoints = pts.map((p, i) => {
+        const sol = ik2d(activeLengths, p, false);
+        return {
+          id: uid(),
+          name: p.name,
+          angles: sol.angles,
+          target: p,
+          move: i % 2 === 0 ? "MOVJ" : "MOVL",
+          spd: 60,
+        };
+      });
+    } else if (type === "round") {
+      // Arounding: A circular motion trace
+      for (let i = 0; i <= 360; i += 45) {
+        const rad = (i * Math.PI) / 180;
+        const p = { x: 120 * Math.cos(rad), y: 120 * Math.sin(rad) };
+        const sol = ik2d(activeLengths, p, true);
+        demoPoints.push({
+          id: uid(),
+          name: `R${i}`,
+          angles: sol.angles,
+          target: p,
+          move: "MOVL",
+          spd: 40,
+        });
+      }
+    } else if (type === "dance") {
+      // Dancing: Rhythmic joint movements
+      const patterns = [
+        [45, -45, 45],
+        [-45, 45, -45],
+        [90, 0, -90],
+        [0, 90, 0],
+        [-90, 0, 90],
+        [0, 0, 0],
+      ];
+      demoPoints = patterns.map((p, i) => {
+        const pts = fk2d(activeLengths, p);
+        const last = pts[pts.length - 1] ?? { x: 0, y: 0 };
+        return {
+          id: uid(),
+          name: `Step ${i + 1}`,
+          angles: p,
+          target: last,
+          move: "MOVJ",
+          spd: 80,
+        };
+      });
+    }
+
+    setWaypoints(demoPoints);
+    setTimeout(() => setPlaying(true), 100);
+  };
+
   /* ---------- lessons ---------- */
   const lessonState = {
     mode,
@@ -652,6 +725,7 @@ function KinematicsLab() {
                   onClear={() => setWaypoints([])}
                   onJogJoint={jogJoint}
                   onJogCart={jogCart}
+                  onRunDemo={runDemo}
                 />
               </Section>
 
