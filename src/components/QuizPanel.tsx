@@ -64,58 +64,58 @@ export function QuizPanel({
   const avg = history.length ? Math.round(history.reduce((a, b) => a + b, 0) / history.length) : 0;
 
   return (
-    <div className="space-y-4">
-      <div className="space-y-2">
+    <div className="space-y-6">
+      <div className="space-y-3">
         <h4 className="lab-label">Target challenge</h4>
         {challenge ? (
           <>
-            <p className="font-mono text-xs text-secondary-foreground">
-              Reach ({challenge.target.x}, {challenge.target.y}) — set joint angles by hand, then submit.
+            <p className="font-mono text-xs text-muted-foreground">
+              Reach ({challenge.target.x}, {challenge.target.y}) — set joint angles, then submit.
             </p>
             <div className="flex gap-2">
               <button
-                className="border-2 border-foreground bg-foreground px-3 py-2 text-sm font-black uppercase tracking-widest text-background shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+                className="rounded-lg bg-foreground px-4 py-2 text-xs font-black uppercase tracking-widest text-background transition-all hover:opacity-90 active:scale-95"
                 onClick={submit}
               >
                 Submit
               </button>
               <button
-                className="border-2 border-foreground bg-background px-3 py-2 text-sm font-black uppercase tracking-widest text-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+                className="rounded-lg border border-border px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-secondary transition-all"
                 onClick={() => onSetTarget(challenge.target)}
               >
                 Show target
               </button>
-              <button className="border-2 border-foreground bg-background px-3 py-2 text-sm font-black uppercase tracking-widest text-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]" onClick={start}>
+              <button className="rounded-lg border border-border px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-secondary transition-all" onClick={start}>
                 New
               </button>
             </div>
           </>
         ) : (
           <button
-            className="border-2 border-foreground bg-foreground px-3 py-2 text-sm font-black uppercase tracking-widest text-background shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+            className="rounded-lg bg-foreground px-4 py-2 text-xs font-black uppercase tracking-widest text-background transition-all hover:opacity-90 active:scale-95"
             onClick={start}
           >
             Start challenge
           </button>
         )}
         {result && (
-          <div className="border-2 border-foreground p-3 font-mono text-xs shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-            <div className="mb-1 uppercase font-black tracking-widest opacity-50 text-[9px]">Last Result</div>
+          <div className="rounded-xl bg-secondary p-4 font-mono text-xs shadow-sm">
+            <div className="mb-2 uppercase font-black tracking-widest opacity-50 text-[9px]">Last Result</div>
             <div>Error: {result.error.toFixed(2)} px</div>
             <div>Time: {result.secs.toFixed(1)} s</div>
-            <div className="mt-2 text-lg font-black text-foreground">Score: {result.score}/100</div>
+            <div className="mt-3 text-lg font-black text-foreground">Score: {result.score}/100</div>
           </div>
         )}
         {history.length > 0 && (
-          <p className="text-xs text-muted-foreground">
-            {history.length} attempts · average score {avg}
+          <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">
+            {history.length} attempts · average {avg}
           </p>
         )}
       </div>
 
-      <div className="space-y-2 border-t border-border pt-3">
-        <h4 className="lab-label">Predict the FK result</h4>
-        <p className="font-mono text-[11px] text-muted-foreground">
+      <div className="space-y-3 border-t pt-6">
+        <h4 className="lab-label">Predict FK</h4>
+        <p className="font-mono text-[10px] text-muted-foreground">
           L = [{lengths.map((l) => l.toFixed(0)).join(", ")}] · θ = [
           {angles.map((a) => a.toFixed(0)).join(", ")}]
         </p>
@@ -133,10 +133,10 @@ export function QuizPanel({
             onChange={(e) => setPredict((p) => ({ ...p, y: e.target.value }))}
           />
         </div>
-        <button className="rounded-lg border border-border px-3 py-2 text-sm font-semibold" onClick={checkPredict}>
-          Check my answer
+        <button className="w-full rounded-lg bg-secondary px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-secondary/70" onClick={checkPredict}>
+          Check answer
         </button>
-        {predictResult && <p className="font-mono text-xs text-primary">{predictResult}</p>}
+        {predictResult && <p className="font-mono text-[10px] text-primary">{predictResult}</p>}
       </div>
     </div>
   );
