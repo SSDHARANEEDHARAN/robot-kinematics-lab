@@ -142,8 +142,8 @@ export function DHView3D({ frames, activeStep }: Props) {
 
       // Link Body
       ctx.strokeStyle = color;
-      ctx.lineWidth = r * 1.5;
-      ctx.lineCap = "round";
+      ctx.lineWidth = r * 1.8; // Slightly thicker
+      ctx.lineCap = "butt"; // Flat ends to fit inside joint housing
       ctx.beginPath();
       ctx.moveTo(pa.x, pa.y);
       ctx.lineTo(pb.x, pb.y);
