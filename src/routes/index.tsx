@@ -585,10 +585,6 @@ function KinematicsLab() {
                 <div className="flex-1">
                   <DHView3D frames={frames} />
                 </div>
-                <div className="w-[300px] border-l border-border bg-panel p-4 backdrop-blur-xl overflow-y-auto">
-                  <h3 className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-primary">Live Transform Chain</h3>
-                  <DHFormula frames={frames} dhRows={dhRows} step={dhStep} onStep={setDhStep} />
-                </div>
               </div>
             ) : (
               <div className="flex h-full w-full">
@@ -606,11 +602,6 @@ function KinematicsLab() {
                     velocity={velocity}
                     unit={unit}
                   />
-                </div>
-                <div className="w-[300px] border-l border-border bg-panel p-4 backdrop-blur-xl overflow-y-auto">
-                   <h3 className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-primary">Live Math Solver</h3>
-                   {mode === "FK" && <FKFormula lengths={activeLengths} angles={planarAngles} unit={unit} end={end} />}
-                   {mode === "IK" && <IKFormula lengths={activeLengths} target={target} angles={ik.angles} unit={unit} reachable={ik.reachable} />}
                 </div>
               </div>
             )}
