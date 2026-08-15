@@ -874,6 +874,7 @@ function KinematicsLab() {
             </div>
           </div>
         </section>
+        </aside>
 
         {/* ---------- Right: readouts + tools ---------- */}
         <aside className="space-y-4">
