@@ -1,4 +1,7 @@
 import { deg2rad, fk2d, ik2d, type DHRow, type Vec2 } from "./kinematics";
+import type { jsPDF } from "jspdf";
+import "jspdf-autotable";
+
 
 export type Waypoint = {
   id: string;
