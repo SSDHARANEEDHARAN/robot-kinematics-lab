@@ -1,9 +1,8 @@
-@import "tailwindcss" source(none);
-@source "../src";
+@import "tailwindcss";
 @import "tw-animate-css";
 @import "./styles/loading.css";
 
-@custom-variant dark (&:is(.dark *));
+@source "../src";
 
 /*
  * Design system definition.
@@ -171,10 +170,10 @@
   position: relative;
   overflow: hidden;
   border: none;
-}
 
-.dark @utility glass-card {
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
+  @variant dark {
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4);
+  }
 }
 
 @utility lab-card {
@@ -182,12 +181,10 @@
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.1);
-  }
-}
-
-.dark @utility lab-card {
-  &:hover {
-    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.6);
+    
+    @variant dark {
+      box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.6);
+    }
   }
 }
 
@@ -210,10 +207,10 @@
   color: var(--foreground);
   outline: none;
   transition: background-color 0.2s ease;
-}
 
-.lab-input:focus {
-  background-color: var(--color-secondary);
+  &:focus {
+    background-color: var(--color-secondary);
+  }
 }
 
 input[type="range"] {
