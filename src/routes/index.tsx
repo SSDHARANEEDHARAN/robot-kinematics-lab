@@ -1036,48 +1036,6 @@ function KinematicsLab() {
                   </Card>
                 </div>
               )}
-
-                <TeachPanel
-                  waypoints={waypoints}
-                  playing={playing}
-                  activeIndex={activeIndex}
-                  jointCount={linkCount}
-                  onTeach={teach}
-                  onDelete={(id) => setWaypoints((w) => w.filter((x) => x.id !== id))}
-                  onSetMove={(id, m) =>
-                    setWaypoints((w) => w.map((x) => (x.id === id ? { ...x, move: m } : x)))
-                  }
-                  onSetSpeed={(id, s) =>
-                    setWaypoints((w) => w.map((x) => (x.id === id ? { ...x, spd: s } : x)))
-                  }
-                  onGoto={gotoWaypoint}
-                  onPlay={() => setPlaying(true)}
-                  onStop={() => setPlaying(false)}
-                  onClear={() => setWaypoints([])}
-                  onJogJoint={jogJoint}
-                  onJogCart={jogCart}
-                />
-              )}
-
-              {tab === "quiz" && (
-                <QuizPanel
-                  lengths={activeLengths}
-                  angles={planarAngles}
-                  onSetTarget={(t) => {
-                    setMode("IK");
-                    setTarget(t);
-                  }}
-                />
-              )}
-
-              {tab === "lessons" && (
-                <LessonPanel
-                  state={lessonState}
-                  activeId={lessonId}
-                  onSelect={selectLesson}
-                  completed={completed}
-                />
-              )}
             </div>
           </div>
 
