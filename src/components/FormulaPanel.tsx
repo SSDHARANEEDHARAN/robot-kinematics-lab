@@ -137,44 +137,90 @@ export function IKFormula({
   );
 }
 
-export function DHFormula({ frames, step, onStep }: { frames: Mat4[]; step: number; onStep: (s: number) => void }) {
+export function DHFormula({
+  frames,
+  dhRows,
+  step,
+  onStep,
+}: {
+  frames: Mat4[];
+  dhRows: any[];
+  step: number;
+  onStep: (s: number) => void;
+}) {
   const count = Math.max(0, frames.length - 1);
-  const shown = frames[Math.min(step + 1, frames.length - 1)] as Mat4;
-  return (
-    <div className="space-y-2">
-      <p className="font-mono text-xs text-secondary-foreground">
-        T = A₁ · A₂ · … · A{count} &nbsp; (multiplying up to A{step + 1})
-      </p>
-      <div className="rounded-md bg-secondary p-2 font-mono text-[11px]">
+  const currentMatrix = frames[step + 1] as Mat4;
+  const prevMatrix = frames[step] as Mat4;
+
+  const renderMatrix = (m: Mat4, label?: string, highlight = false) => (
+    <div className={`space-y-1 ${highlight ? "scale-105 transition-transform" : ""}`}>
+      {label && <p className="mb-1 text-[10px] font-bold text-brand">{label}</p>}
+      <div className={`rounded-md ${highlight ? "bg-primary/5 ring-1 ring-primary/20" : "bg-secondary"} p-2 font-mono text-[10px]`}>
         {[0, 1, 2, 3].map((r) => (
-          <div key={r} className="flex gap-3 whitespace-nowrap">
+          <div key={r} className="flex gap-2 whitespace-nowrap">
             {[0, 1, 2, 3].map((c) => (
-              <span key={c} className="w-12 text-right text-secondary-foreground">
-                {(shown?.[r * 4 + c] ?? 0).toFixed(2)}
+              <span key={c} className={`w-10 text-right ${highlight ? "text-primary" : "text-secondary-foreground"}`}>
+                {(m?.[r * 4 + c] ?? 0).toFixed(1)}
               </span>
             ))}
           </div>
         ))}
       </div>
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          className="rounded-md border border-border px-2 py-1 text-xs font-semibold"
-          onClick={() => onStep(Math.max(0, step - 1))}
-        >
-          ◀ step
-        </button>
-        <button
-          type="button"
-          className="rounded-md border border-border px-2 py-1 text-xs font-semibold"
-          onClick={() => onStep(Math.min(count - 1, step + 1))}
-        >
-          step ▶
-        </button>
-        <span className="text-xs text-muted-foreground">
-          A{step + 1} of {count}
+    </div>
+  );
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2">
+          {renderMatrix(prevMatrix, `T${step}`)}
+          <span className="text-lg font-bold">×</span>
+          {renderMatrix(dhRows[step] ? (dhMatrix(dhRows[step]) as any) : identity(), `A${step + 1}`, true)}
+          <span className="text-lg font-bold">=</span>
+          {renderMatrix(currentMatrix, `T${step + 1}`)}
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className="rounded-md border border-border bg-card px-3 py-1.5 text-[11px] font-bold transition-colors hover:bg-accent"
+            onClick={() => onStep(Math.max(0, step - 1))}
+            disabled={step === 0}
+          >
+            ◀ PREV
+          </button>
+          <button
+            type="button"
+            className="rounded-md border border-border bg-card px-3 py-1.5 text-[11px] font-bold transition-colors hover:bg-accent"
+            onClick={() => onStep(Math.min(count - 1, step + 1))}
+            disabled={step >= count - 1}
+          >
+            NEXT ▶
+          </button>
+        </div>
+        <span className="text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">
+          Step {step + 1} of {count}
         </span>
       </div>
     </div>
   );
 }
+
+// Helpers for the formula panel matrix display
+const dhMatrix = ({ theta, d, a, alpha }: any) => {
+  const ct = Math.cos((theta * Math.PI) / 180);
+  const st = Math.sin((theta * Math.PI) / 180);
+  const ca = Math.cos((alpha * Math.PI) / 180);
+  const sa = Math.sin((alpha * Math.PI) / 180);
+  return [
+    ct, -st * ca, st * sa, a * ct,
+    st, ct * ca, -ct * sa, a * st,
+    0, sa, ca, d,
+    0, 0, 0, 1,
+  ];
+};
+
+const identity = (): Mat4 => [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+

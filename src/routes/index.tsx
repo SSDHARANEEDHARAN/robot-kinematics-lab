@@ -581,23 +581,40 @@ function KinematicsLab() {
           <div className="h-[560px] border-t border-border bg-panel overflow-hidden relative">
              {/* Realistic fixed simulation area */}
             {mode === "DH" ? (
-              <DHView3D frames={frames} />
+              <div className="flex h-full w-full">
+                <div className="flex-1">
+                  <DHView3D frames={frames} />
+                </div>
+                <div className="w-[300px] border-l border-border bg-card/50 p-4 backdrop-blur-sm overflow-y-auto">
+                  <h3 className="mb-4 text-[10px] font-extrabold uppercase tracking-widest text-brand">Live Transform Chain</h3>
+                  <DHFormula frames={frames} dhRows={dhRows} step={dhStep} onStep={setDhStep} />
+                </div>
+              </div>
             ) : (
-              <ArmView2D
-                points={points}
-                lengths={activeLengths}
-                showZone={showZone}
-                target={mode === "IK" ? target : null}
-                onTargetChange={mode === "IK" && !pathMode && !playing ? setTarget : undefined}
-                ghostPoints={mode === "IK" && showGhost ? ghostPoints : undefined}
-                trace={showTrace ? trace : undefined}
-                path={waypoints.map((w) => w.target)}
-                workspace={workspace}
-                velocity={velocity}
-                unit={unit}
-              />
-
+              <div className="flex h-full w-full">
+                <div className="flex-1">
+                  <ArmView2D
+                    points={points}
+                    lengths={activeLengths}
+                    showZone={showZone}
+                    target={mode === "IK" ? target : null}
+                    onTargetChange={mode === "IK" && !pathMode && !playing ? setTarget : undefined}
+                    ghostPoints={mode === "IK" && showGhost ? ghostPoints : undefined}
+                    trace={showTrace ? trace : undefined}
+                    path={waypoints.map((w) => w.target)}
+                    workspace={workspace}
+                    velocity={velocity}
+                    unit={unit}
+                  />
+                </div>
+                <div className="w-[300px] border-l border-border bg-card/50 p-4 backdrop-blur-sm overflow-y-auto">
+                   <h3 className="mb-4 text-[10px] font-extrabold uppercase tracking-widest text-brand">Live Math Solver</h3>
+                   {mode === "FK" && <FKFormula lengths={activeLengths} angles={planarAngles} unit={unit} end={end} />}
+                   {mode === "IK" && <IKFormula lengths={activeLengths} target={target} angles={ik.angles} unit={unit} reachable={ik.reachable} />}
+                </div>
+              </div>
             )}
+
           </div>
         </section>
 
@@ -623,7 +640,7 @@ function KinematicsLab() {
                 <div className="space-y-3">
                    {mode === "FK" && <FKFormula lengths={activeLengths} angles={planarAngles} unit={unit} end={end} />}
                    {mode === "IK" && <IKFormula lengths={activeLengths} target={target} angles={ik.angles} unit={unit} reachable={ik.reachable} />}
-                   {mode === "DH" && <DHFormula frames={frames} step={dhStep} onStep={setDhStep} />}
+                   {mode === "DH" && <DHFormula frames={frames} dhRows={dhRows} step={dhStep} onStep={setDhStep} />}
                 </div>
               )}
               {tab === "teach" && (
