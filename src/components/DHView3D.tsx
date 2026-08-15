@@ -184,22 +184,36 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       ctx.translate(pa.x, pa.y);
       ctx.rotate(jointAngle);
       
-      // Joint Housing
+      // Joint Housing: Rounded "Cup" Shape
       const hGrad = ctx.createLinearGradient(0, -hr, 0, hr);
       hGrad.addColorStop(0, "#f8fafc");
       hGrad.addColorStop(0.5, "#cbd5e1");
       hGrad.addColorStop(1, "#94a3b8");
       
       ctx.fillStyle = hGrad;
+      
+      // Draw the "Cup" / Sphere segment for joint
       ctx.beginPath();
-      ctx.roundRect(-hw/2, -hr, hw, hr * 2, hr * 0.3);
+      ctx.arc(0, 0, hr, -Math.PI/2, Math.PI/2); // Main housing curve
+      ctx.lineTo(-hw/2, hr);
+      ctx.lineTo(-hw/2, -hr);
+      ctx.closePath();
       ctx.fill();
-      ctx.strokeStyle = "rgba(0,0,0,0.1)";
+      ctx.strokeStyle = "rgba(0,0,0,0.15)";
+      ctx.lineWidth = 1;
       ctx.stroke();
 
-      // Accented core
+      // Accented central ring (the "actuator" hub)
       ctx.fillStyle = linkColor || "#3b82f6";
-      ctx.fillRect(-hw * 0.2, -hr * 0.7, hw * 0.4, hr * 1.4);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, hw * 0.3, hr * 0.9, 0, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // End Cap highlight
+      ctx.fillStyle = "rgba(255,255,255,0.3)";
+      ctx.beginPath();
+      ctx.ellipse(0, -hr * 0.6, hw * 0.2, hr * 0.1, 0, 0, Math.PI * 2);
+      ctx.fill();
       
       ctx.restore();
 
