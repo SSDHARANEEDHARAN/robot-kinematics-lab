@@ -981,7 +981,7 @@ function KinematicsLab() {
 
               <Section title="Industrial Progress" collapsible defaultOpen={false}>
                 <div className="space-y-4">
-                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Robotics Mastery</h4>
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">Robotics Mastery</h4>
                   <Stat label="Completed" value={`${Object.keys(completed).length}/${LESSONS.length}`} />
                 </div>
               </Section>
@@ -990,14 +990,14 @@ function KinematicsLab() {
         </aside>
       </div>
 
-      <footer className="mt-8 flex items-center justify-between border-t-2 border-slate-900/10 pt-6 text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-        <div className="flex items-center gap-2 text-yellow-500">
+      <footer className="mt-8 flex items-center justify-between border-t-2 border-foreground pt-6 text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+        <div className="flex items-center gap-2 text-foreground">
            <div className="h-2 w-2 rounded-full bg-current animate-pulse" />
            <span>System Online</span>
         </div>
         <div className="flex items-center gap-4">
           <span className="text-foreground">Present by Tharaneetharan SS</span>
-          <span className="h-1 w-1 rounded-full bg-yellow-400" />
+          <span className="h-1 w-1 rounded-full bg-foreground" />
           <span>Industrial Automation Series</span>
         </div>
       </footer>
