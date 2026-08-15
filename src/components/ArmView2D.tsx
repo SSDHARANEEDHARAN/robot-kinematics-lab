@@ -7,6 +7,9 @@ type Props = {
   points: Vec2[];
   lengths: number[];
   showZone: boolean;
+  showGrid?: boolean;
+  showAxesOverlay?: boolean;
+  showJointAxes?: boolean;
   target?: Vec2 | null | undefined;
   onTargetChange?: ((p: Vec2) => void) | undefined;
   ghostPoints?: Vec2[] | undefined;
@@ -49,6 +52,9 @@ export function ArmView2D({
   interactive: forceInteractive,
   heatmap = [],
   collisions,
+  showGrid = true,
+  showAxesOverlay = true,
+  showJointAxes = true,
 }: Props) {
 
   const svgRef = useRef<SVGSVGElement>(null);
@@ -289,17 +295,21 @@ export function ArmView2D({
                 />
               
               {/* Angle Indicator Arrow */}
-              <line 
-                x1={p.x} y1={p.y} x2={arrowX} y2={arrowY}
-                className={isHighlighted ? "stroke-foreground" : "stroke-muted-foreground/30"}
-                strokeWidth={2}
-                strokeDasharray="2 2"
-              />
-              <path 
-                d={`M ${arrowX} ${arrowY} l -8 -4 l 0 8 z`}
-                transform={`rotate(${(angle * 180) / Math.PI}, ${arrowX}, ${arrowY})`}
-                className={isHighlighted ? "fill-foreground" : "fill-muted-foreground/30"}
-              />
+              {showJointAxes && (
+                <>
+                  <line 
+                    x1={p.x} y1={p.y} x2={arrowX} y2={arrowY}
+                    className={isHighlighted ? "stroke-foreground" : "stroke-muted-foreground/30"}
+                    strokeWidth={2}
+                    strokeDasharray="2 2"
+                  />
+                  <path 
+                    d={`M ${arrowX} ${arrowY} l -8 -4 l 0 8 z`}
+                    transform={`rotate(${(angle * 180) / Math.PI}, ${arrowX}, ${arrowY})`}
+                    className={isHighlighted ? "fill-foreground" : "fill-muted-foreground/30"}
+                  />
+                </>
+              )}
 
               {/* Core joint circle */}
               <circle
