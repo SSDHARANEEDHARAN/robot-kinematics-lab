@@ -15,13 +15,14 @@ type Props = {
 
 // Colors based on the uploaded reference image
 const LINK_COLORS = [
-  "#2C3E50", // Dark grey/black for base/first link
-  "#E74C3C", // Red for second link
-  "#9B59B6", // Purple for third link
-  "#3498DB", // Blue for fourth link
-  "#E67E22", // Orange for fifth link
-  "#2ECC71", // Green (if needed)
+  "#2C3E50", // J1: Dark grey/black base link
+  "#C0392B", // J2: Red rod link
+  "#2C3E50", // J3: Dark grey rod link
+  "#8E44AD", // J4: Purple (optional)
+  "#2980B9", // J5: Blue (optional)
+  "#27AE60", // J6: Green (optional)
 ];
+
 
 export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = [], linkCount = 2, showAxes = true }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -170,114 +171,117 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       const isHighlighted = activeStep !== undefined && i < activeStep;
       const r = (13 - i * 1.2) * currentBaseScale;
 
-      // --- Link body: glossy orange rod with cylindrical shading ---
+      // --- Link body: realistic cylinders based on reference image ---
       const ang = Math.atan2(pb.y - pa.y, pb.x - pa.x);
       const nx = Math.cos(ang + Math.PI / 2);
       const ny = Math.sin(ang + Math.PI / 2);
-      const lw = r * 2;
-      const grad = ctx.createLinearGradient(
-        pa.x + nx * lw * 0.5, pa.y + ny * lw * 0.5,
-        pa.x - nx * lw * 0.5, pa.y - ny * lw * 0.5,
-      );
-      grad.addColorStop(0, "#8a3505");
-      grad.addColorStop(0.28, "#e4620d");
-      grad.addColorStop(0.48, "#ff9a3c");
-      grad.addColorStop(0.62, "#ffd7ac");
-      grad.addColorStop(0.85, "#e0650f");
-      grad.addColorStop(1, "#a03e06");
+      const lw = r * 2.2;
+      
+      // Determine color based on link index to match reference
+      // J1: Black/Dark Grey, J2: Red, etc.
+      const linkColor = LINK_COLORS[i] || "#7F8C8D";
 
       ctx.save();
-      ctx.shadowColor = "rgba(0,0,0,0.28)";
-      ctx.shadowBlur = 12;
-      ctx.shadowOffsetY = 5;
-      ctx.strokeStyle = grad;
+      // Drop shadow for 3D depth
+      ctx.shadowColor = "rgba(0,0,0,0.35)";
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetY = 6;
+      
+      // Basic cylinder body
+      ctx.fillStyle = linkColor;
+      
+      // Simple cylindrical shading (darker on bottom)
+      const cylinderGrad = ctx.createLinearGradient(
+        pa.x + nx * lw * 0.5, pa.y + ny * lw * 0.5,
+        pa.x - nx * lw * 0.5, pa.y - ny * lw * 0.5
+      );
+      cylinderGrad.addColorStop(0, linkColor);
+      cylinderGrad.addColorStop(0.5, linkColor);
+      cylinderGrad.addColorStop(1, "rgba(0,0,0,0.3)"); // Darken bottom side
+      
+      ctx.strokeStyle = cylinderGrad;
       ctx.lineWidth = lw;
-      ctx.lineCap = "butt";
+      ctx.lineCap = "round";
       ctx.beginPath();
       ctx.moveTo(pa.x, pa.y);
       ctx.lineTo(pb.x, pb.y);
       ctx.stroke();
-      ctx.restore();
-
-      // specular streak along the rod
-      ctx.save();
-      ctx.globalAlpha = 0.5;
-      ctx.strokeStyle = "#fff6ea";
-      ctx.lineWidth = Math.max(1.5, r * 0.28);
+      
+      // Top specular highlight (white streak)
+      ctx.strokeStyle = "rgba(255,255,255,0.2)";
+      ctx.lineWidth = lw * 0.2;
       ctx.beginPath();
-      ctx.moveTo(pa.x + nx * r * 0.45, pa.y + ny * r * 0.45);
-      ctx.lineTo(pb.x + nx * r * 0.45, pb.y + ny * r * 0.45);
+      ctx.moveTo(pa.x + nx * lw * 0.2, pa.y + ny * lw * 0.2);
+      ctx.lineTo(pb.x + nx * lw * 0.2, pb.y + ny * lw * 0.2);
       ctx.stroke();
       ctx.restore();
 
-      // --- Joint: frosted gray cylindrical housing over the rod ---
-      const hw = r * 2.2;   // housing half-length along the link axis
-      const hr = r * 1.6;  // housing radius
-      const dx = Math.cos(ang);
-      const dy = Math.sin(ang);
-      const c1 = { x: pa.x - dx * hw * 0.35, y: pa.y - dy * hw * 0.35 };
-      const c2 = { x: pa.x + dx * hw * 0.75, y: pa.y + dy * hw * 0.75 };
 
-      const hGrad = ctx.createLinearGradient(
-        pa.x + nx * hr, pa.y + ny * hr,
-        pa.x - nx * hr, pa.y - ny * hr,
-      );
-      hGrad.addColorStop(0, "rgba(80,85,90,0.85)");
-      hGrad.addColorStop(0.3, "rgba(160,165,170,0.85)");
-      hGrad.addColorStop(0.5, "rgba(220,225,230,0.85)");
-      hGrad.addColorStop(0.75, "rgba(150,155,160,0.85)");
-      hGrad.addColorStop(1, "rgba(85,90,95,0.85)");
+      // --- Joint: Sleek cylindrical joints (frosted gray) ---
+      const hr = r * 1.8;  // joint radius
+      const hw = r * 1.5;  // joint width
+      
+      const drawJoint = (cx: number, cyy: number, angle: number) => {
+        const jnx = Math.cos(angle + Math.PI / 2);
+        const jny = Math.sin(angle + Math.PI / 2);
+        
+        const hGrad = ctx.createLinearGradient(
+          cx + jnx * hr, cyy + jny * hr,
+          cx - jnx * hr, cyy - jny * hr
+        );
+        hGrad.addColorStop(0, "#D5DBDB");
+        hGrad.addColorStop(0.5, "#BDC3C7");
+        hGrad.addColorStop(1, "#95A5A6");
 
-      ctx.save();
-      ctx.shadowColor = "rgba(0,0,0,0.22)";
-      ctx.shadowBlur = 10;
-      ctx.shadowOffsetY = 4;
-      ctx.strokeStyle = hGrad;
-      ctx.lineWidth = hr * 2;
-      ctx.lineCap = "butt";
-      ctx.beginPath();
-      ctx.moveTo(c1.x, c1.y);
-      ctx.lineTo(c2.x, c2.y);
-      ctx.stroke();
-      ctx.restore();
-
-      // housing end caps (elliptical rims)
-      const capRim = (cx: number, cyy: number) => {
         ctx.save();
         ctx.translate(cx, cyy);
-        ctx.rotate(ang);
+        ctx.rotate(angle);
+        
+        // Main joint body (cylinder side view)
+        ctx.fillStyle = hGrad;
         ctx.beginPath();
-        ctx.ellipse(0, 0, hr * 0.45, hr, 0, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(60,65,70,0.9)";
+        ctx.rect(-hw/2, -hr, hw, hr * 2);
         ctx.fill();
-        ctx.strokeStyle = "rgba(90,96,102,0.5)";
-        ctx.lineWidth = 1.2;
+        ctx.strokeStyle = "rgba(0,0,0,0.2)";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(-hw/2, -hr, hw, hr * 2);
+        
+        // Joint end caps
+        ctx.beginPath();
+        ctx.ellipse(-hw/2, 0, hr * 0.3, hr, 0, 0, Math.PI * 2);
+        ctx.fillStyle = "#7F8C8D";
+        ctx.fill();
         ctx.stroke();
+
+        ctx.beginPath();
+        ctx.ellipse(hw/2, 0, hr * 0.3, hr, 0, 0, Math.PI * 2);
+        ctx.fillStyle = "#BDC3C7";
+        ctx.fill();
+        ctx.stroke();
+        
+        // Highlight band
+        ctx.strokeStyle = "rgba(255,255,255,0.4)";
+        ctx.lineWidth = hr * 0.2;
+        ctx.beginPath();
+        ctx.moveTo(-hw/2, -hr * 0.5);
+        ctx.lineTo(hw/2, -hr * 0.5);
+        ctx.stroke();
+        
         ctx.restore();
       };
-      capRim(c1.x, c1.y);
-      capRim(c2.x, c2.y);
-
-      // frosted highlight band
-      ctx.save();
-      ctx.globalAlpha = 0.55;
-      ctx.strokeStyle = "#ffffff";
-      ctx.lineWidth = hr * 0.35;
-      ctx.beginPath();
-      ctx.moveTo(c1.x + nx * hr * 0.5, c1.y + ny * hr * 0.5);
-      ctx.lineTo(c2.x + nx * hr * 0.5, c2.y + ny * hr * 0.5);
-      ctx.stroke();
-      ctx.restore();
+      
+      drawJoint(pa.x, pa.y, ang + Math.PI/2);
 
       if (isHighlighted) {
         ctx.save();
-        ctx.strokeStyle = "rgba(20,20,20,0.85)";
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = "rgba(46, 204, 113, 0.8)"; // Green highlight for active
+        ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.arc(pa.x, pa.y, hr + 4, 0, Math.PI * 2);
+        ctx.arc(pa.x, pa.y, hr + 5, 0, Math.PI * 2);
         ctx.stroke();
         ctx.restore();
       }
+
 
       // Frame axes at each joint
       if (showAxes) {

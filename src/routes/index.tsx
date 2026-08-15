@@ -501,6 +501,7 @@ function KinematicsLab() {
             Virtual Lab Environment
           </p>
         </div>
+
         
         <div className="flex items-center gap-4">
           <SegButton
