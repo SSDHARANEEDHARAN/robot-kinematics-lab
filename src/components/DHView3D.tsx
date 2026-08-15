@@ -3,11 +3,14 @@ import { axisOf, originOf, type Mat4, type Vec3 } from "@/lib/kinematics";
 import { GhostButton } from "./LabControls";
 
 
-type Props = { frames: Mat4[] };
+type Props = { 
+  frames: Mat4[];
+  activeStep?: number | undefined;
+};
 
 const LINK_COLORS = ["oklch(0.3 0.05 250)", "oklch(0.4 0.05 250)", "oklch(0.5 0.05 250)", "oklch(0.6 0.05 250)", "oklch(0.7 0.05 250)", "oklch(0.8 0.05 250)"];
 
-export function DHView3D({ frames }: Props) {
+export function DHView3D({ frames, activeStep }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [cam, setCam] = useState({ yaw: -0.9, pitch: 0.5, zoom: 1.2 });
   const drag = useRef<{ x: number; y: number } | null>(null);
@@ -97,14 +100,26 @@ export function DHView3D({ frames }: Props) {
     for (let i = 0; i < frames.length - 1; i++) {
       const a = originOf(frames[i] as Mat4);
       const b = originOf(frames[i + 1] as Mat4);
-      const color = LINK_COLORS[i % LINK_COLORS.length] || "#475569";
-      drawCylinder(a, b, 14 - i * 1.5, color);
+      
+      const isLink1Step = activeStep !== undefined && activeStep >= 1 && activeStep <= 4;
+      const isLink2Step = activeStep !== undefined && activeStep >= 2 && activeStep <= 4;
+      const isHighlighted = (i === 0 && isLink1Step) || (i === 1 && isLink2Step);
+
+      const color = isHighlighted ? "oklch(0.55 0.15 200)" : (LINK_COLORS[i % LINK_COLORS.length] || "#475569");
+      drawCylinder(a, b, (14 - i * 1.5) * (isHighlighted ? 1.3 : 1), color);
     }
 
     // Joint Housings (Realistic motors)
     frames.forEach((f, i) => {
       const p = project(originOf(f));
-      const r = 18 - i * 1.8;
+      
+      const isJoint2 = i === 1; 
+      const isJoint1 = i === 0; 
+      const isJoint2Highlighted = activeStep !== undefined && activeStep >= 2 && isJoint2;
+      const isJoint1Highlighted = activeStep !== undefined && activeStep >= 4 && isJoint1;
+      const isHighlighted = isJoint1Highlighted || isJoint2Highlighted;
+
+      const r = (18 - i * 1.8) * (isHighlighted ? 1.25 : 1);
       
       // Housing gradient
       const grad = ctx.createRadialGradient(p.x - r/3, p.y - r/3, 1, p.x, p.y, r);

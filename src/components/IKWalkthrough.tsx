@@ -1,17 +1,22 @@
 import { useState, useEffect } from "react";
 const n = (v: number, d = 2) => v.toFixed(d);
-import { deg2rad, rad2deg } from "@/lib/kinematics";
+import { deg2rad, rad2deg, ik2d as solveIK } from "@/lib/kinematics";
 import type { Vec2 } from "@/lib/kinematics";
+import { Play, Pause, ChevronRight, ChevronLeft } from "lucide-react";
 
 interface WalkthroughProps {
   target: Vec2;
   lengths: number[];
   angles: number[];
   unit: "deg" | "rad";
+  elbowUp: boolean;
+  onStepSelect?: (step: number) => void;
 }
 
-export function IKWalkthrough({ target, lengths, angles, unit }: WalkthroughProps) {
+export function IKWalkthrough({ target, lengths, angles, unit, elbowUp, onStepSelect }: WalkthroughProps) {
   const [activeStep, setActiveStep] = useState(0);
+  const [autoplay, setAutoplay] = useState(false);
+  
   const l1 = lengths[0] ?? 0;
   const l2 = lengths[1] ?? 0;
   const x = target.x;
@@ -20,47 +25,74 @@ export function IKWalkthrough({ target, lengths, angles, unit }: WalkthroughProp
   const d = Math.sqrt(d2);
   
   const cos2 = (d2 - l1 * l1 - l2 * l2) / (2 * l1 * l2);
-  const t2 = angles[1] ?? 0;
-  const t1 = angles[0] ?? 0;
-
+  
+  // Solve both solutions
+  const solUp = solveIK(lengths, target, true);
+  const solDown = solveIK(lengths, target, false);
+  
   const u = (deg: number) => (unit === "deg" ? `${deg.toFixed(1)}°` : `${deg2rad(deg).toFixed(3)}`);
 
   const steps = [
     {
       title: "1. Cartesian Distance",
-      description: "First, we calculate the distance from the base to the target coordinates.",
+      description: "Calculate distance from base to target.",
       formula: "D = √(x² + y²)",
       calculation: `D = √(${n(x)}² + ${n(y)}²) = ${n(d)}`,
     },
     {
       title: "2. Reachability Check",
-      description: "Ensure the target is within the workspace defined by link lengths.",
+      description: "Verify target is within workspace.",
       formula: "|L₁ - L₂| ≤ D ≤ L₁ + L₂",
       calculation: `${n(Math.abs(l1 - l2))} ≤ ${n(d)} ≤ ${n(l1 + l2)}`,
     },
     {
       title: "3. Law of Cosines (θ₂)",
-      description: "Using the triangle formed by L1, L2, and D, we solve for the elbow angle.",
+      description: "Solve for the interior elbow angle.",
       formula: "cos(θ₂) = (D² - L₁² - L₂²) / (2 · L₁ · L₂)",
-      calculation: `cos(θ₂) = (${n(d2)} - ${n(l1*l1)} - ${n(l2*l2)}) / (2 · ${l1} · ${l2}) = ${n(cos2, 4)}`,
+      calculation: `cos(θ₂) = ${n(cos2, 4)}`,
     },
     {
-      title: "4. Solve θ₂",
-      description: "Calculate the angle using inverse cosine (Acos).",
-      formula: "θ₂ = acos(cos(θ₂))",
-      calculation: `θ₂ = acos(${n(cos2, 4)}) = ${u(t2)}`,
+      title: "4. Elbow Configuration",
+      description: "Two valid solutions exist for θ₂ (±acos).",
+      formula: "θ₂ = ±acos(cos(θ₂))",
+      up: `Elbow Up: ${u(solUp.angles[1] ?? 0)}`,
+      down: `Elbow Down: ${u(solDown.angles[1] ?? 0)}`,
     },
     {
-      title: "5. Solve θ₁",
-      description: "Finally, calculate the base angle by subtracting the internal triangle angle from the target heading.",
-      formula: "θ₁ = atan2(y, x) - atan2(L₂·sin θ₂, L₁ + L₂·cos θ₂)",
-      calculation: `θ₁ = ${u(rad2deg(Math.atan2(y, x)))} - ${u(rad2deg(Math.atan2(l2 * Math.sin(deg2rad(t2)), l1 + l2 * Math.cos(deg2rad(t2)))))} = ${u(t1)}`,
+      title: "5. Base Angle (θ₁)",
+      description: "Final orientation based on θ₂.",
+      formula: "θ₁ = atan2(y,x) - atan2(L₂s₂, L₁+L₂c₂)",
+      up: `Elbow Up: ${u(solUp.angles[0] ?? 0)}`,
+      down: `Elbow Down: ${u(solDown.angles[0] ?? 0)}`,
     },
   ];
 
+  useEffect(() => {
+    onStepSelect?.(activeStep);
+  }, [activeStep, onStepSelect]);
+
+  useEffect(() => {
+    if (!autoplay) return;
+    const interval = setInterval(() => {
+      setActiveStep((s) => (s + 1) % steps.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [autoplay, steps.length]);
+
   return (
     <div className="flex h-full flex-col gap-4">
-      <div className="flex-1 space-y-4 overflow-y-auto scrollbar-hide pr-2">
+      <div className="flex items-center justify-between px-1">
+        <h3 className="text-[10px] font-black uppercase tracking-widest text-primary">IK Walkthrough</h3>
+        <button 
+          onClick={() => setAutoplay(!autoplay)}
+          className={`flex items-center gap-1.5 rounded px-2 py-1 text-[9px] font-bold uppercase transition-colors ${autoplay ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}
+        >
+          {autoplay ? <Pause size={10} /> : <Play size={10} />}
+          {autoplay ? 'Stop' : 'Autoplay'}
+        </button>
+      </div>
+
+      <div className="flex-1 space-y-3 overflow-y-auto scrollbar-hide pr-2">
         {steps.map((step, i) => (
           <div
             key={i}
@@ -71,39 +103,52 @@ export function IKWalkthrough({ target, lengths, angles, unit }: WalkthroughProp
                 : "border-border bg-card hover:border-primary/50"
             }`}
           >
-            <h4 className={`text-xs font-bold uppercase tracking-wider ${activeStep === i ? "text-primary" : "text-muted-foreground"}`}>
+            <h4 className={`text-[10px] font-bold uppercase tracking-wider ${activeStep === i ? "text-primary" : "text-muted-foreground"}`}>
               {step.title}
             </h4>
-            <p className="mt-1 text-[11px] leading-relaxed text-secondary-foreground">
+            <p className="mt-1 text-[10px] leading-relaxed text-secondary-foreground/80">
               {step.description}
             </p>
-            <div className="mt-2 space-y-1 font-mono text-[10px]">
-              <div className="text-muted-foreground">{step.formula}</div>
-              <div className="font-bold text-foreground">{step.calculation}</div>
+            
+            <div className="mt-2 space-y-1.5 font-mono text-[10px]">
+              <div className="text-muted-foreground/60">{step.formula}</div>
+              {step.calculation && (
+                <div className="font-bold text-foreground">{step.calculation}</div>
+              )}
+              {(step.up || step.down) && (
+                <div className="grid grid-cols-2 gap-2 mt-1">
+                  <div className={`rounded p-1.5 border ${elbowUp ? 'border-primary bg-primary/5 text-primary' : 'border-border opacity-60'}`}>
+                    <div className="text-[8px] uppercase font-bold mb-0.5">Up</div>
+                    <div className="font-bold truncate">{step.up}</div>
+                  </div>
+                  <div className={`rounded p-1.5 border ${!elbowUp ? 'border-primary bg-primary/5 text-primary' : 'border-border opacity-60'}`}>
+                    <div className="text-[8px] uppercase font-bold mb-0.5">Down</div>
+                    <div className="font-bold truncate">{step.down}</div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         ))}
       </div>
       
-      <div className="flex items-center justify-between border-t border-border pt-4">
+      <div className="flex items-center justify-between border-t border-border pt-3">
         <button
-          type="button"
           onClick={() => setActiveStep(Math.max(0, activeStep - 1))}
           disabled={activeStep === 0}
-          className="rounded border border-border px-3 py-1 text-[10px] font-bold uppercase transition-colors hover:bg-accent disabled:opacity-50"
+          className="rounded border border-border p-1.5 transition-colors hover:bg-accent disabled:opacity-30"
         >
-          Previous
+          <ChevronLeft size={14} />
         </button>
-        <span className="text-[10px] font-bold text-muted-foreground">
-          Step {activeStep + 1} / {steps.length}
+        <span className="text-[10px] font-bold text-muted-foreground tracking-widest">
+          {activeStep + 1} / {steps.length}
         </span>
         <button
-          type="button"
           onClick={() => setActiveStep(Math.min(steps.length - 1, activeStep + 1))}
           disabled={activeStep === steps.length - 1}
-          className="rounded border border-border px-3 py-1 text-[10px] font-bold uppercase transition-colors hover:bg-accent disabled:opacity-50"
+          className="rounded border border-border p-1.5 transition-colors hover:bg-accent disabled:opacity-30"
         >
-          Next
+          <ChevronRight size={14} />
         </button>
       </div>
     </div>
