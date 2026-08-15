@@ -377,16 +377,6 @@ function KinematicsLab() {
           <h1 className="mt-1 text-2xl font-black tracking-tighter text-foreground uppercase opacity-80 md:text-3xl">
             Virtual Lab Environment
           </h1>
-          <div className="mt-2 group relative">
-            <span className="cursor-help text-[10px] text-muted-foreground/40 hover:text-muted-foreground transition-colors">
-              [System Info]
-            </span>
-            <div className="absolute left-0 top-full z-50 mt-2 hidden w-80 rounded-lg border border-border bg-card p-4 text-[10px] leading-relaxed text-muted-foreground shadow-xl group-hover:block">
-              '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
-              {"\n\n"}
-              MODE PERAMETRAS ALL ARE POPUP TYPE IF I POINT IT WILL POPUP AND LIST THE SETTING I CAN SCRROL INSIDE OF POP UP 3D SIMULATION PLACE IS FIXED DONT SCROOL OTHER SIDE IT WILL SHOW ALWASY INSIDE OF THAT IT WILL SCROOLLABLE AND ALSO DOWN OF PRESENT BY THARANEETHARAN SS DOWN OF AND ALSO 6 OR 5 OR 4 OR 3 OR 3 OR 1 THE JI POINT IS FIXXED POSIITION ONLY THER IS NO CHNAGES IN IT AND ALSO SIMULATION PLACE MAKE A RELASTIC ROBOT NOW THIS IS JUST A SKETCH BUT I NEED REALSITC ROBOT BASED DESING
-            </div>
-          </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <SegButton
