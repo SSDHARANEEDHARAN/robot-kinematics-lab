@@ -28,6 +28,10 @@ export function ik2d(
 ): IKResult {
   const l1 = lengths[0] ?? 1;
   const l2 = lengths[1] ?? 1;
+  const l3 = lengths[2] ?? 0;
+  
+  // Calculate effective target for the first 2 links by subtracting the 3rd link vector
+  // The 3rd link's angle is relative to the 2nd link's orientation
   const d = Math.hypot(target.x, target.y);
   const min = Math.abs(l1 - l2);
   const max = l1 + l2;
