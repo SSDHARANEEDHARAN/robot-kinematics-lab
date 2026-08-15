@@ -298,8 +298,8 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
     ctx.fill();
     ctx.strokeStyle = "rgba(0,0,0,0.3)";
     ctx.stroke();
-    if (showAxes) {
-      drawAxes(eePos, frames[frames.length - 1] as Mat4, 35);
+    if (showAxes && effectiveFrames.length > 0) {
+      drawAxes(eePos, effectiveFrames[effectiveFrames.length - 1] as Mat4, 35);
     }
 
 
