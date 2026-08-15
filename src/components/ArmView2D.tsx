@@ -92,7 +92,7 @@ export function ArmView2D({
         {workspace && workspace.length > 0 && (
           <g opacity={0.3}>
             {workspace.map((p, i) => (
-              <circle key={i} cx={r1(p.x)} cy={r1(p.y)} r={3} className="fill-brand" />
+              <circle key={i} cx={r1(p.x)} cy={r1(p.y)} r={3} fill="oklch(0.55 0.15 200)" />
             ))}
           </g>
         )}
@@ -115,14 +115,16 @@ export function ArmView2D({
           <g>
             <circle
               r={maxReach}
-              className="fill-primary/5 stroke-primary/20"
+              fill="oklch(0.55 0.15 200 / 0.03)"
+              stroke="oklch(0.55 0.15 200 / 0.2)"
               strokeWidth={1.5}
               strokeDasharray="4 4"
             />
             {minReach > 1 && (
               <circle
                 r={minReach}
-                className="fill-background stroke-primary/10"
+                className="fill-background"
+                stroke="oklch(0.55 0.15 200 / 0.1)"
                 strokeWidth={1.2}
                 strokeDasharray="2 2"
               />
@@ -145,14 +147,14 @@ export function ArmView2D({
           <g>
             <polyline
               points={path.map((p) => `${r1(p.x)},${r1(p.y)}`).join(" ")}
-              className="stroke-brand"
+              stroke="oklch(0.55 0.15 200)"
               strokeWidth={2}
               strokeDasharray="7 6"
               fill="none"
             />
             {path.map((p, i) => (
               <g key={i}>
-                <circle cx={r1(p.x)} cy={r1(p.y)} r={6} className="fill-brand" />
+                <circle cx={r1(p.x)} cy={r1(p.y)} r={6} fill="oklch(0.55 0.15 200)" />
                 <g transform={`translate(${r1(p.x) + 10}, ${r1(p.y)}) scale(1,-1)`}>
                   <text className="fill-foreground" fontSize={13} fontWeight={700}>
                     P{i + 1}
