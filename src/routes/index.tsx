@@ -588,6 +588,8 @@ function KinematicsLab() {
                     velocity={velocity}
                     unit={unit}
                     activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
+                    limits={[{ min: -150, max: 150 }, { min: -150, max: 150 }, { min: -180, max: 180 }]}
+                    angles={planarAngles}
                   />
                 </div>
               </div>
