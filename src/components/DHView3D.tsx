@@ -161,6 +161,9 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       drawAxes({x: 0, y: 0, z: 0}, [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1], 60, true);
     }
 
+    // Pre-calculate projections for depth sorting
+    const projectFrame = (frame: Mat4) => project(originOf(frame));
+
     // Links and Joints
     for (let i = 0; i < effectiveFrames.length - 1; i++) {
       const a = originOf(effectiveFrames[i] as Mat4);
@@ -173,22 +176,19 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
 
       // --- Link body: realistic cylinders based on reference image ---
       const ang = Math.atan2(pb.y - pa.y, pb.x - pa.x);
+      const dist = Math.sqrt((pb.x - pa.x) ** 2 + (pb.y - pa.y) ** 2);
+      
       const nx = Math.cos(ang + Math.PI / 2);
       const ny = Math.sin(ang + Math.PI / 2);
       const lw = r * 2.2;
       
-      // Determine color based on link index to match reference
-      // J1: Black/Dark Grey, J2: Red, etc.
-      const linkColor = LINK_COLORS[i] || "#7F8C8D";
+      const linkColor = LINK_COLORS[i % LINK_COLORS.length] || "#7F8C8D";
 
       ctx.save();
       // Drop shadow for 3D depth
       ctx.shadowColor = "rgba(0,0,0,0.35)";
       ctx.shadowBlur = 10;
       ctx.shadowOffsetY = 6;
-      
-      // Basic cylinder body
-      ctx.fillStyle = linkColor;
       
       // Simple cylindrical shading (darker on bottom)
       const cylinderGrad = ctx.createLinearGradient(
@@ -197,91 +197,113 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       );
       cylinderGrad.addColorStop(0, linkColor);
       cylinderGrad.addColorStop(0.5, linkColor);
-      cylinderGrad.addColorStop(1, "rgba(0,0,0,0.3)"); // Darken bottom side
+      cylinderGrad.addColorStop(1, "rgba(0,0,0,0.4)"); 
       
       ctx.strokeStyle = cylinderGrad;
       ctx.lineWidth = lw;
-      ctx.lineCap = "round";
+      ctx.lineCap = "butt"; // Use butt for links so they don't overlap joint center visually too much
       ctx.beginPath();
       ctx.moveTo(pa.x, pa.y);
       ctx.lineTo(pb.x, pb.y);
       ctx.stroke();
       
       // Top specular highlight (white streak)
-      ctx.strokeStyle = "rgba(255,255,255,0.2)";
-      ctx.lineWidth = lw * 0.2;
+      ctx.strokeStyle = "rgba(255,255,255,0.25)";
+      ctx.lineWidth = lw * 0.15;
       ctx.beginPath();
-      ctx.moveTo(pa.x + nx * lw * 0.2, pa.y + ny * lw * 0.2);
-      ctx.lineTo(pb.x + nx * lw * 0.2, pb.y + ny * lw * 0.2);
+      ctx.moveTo(pa.x + nx * lw * 0.25, pa.y + ny * lw * 0.25);
+      ctx.lineTo(pb.x + nx * lw * 0.25, pb.y + ny * lw * 0.25);
       ctx.stroke();
       ctx.restore();
 
-
-      // --- Joint: Sleek cylindrical joints (frosted gray) ---
-      const hr = r * 1.8;  // joint radius
-      const hw = r * 1.5;  // joint width
+      // --- Joint: Complex Industrial Housing ---
+      const hr = r * 2.2;  // Increased joint radius for "proper style"
+      const hw = r * 2.8;  // Increased joint width
       
-      const drawJoint = (cx: number, cyy: number, angle: number) => {
-        const jnx = Math.cos(angle + Math.PI / 2);
-        const jny = Math.sin(angle + Math.PI / 2);
-        
-        const hGrad = ctx.createLinearGradient(
-          cx + jnx * hr, cyy + jny * hr,
-          cx - jnx * hr, cyy - jny * hr
-        );
-        hGrad.addColorStop(0, "#D5DBDB");
-        hGrad.addColorStop(0.5, "#BDC3C7");
-        hGrad.addColorStop(1, "#95A5A6");
-
+      const drawComplexJoint = (cx: number, cyy: number, angle: number, index: number) => {
         ctx.save();
         ctx.translate(cx, cyy);
         ctx.rotate(angle);
         
-        // Main joint body (cylinder side view)
-        ctx.fillStyle = hGrad;
-        ctx.beginPath();
-        ctx.rect(-hw/2, -hr, hw, hr * 2);
-        ctx.fill();
-        ctx.strokeStyle = "rgba(0,0,0,0.2)";
-        ctx.lineWidth = 1;
-        ctx.strokeRect(-hw/2, -hr, hw, hr * 2);
+        // 1. Main outer housing (Cylindrical base)
+        const jGrad = ctx.createLinearGradient(0, -hr, 0, hr);
+        jGrad.addColorStop(0, "#E5E7E9");
+        jGrad.addColorStop(0.4, "#BDC3C7");
+        jGrad.addColorStop(0.6, "#95A5A6");
+        jGrad.addColorStop(1, "#7F8C8D");
         
-        // Joint end caps
+        ctx.fillStyle = jGrad;
         ctx.beginPath();
-        ctx.ellipse(-hw/2, 0, hr * 0.3, hr, 0, 0, Math.PI * 2);
-        ctx.fillStyle = "#7F8C8D";
+        // Rounded housing
+        ctx.roundRect(-hw/2, -hr, hw, hr * 2, hr * 0.2);
+        ctx.fill();
+        
+        // Subtly outline
+        ctx.strokeStyle = "rgba(0,0,0,0.15)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // 2. Middle "Power Band" or "Actuator Hub"
+        const bandWidth = hw * 0.4;
+        const bandColor = index % 2 === 0 ? "#2C3E50" : "#C0392B";
+        ctx.fillStyle = bandColor;
+        ctx.fillRect(-bandWidth/2, -hr * 1.05, bandWidth, hr * 2.1);
+        
+        // 3. Bolts/Rivets around the hub (Simulated)
+        ctx.fillStyle = "rgba(0,0,0,0.3)";
+        for(let j = -1; j <= 1; j+=2) {
+          for(let k = -1; k <= 1; k+=0.5) {
+            ctx.beginPath();
+            ctx.arc((bandWidth/2 + 2) * j, hr * 0.7 * k, 1.5, 0, Math.PI*2);
+            ctx.fill();
+          }
+        }
+
+        // 4. End Caps with depth
+        // Left Cap
+        ctx.beginPath();
+        ctx.ellipse(-hw/2, 0, hr * 0.2, hr, 0, 0, Math.PI * 2);
+        ctx.fillStyle = "#AAB7B8";
+        ctx.fill();
+        ctx.stroke();
+        
+        // Right Cap (Interactive side)
+        ctx.beginPath();
+        ctx.ellipse(hw/2, 0, hr * 0.2, hr, 0, 0, Math.PI * 2);
+        ctx.fillStyle = "#D5DBDB";
         ctx.fill();
         ctx.stroke();
 
-        ctx.beginPath();
-        ctx.ellipse(hw/2, 0, hr * 0.3, hr, 0, 0, Math.PI * 2);
-        ctx.fillStyle = "#BDC3C7";
-        ctx.fill();
-        ctx.stroke();
-        
-        // Highlight band
+        // 5. Specular highlight on the outer shell
         ctx.strokeStyle = "rgba(255,255,255,0.4)";
-        ctx.lineWidth = hr * 0.2;
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.moveTo(-hw/2, -hr * 0.5);
-        ctx.lineTo(hw/2, -hr * 0.5);
+        ctx.moveTo(-hw/2 + 5, -hr * 0.6);
+        ctx.lineTo(hw/2 - 5, -hr * 0.6);
         ctx.stroke();
         
         ctx.restore();
       };
       
-      drawJoint(pa.x, pa.y, ang + Math.PI/2);
+      // Draw joint at start of link
+      // Use the Z-axis of the frame to orient the joint cylinder
+      const frameA = effectiveFrames[i] as Mat4;
+      const zAxis = axisOf(frameA, 2);
+      const projZ = project({x: a.x + zAxis.x, y: a.y + zAxis.y, z: a.z + zAxis.z});
+      const jointAngle = Math.atan2(projZ.y - pa.y, projZ.x - pa.x);
+      
+      drawComplexJoint(pa.x, pa.y, jointAngle, i);
 
       if (isHighlighted) {
         ctx.save();
-        ctx.strokeStyle = "rgba(46, 204, 113, 0.8)"; // Green highlight for active
-        ctx.lineWidth = 3;
+        ctx.strokeStyle = "#3498DB";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
         ctx.beginPath();
-        ctx.arc(pa.x, pa.y, hr + 5, 0, Math.PI * 2);
+        ctx.arc(pa.x, pa.y, hr * 1.4, 0, Math.PI * 2);
         ctx.stroke();
         ctx.restore();
       }
-
 
       // Frame axes at each joint
       if (showAxes && effectiveFrames[i]) {
