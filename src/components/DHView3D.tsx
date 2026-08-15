@@ -92,7 +92,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
 
     const drawAxes = (pos: Vec3, frame: Mat4, size = 30, isBase = false) => {
       const p = project(pos);
-      const axisSize = size * baseScale;
+      const axisSize = size * currentBaseScale;
       const xAxis = axisOf(frame, 0);
       const yAxis = axisOf(frame, 1);
       const zAxis = axisOf(frame, 2);
