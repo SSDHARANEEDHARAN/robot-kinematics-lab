@@ -266,7 +266,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
   }, [effectiveFrames, cam, activeStep, showAxes, baseScale]);
 
   return (
-    <div className="relative h-full w-full bg-slate-100">
+    <div className="relative h-full w-full bg-background">
       <canvas
         ref={canvasRef}
         className="h-full w-full cursor-grab touch-none active:cursor-grabbing"
