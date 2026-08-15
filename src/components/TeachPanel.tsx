@@ -15,6 +15,7 @@ export function TeachPanel({
   onJogJoint,
   onJogCart,
   jointCount,
+  onRunDemo,
 }: {
   waypoints: Waypoint[];
   playing: boolean;
@@ -30,11 +31,36 @@ export function TeachPanel({
   onJogJoint: (i: number, delta: number) => void;
   onJogCart: (axis: "x" | "y", delta: number) => void;
   jointCount: number;
+  onRunDemo: (type: "pick" | "round" | "dance") => void;
 }) {
   const jog =
     "rounded-md border border-border bg-card px-2 py-2 text-sm font-bold text-foreground hover:bg-accent active:bg-secondary";
   return (
     <div className="space-y-4">
+      <div>
+        <h4 className="lab-label mb-2">Demo Programs</h4>
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          <button 
+            className="rounded-lg border border-border bg-secondary/50 py-2 text-[10px] font-black uppercase tracking-wider hover:bg-primary hover:text-primary-foreground transition-colors"
+            onClick={() => onRunDemo("pick")}
+          >
+            Pick & Place
+          </button>
+          <button 
+            className="rounded-lg border border-border bg-secondary/50 py-2 text-[10px] font-black uppercase tracking-wider hover:bg-primary hover:text-primary-foreground transition-colors"
+            onClick={() => onRunDemo("round")}
+          >
+            Arounding
+          </button>
+          <button 
+            className="rounded-lg border border-border bg-secondary/50 py-2 text-[10px] font-black uppercase tracking-wider hover:bg-primary hover:text-primary-foreground transition-colors"
+            onClick={() => onRunDemo("dance")}
+          >
+            Dancing
+          </button>
+        </div>
+      </div>
+
       <div>
         <h4 className="lab-label mb-2">Joint jog (FK)</h4>
         <div className="space-y-1.5">
