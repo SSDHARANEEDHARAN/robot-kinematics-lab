@@ -62,77 +62,77 @@
 }
 
 :root {
-  --radius: 0rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0 0 0);
+  --radius: 0.5rem;
+  --background: oklch(0.98 0.005 240);
+  --foreground: oklch(0.15 0.02 240);
+  --card: oklch(1 0 0 / 0.8);
+  --card-foreground: oklch(0.15 0.02 240);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0 0 0);
-  --primary: oklch(0 0 0);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.95 0 0);
-  --secondary-foreground: oklch(0 0 0);
-  --muted: oklch(0.9 0 0);
-  --muted-foreground: oklch(0.4 0 0);
-  --accent: oklch(0 0 0);
+  --popover-foreground: oklch(0.15 0.02 240);
+  --primary: oklch(0.45 0.18 240);
+  --primary-foreground: oklch(0.98 0.005 240);
+  --secondary: oklch(0.92 0.01 240);
+  --secondary-foreground: oklch(0.15 0.02 240);
+  --muted: oklch(0.95 0.01 240);
+  --muted-foreground: oklch(0.45 0.02 240);
+  --accent: oklch(0.5 0.25 280);
   --accent-foreground: oklch(1 0 0);
-  --destructive: oklch(0.2 0 0);
+  --destructive: oklch(0.55 0.2 25);
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0 0 0);
-  --input: oklch(0.95 0 0);
-  --ring: oklch(0 0 0);
-  --brand: oklch(0 0 0);
-  --panel: oklch(1 0 0);
-  --link-1: oklch(0.2 0 0);
-  --link-2: oklch(0.4 0 0);
-  --link-3: oklch(0 0 0);
-  --grid: oklch(0 0 0 / 10%);
-  --zone: oklch(0 0 0 / 5%);
+  --border: oklch(0.9 0.02 240);
+  --input: oklch(0.95 0.01 240);
+  --ring: oklch(0.45 0.18 240);
+  --brand: oklch(0.45 0.18 240);
+  --panel: oklch(1 0 0 / 0.5);
+  --link-1: oklch(0.45 0.18 240);
+  --link-2: oklch(0.5 0.25 280);
+  --link-3: oklch(0.15 0.02 240);
+  --grid: oklch(0 0 0 / 5%);
+  --zone: oklch(0.45 0.18 240 / 5%);
 
-  --chart-1: oklch(0 0 0);
-  --chart-2: oklch(0.2 0 0);
-  --chart-3: oklch(0.4 0 0);
-  --chart-4: oklch(0.6 0 0);
-  --chart-5: oklch(0.8 0 0);
+  --chart-1: oklch(0.45 0.18 240);
+  --chart-2: oklch(0.5 0.25 280);
+  --chart-3: oklch(0.55 0.2 25);
+  --chart-4: oklch(0.6 0.15 180);
+  --chart-5: oklch(0.7 0.12 60);
 
-  --sidebar: oklch(1 0 0);
-  --sidebar-foreground: oklch(0 0 0);
-  --sidebar-primary: oklch(0 0 0);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.95 0 0);
-  --sidebar-accent-foreground: oklch(0 0 0);
-  --sidebar-border: oklch(0 0 0);
-  --sidebar-ring: oklch(0 0 0);
+  --sidebar: oklch(0.98 0.005 240);
+  --sidebar-foreground: oklch(0.15 0.02 240);
+  --sidebar-primary: oklch(0.45 0.18 240);
+  --sidebar-primary-foreground: oklch(0.98 0.005 240);
+  --sidebar-accent: oklch(0.92 0.01 240);
+  --sidebar-accent-foreground: oklch(0.15 0.02 240);
+  --sidebar-border: oklch(0.9 0.02 240);
+  --sidebar-ring: oklch(0.45 0.18 240);
 }
 
 .dark {
-  --background: oklch(0 0 0);
-  --foreground: oklch(1 0 0);
-  --card: oklch(0 0 0);
-  --card-foreground: oklch(1 0 0);
-  --popover: oklch(0 0 0);
-  --popover-foreground: oklch(1 0 0);
-  --primary: oklch(1 0 0);
-  --primary-foreground: oklch(0 0 0);
-  --secondary: oklch(0.1 0 0);
-  --secondary-foreground: oklch(1 0 0);
-  --muted: oklch(0.2 0 0);
-  --muted-foreground: oklch(0.7 0 0);
-  --accent: oklch(1 0 0);
-  --accent-foreground: oklch(0 0 0);
-  --destructive: oklch(0.8 0 0);
-  --destructive-foreground: oklch(0 0 0);
-  --border: oklch(1 0 0);
-  --input: oklch(0.1 0 0);
-  --ring: oklch(1 0 0);
-  --brand: oklch(1 0 0);
-  --panel: oklch(0 0 0);
-  --link-1: oklch(0.8 0 0);
-  --link-2: oklch(0.6 0 0);
-  --link-3: oklch(1 0 0);
-  --grid: oklch(1 0 0 / 10%);
-  --zone: oklch(1 0 0 / 5%);
+  --background: oklch(0.1 0.02 240);
+  --foreground: oklch(0.95 0.01 240);
+  --card: oklch(0.15 0.02 240 / 0.7);
+  --card-foreground: oklch(0.95 0.01 240);
+  --popover: oklch(0.1 0.02 240);
+  --popover-foreground: oklch(0.95 0.01 240);
+  --primary: oklch(0.65 0.15 240);
+  --primary-foreground: oklch(0.1 0.02 240);
+  --secondary: oklch(0.2 0.02 240);
+  --secondary-foreground: oklch(0.95 0.01 240);
+  --muted: oklch(0.18 0.02 240);
+  --muted-foreground: oklch(0.7 0.01 240);
+  --accent: oklch(0.7 0.2 280);
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.6 0.18 25);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.25 0.02 240);
+  --input: oklch(0.2 0.02 240);
+  --ring: oklch(0.65 0.15 240);
+  --brand: oklch(0.65 0.15 240);
+  --panel: oklch(0.15 0.02 240 / 0.4);
+  --link-1: oklch(0.65 0.15 240);
+  --link-2: oklch(0.7 0.2 280);
+  --link-3: oklch(0.95 0.01 240);
+  --grid: oklch(1 1 1 / 5%);
+  --zone: oklch(0.65 0.15 240 / 5%);
 }
 
 @layer base {
@@ -143,13 +143,19 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    background-image: 
+      radial-gradient(circle at 50% 50%, var(--primary) 0%, transparent 1%),
+      radial-gradient(circle at 0% 0%, var(--accent) 0%, transparent 0.5%);
+    background-size: 40px 40px, 100% 100%;
     background-attachment: fixed;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
   }
 
   .dark body {
-    background-image: none;
+    background-image: 
+      radial-gradient(circle at 50% 50%, var(--primary) 0.5%, transparent 1%),
+      linear-gradient(to bottom right, var(--background), oklch(0.05 0.01 240));
   }
 
   html {
@@ -159,14 +165,36 @@
 
 @utility glass-card {
   background-color: var(--card);
-  border: 2px solid var(--border);
-  border-radius: 0;
-  box-shadow: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  position: relative;
+  overflow: hidden;
 }
 
 @utility lab-card {
   @apply glass-card;
+  &:hover {
+    transform: translateY(-6px) scale(1.015);
+    box-shadow: 0 25px 30px -5px rgb(0 0 0 / 0.15), 0 12px 15px -6px rgb(0 0 0 / 0.1);
+    border-color: var(--primary);
+  }
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 45%, var(--primary) 50%, transparent 55%);
+    background-size: 300% 300%;
+    opacity: 0;
+    transition: opacity 0.6s, background-position 0.6s;
+    pointer-events: none;
+  }
+  &:hover::before {
+    opacity: 0.1;
+    background-position: 100% 100%;
+  }
 }
 
 @utility lab-label {

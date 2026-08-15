@@ -534,30 +534,33 @@ function KinematicsLab() {
 
   return (
     <main className="min-h-screen px-4 pb-8 pt-0 md:px-8 max-w-[1920px] mx-auto select-none flex flex-col bg-background text-foreground">
-      <header className="py-6 mb-6 flex items-center justify-between border-b-4 border-foreground">
-        <div className="flex flex-col gap-0.5">
-          <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+      <header className="mb-8 flex items-center justify-between border-b border-border/50 py-6">
+        <div className="flex flex-col gap-0.5 group cursor-default">
+          <p className="text-[9px] font-black uppercase tracking-[0.4em] text-primary transition-all group-hover:tracking-[0.6em]">
             Industrial Kinematics
           </p>
           <p className="text-xl font-black uppercase tracking-tighter text-foreground">
-            Factory Precision V3
+            Precision Lab V3
           </p>
         </div>
 
-        
         <div className="flex items-center gap-4">
-          <SegButton
-            options={[
-              { value: "deg", label: "deg" },
-              { value: "rad", label: "rad" },
-            ]}
-            value={unit}
-            onChange={(v) => setUnit(v as "deg" | "rad")}
-          />
-          <div className="flex items-center gap-2 border-2 border-foreground bg-background px-3 py-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
-            <span className={`h-2 w-2 rounded-full ${mode === "IK" && !ik.reachable ? "bg-foreground animate-pulse" : "bg-foreground"}`} />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground">
-              {mode === "IK" && !ik.reachable ? "Out of reach" : playing ? "Running" : "System Ready"}
+          <div className="hidden lg:flex items-center gap-4 mr-4">
+            <SegButton
+              options={[
+                { value: "IK", label: "Inverse" },
+                { value: "FK", label: "Forward" },
+                { value: "DH", label: "DH-Param" },
+              ]}
+              value={mode}
+              onChange={(v) => setMode(v as Mode)}
+            />
+          </div>
+
+          <div className="flex items-center gap-2 rounded-full border border-border/50 bg-secondary/50 px-4 py-2 backdrop-blur-md transition-all hover:border-primary/50 shadow-lg shadow-black/5">
+            <span className={`h-2 w-2 rounded-full shadow-[0_0_8px] ${mode === "IK" && !ik.reachable ? "bg-destructive shadow-destructive/50 animate-pulse" : "bg-primary shadow-primary/50"}`} />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/80">
+              {mode === "IK" && !ik.reachable ? "Out of reach" : playing ? "Executing" : "Active"}
             </span>
           </div>
         </div>
@@ -568,11 +571,11 @@ function KinematicsLab() {
         {/* ---------- Left: popups ---------- */}
         <aside className="flex flex-col gap-3 overflow-hidden h-[500px] xl:h-full order-2 xl:order-1">
           <div className="flex flex-1 flex-col overflow-hidden">
-            <div className="w-full border-2 border-foreground bg-foreground px-4 py-3 text-xs font-black uppercase tracking-widest text-background shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-              Robot Settings
+            <div className="w-full rounded-t-xl border border-border bg-foreground px-4 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-background shadow-lg">
+              Robot Configuration
             </div>
-            <div className="mt-0 flex-1 overflow-y-auto border-2 border-t-0 border-foreground bg-card shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] scrollbar-hide">
-              <div className="lab-card border-none shadow-none divide-y-2 divide-slate-900/5">
+            <div className="mt-0 flex-1 overflow-y-auto rounded-b-xl border border-t-0 border-border/50 bg-card/50 backdrop-blur-xl shadow-xl scrollbar-hide">
+              <div className="border-none shadow-none divide-y border-border/10">
                 <Section title="Mode">
                   <SegButton
                     options={[
@@ -583,6 +586,11 @@ function KinematicsLab() {
                     value={mode}
                     onChange={(v) => setMode(v as Mode)}
                   />
+                  <div className="mt-4 flex flex-col gap-2">
+                    <GhostButton onClick={share}>
+                      {shareMsg || "Share Preset"}
+                    </GhostButton>
+                  </div>
                 </Section>
                 {mode === "DH" ? (
                   <>
@@ -990,14 +998,15 @@ function KinematicsLab() {
         </aside>
       </div>
 
-      <footer className="mt-8 flex items-center justify-between border-t-2 border-foreground pt-6 text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-        <div className="flex items-center gap-2 text-foreground">
-           <div className="h-2 w-2 rounded-full bg-current animate-pulse" />
-           <span>System Online</span>
+      <footer className="mt-12 flex items-center justify-between border-t border-border/50 py-8 text-[9px] font-bold uppercase tracking-[0.3em] text-muted-foreground">
+        <div className="flex items-center gap-3 text-foreground/60 transition-colors hover:text-primary">
+           <div className="h-2 w-2 rounded-full bg-primary shadow-[0_0_8px] shadow-primary/50 animate-pulse" />
+           <span>Lab System Active</span>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="text-foreground">Present by Tharaneetharan SS</span>
-          <span className="h-1 w-1 rounded-full bg-foreground" />
+        <div className="flex items-center gap-6">
+          <span className="text-foreground/80 font-black">Powered by Factory AI</span>
+          <span className="h-1 w-1 rounded-full bg-border" />
+          <span className="text-primary font-black">Presented by Tharaneetharan SS</span>
           <span>Industrial Automation Series</span>
         </div>
       </footer>

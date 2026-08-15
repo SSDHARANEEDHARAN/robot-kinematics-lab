@@ -126,21 +126,24 @@ export function ArmView2D({
         </g>
 
         {showZone && (
-          <g>
+          <g className="opacity-20 transition-opacity duration-700 hover:opacity-40">
             <circle
               r={maxReach}
-              fill="oklch(0.55 0.15 200 / 0.03)"
-              stroke="oklch(0.55 0.15 200 / 0.2)"
+              fill="var(--primary)"
+              fillOpacity={0.03}
+              stroke="var(--primary)"
               strokeWidth={1.5}
-              strokeDasharray="4 4"
+              strokeDasharray="8 8"
+              className="animate-[spin_60s_linear_infinite]"
             />
             {minReach > 1 && (
               <circle
                 r={minReach}
                 className="fill-background"
-                stroke="oklch(0.55 0.15 200 / 0.1)"
+                stroke="var(--primary)"
                 strokeWidth={1.2}
-                strokeDasharray="2 2"
+                strokeDasharray="4 4"
+                opacity={0.5}
               />
             )}
           </g>
@@ -198,10 +201,11 @@ export function ArmView2D({
                 y1={r1(p.y)}
                 x2={r1(q.x)}
                 y2={r1(q.y)}
-                stroke={isColliding ? "#ef4444" : (i % 2 === 0 ? "var(--foreground)" : "var(--muted-foreground)")}
+                stroke={isColliding ? "#ef4444" : "var(--primary)"}
                 strokeWidth={isHighlighted ? 18 : 12}
                 strokeLinecap="round"
                 opacity={isHighlighted ? 1 : 0.9}
+                className="transition-all duration-300 hover:opacity-100"
               />
               {/* Brushed highlight */}
               <line
@@ -297,7 +301,7 @@ export function ArmView2D({
                 cx={r1(p.x)}
                 cy={r1(p.y)}
                 r={isHighlighted ? 8 : (i === 0 ? 7 : 6)}
-                className={isHighlighted ? "fill-foreground stroke-foreground" : (i === 0 ? "fill-foreground stroke-foreground" : "fill-background stroke-foreground")}
+                className={`transition-all duration-300 hover:scale-125 ${isHighlighted ? "fill-primary stroke-primary" : (i === 0 ? "fill-primary stroke-primary" : "fill-background stroke-primary")}`}
                 strokeWidth={2}
               />
               {/* Limit Violation Warning */}
@@ -311,7 +315,7 @@ export function ArmView2D({
           );
         })}
 
-        <circle cx={r1(end.x)} cy={r1(end.y)} r={8} className="fill-foreground stroke-background" strokeWidth={2} />
+        <circle cx={r1(end.x)} cy={r1(end.y)} r={8} className="fill-primary stroke-background shadow-lg animate-pulse" strokeWidth={2} />
       </g>
     </svg>
   );

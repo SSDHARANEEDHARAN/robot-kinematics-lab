@@ -17,18 +17,18 @@ export function Section({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="border-b-2 border-foreground last:border-b-0">
+    <div className="border-b border-border/50 last:border-b-0 transition-colors hover:bg-muted/10">
       <div 
-        className={`flex items-center justify-between px-5 py-4 ${collapsible ? 'cursor-pointer hover:bg-muted/30' : ''}`}
+        className={`flex items-center justify-between px-5 py-3 ${collapsible ? 'cursor-pointer' : ''}`}
         onClick={() => collapsible && setIsOpen(!isOpen)}
       >
         <div className="flex items-center gap-2">
           {collapsible && (
-            <span className="text-muted-foreground">
-              {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+            <span className="text-muted-foreground transition-transform duration-200">
+              {isOpen ? <ChevronDown size={14} className="rotate-0" /> : <ChevronRight size={14} className="-rotate-90" />}
             </span>
           )}
-          <h3 className="lab-label">{title}</h3>
+          <h3 className="lab-label text-[10px] text-foreground/70">{title}</h3>
         </div>
         {aside ? <span className="text-xs font-medium text-muted-foreground">{aside}</span> : null}
       </div>
@@ -54,21 +54,21 @@ export function SegButton({
 }) {
   return (
     <div
-      className={`gap-1 rounded-none border-2 border-foreground bg-background p-1 ${stacked ? "grid grid-cols-1" : "grid grid-flow-col auto-cols-fr"}`}
+      className={`gap-1 rounded-lg border border-border bg-secondary/50 p-1 backdrop-blur-md ${stacked ? "grid grid-cols-1" : "grid grid-flow-col auto-cols-fr"}`}
     >
       {options.map((o) => (
         <button
           key={o.value}
           type="button"
           onClick={() => onChange(o.value)}
-          className={`relative z-10 rounded-none px-3 py-2 text-xs font-black uppercase tracking-wider transition-all duration-300 ${
+          className={`relative z-10 rounded-md px-3 py-2 text-[10px] font-bold uppercase tracking-widest transition-all duration-300 ${
             value === o.value
-              ? "text-background"
-              : "text-foreground hover:bg-muted/30"
+              ? "text-primary-foreground"
+              : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
           }`}
         >
           {value === o.value && (
-            <div className="absolute inset-0 -z-10 bg-foreground animate-in fade-in zoom-in-95 duration-300" />
+            <div className="absolute inset-0 -z-10 rounded-md bg-primary shadow-lg shadow-primary/20 animate-in fade-in zoom-in-95 duration-300" />
           )}
           {o.label}
         </button>
@@ -141,28 +141,32 @@ export function GhostButton({ children, onClick }: { children: ReactNode; onClic
     <button
       type="button"
       onClick={onClick}
-      className="rounded-none border-2 border-foreground bg-background px-3 py-2 text-xs font-bold uppercase tracking-wider text-foreground transition-all hover:bg-foreground hover:text-background shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+      className="group relative overflow-hidden rounded-lg border border-primary/30 bg-background px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-foreground transition-all duration-300 hover:border-primary hover:text-primary-foreground hover:shadow-[0_0_20px_rgba(var(--primary),0.3)] active:scale-95"
     >
-      {children}
+      <div className="absolute inset-0 -z-10 translate-y-full bg-primary transition-transform duration-300 group-hover:translate-y-0" />
+      <span className="relative z-10">{children}</span>
     </button>
   );
 }
 
 export function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="lab-card px-4 py-3 border-l-8 border-l-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
-      <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">{label}</div>
-      <div className="mt-1 text-2xl font-black tabular-nums tracking-tight text-foreground drop-shadow-none">{value}</div>
+    <div className="lab-card px-4 py-3 group relative overflow-hidden">
+      <div className="absolute top-0 left-0 h-full w-1 bg-primary opacity-30 transition-all duration-300 group-hover:w-full group-hover:opacity-5" />
+      <div className="relative z-10">
+        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground group-hover:text-primary transition-colors">{label}</div>
+        <div className="mt-1 text-2xl font-black tabular-nums tracking-tight text-foreground transition-transform duration-300 group-hover:scale-105 group-hover:translate-x-1">{value}</div>
+      </div>
     </div>
   );
 }
 
 export function Card({ title, children }: { title?: string; children: ReactNode }) {
   return (
-    <div className="lab-card overflow-hidden border-2 border-foreground shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+    <div className="lab-card overflow-hidden group/card transition-all duration-500 hover:shadow-primary/5">
       {title && (
-        <div className="border-b-2 border-foreground bg-foreground px-5 py-3">
-          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-background">{title}</h3>
+        <div className="border-b border-border/50 bg-secondary/30 px-5 py-3 backdrop-blur-sm">
+          <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/70">{title}</h3>
         </div>
       )}
       <div className="p-5">{children}</div>
@@ -178,7 +182,7 @@ export function Badge({ children, variant = "default" }: { children: ReactNode; 
     danger: "bg-foreground text-background border-2 border-foreground animate-pulse",
   };
   return (
-    <span className={`px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${styles[variant]}`}>
+    <span className={`rounded-full px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.15em] transition-all duration-300 hover:scale-110 hover:rotate-1 ${styles[variant]}`}>
       {children}
     </span>
   );
