@@ -63,16 +63,16 @@ export function IKWalkthrough({ target, lengths, angles, unit, elbowUp: initialE
       description: "Two valid solutions exist for θ₂ (±acos).",
       tooltip: "Robots can reach the same point by bending the elbow up or down. Mathematically, this is the positive and negative root of the arccosine.",
       formula: "θ₂ = ±acos(cos(θ₂))",
-      up: `Elbow Up: ${u(solUp.angles[1] ?? 0)}`,
-      down: `Elbow Down: ${u(solDown.angles[1] ?? 0)}`,
+      up: `Up: ${u(solUp.angles[1] ?? 0)}`,
+      down: `Down: ${u(solDown.angles[1] ?? 0)}`,
     },
     {
       title: "5. Base Angle (θ₁)",
       description: "Final orientation based on θ₂.",
       tooltip: "The base angle depends on both the target position and how Link 2 is oriented relative to Link 1.",
       formula: "θ₁ = atan2(y,x) - atan2(L₂s₂, L₁+L₂c₂)",
-      up: `Elbow Up: ${u(solUp.angles[0] ?? 0)}`,
-      down: `Elbow Down: ${u(solDown.angles[0] ?? 0)}`,
+      up: `Up: ${u(solUp.angles[0] ?? 0)}`,
+      down: `Down: ${u(solDown.angles[0] ?? 0)}`,
     },
   ];
 
@@ -90,21 +90,21 @@ export function IKWalkthrough({ target, lengths, angles, unit, elbowUp: initialE
 
   return (
     <div className="flex h-full flex-col gap-4">
-      <div className="flex flex-col gap-2 px-1">
+      <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <h3 className="text-[10px] font-black uppercase tracking-widest text-primary">IK Walkthrough</h3>
           <button 
             onClick={() => setAutoplay(!autoplay)}
-            className={`flex items-center gap-1.5 rounded px-2 py-1 text-[9px] font-bold uppercase transition-colors ${autoplay ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}
+            className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[9px] font-bold uppercase transition-all ${autoplay ? 'bg-foreground text-background' : 'bg-secondary text-foreground'}`}
           >
             {autoplay ? <Pause size={10} /> : <Play size={10} />}
-            {autoplay ? 'Stop' : 'Autoplay'}
+            {autoplay ? 'Stop' : 'Auto'}
           </button>
         </div>
         
-        <div className="flex flex-col gap-1.5">
-           <div className="flex items-center justify-between text-[8px] font-bold uppercase text-muted-foreground">
-             <span>Delay: {(autoplayDelay/1000).toFixed(1)}s</span>
+        <div className="grid grid-cols-2 gap-2">
+           <div className="flex flex-col gap-1">
+             <span className="text-[8px] font-bold uppercase text-muted-foreground">Speed</span>
              <input 
                type="range" 
                min="500" 
@@ -112,67 +112,64 @@ export function IKWalkthrough({ target, lengths, angles, unit, elbowUp: initialE
                step="100"
                value={autoplayDelay}
                onChange={(e) => setAutoplayDelay(Number(e.target.value))}
-               className="h-1 w-24 accent-primary"
+               className="w-full"
              />
            </div>
            
-           <div className="flex items-center justify-between gap-1 rounded bg-secondary/50 p-0.5">
-             {(['auto', 'up', 'down'] as const).map((l) => (
-               <button
-                 key={l}
-                 onClick={() => setLockElbow(l)}
-                 className={`flex-1 rounded py-0.5 text-[8px] font-bold uppercase transition-all ${
-                   lockElbow === l ? 'bg-card text-primary shadow-sm' : 'text-muted-foreground hover:text-foreground'
-                 }`}
-               >
-                 {l}
-               </button>
-             ))}
+           <div className="flex flex-col gap-1">
+             <span className="text-[8px] font-bold uppercase text-muted-foreground">Elbow</span>
+             <div className="flex items-center justify-between gap-1 rounded-lg bg-secondary p-0.5">
+               {(['auto', 'up', 'down'] as const).map((l) => (
+                 <button
+                   key={l}
+                   onClick={() => setLockElbow(l)}
+                   className={`flex-1 rounded-md py-0.5 text-[8px] font-bold uppercase transition-all ${
+                     lockElbow === l ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                   }`}
+                 >
+                   {l}
+                 </button>
+               ))}
+             </div>
            </div>
         </div>
       </div>
 
-      <div className="flex-1 space-y-3 overflow-y-auto scrollbar-hide pr-2">
+      <div className="flex-1 space-y-3 overflow-y-auto scrollbar-hide">
         {steps.map((step, i) => (
           <div
             key={i}
             onClick={() => setActiveStep(i)}
-            className={`cursor-pointer rounded-md border p-3 transition-all ${
+            className={`cursor-pointer rounded-2xl p-4 transition-all ${
               activeStep === i 
-                ? "border-primary bg-primary/5 ring-1 ring-primary/20" 
-                : "border-border bg-card hover:border-primary/50"
+                ? "bg-secondary" 
+                : "hover:bg-secondary/40"
             }`}
           >
             <div className="flex items-start justify-between">
-              <h4 className={`text-[10px] font-bold uppercase tracking-wider ${activeStep === i ? "text-primary" : "text-muted-foreground"}`}>
+              <h4 className={`text-[10px] font-black uppercase tracking-widest ${activeStep === i ? "text-foreground" : "text-muted-foreground"}`}>
                 {step.title}
               </h4>
-              <div className="group relative">
-                <Info size={10} className="text-muted-foreground/40 hover:text-primary transition-colors" />
-                <div className="absolute right-0 bottom-full mb-2 w-48 rounded bg-foreground p-2 text-[8px] leading-tight text-background opacity-0 shadow-xl transition-opacity group-hover:opacity-100 pointer-events-none z-50">
-                  {step.tooltip}
-                  <div className="absolute right-1 top-full h-0 w-0 border-x-[4px] border-x-transparent border-t-[4px] border-t-foreground" />
-                </div>
-              </div>
+              <Info size={10} className="text-muted-foreground opacity-40" />
             </div>
             
-            <p className="mt-1 text-[10px] leading-relaxed text-secondary-foreground/80">
+            <p className="mt-1 text-[10px] leading-relaxed text-muted-foreground">
               {step.description}
             </p>
             
-            <div className="mt-2 space-y-1.5 font-mono text-[10px]">
-              <div className="text-muted-foreground/60">{step.formula}</div>
+            <div className="mt-3 space-y-2 font-mono text-[10px]">
+              <div className="text-muted-foreground/50">{step.formula}</div>
               {step.calculation && (
-                <div className="font-bold text-foreground">{step.calculation}</div>
+                <div className="font-bold">{step.calculation}</div>
               )}
               {(step.up || step.down) && (
-                <div className="grid grid-cols-2 gap-2 mt-1">
-                  <div className={`border-2 p-1.5 ${effectiveElbowUp ? 'border-foreground bg-foreground text-background shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]' : 'border-muted opacity-40'}`}>
-                    <div className="text-[8px] uppercase font-bold mb-0.5">Up</div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className={`rounded-xl p-2 ${effectiveElbowUp ? 'bg-foreground text-background' : 'bg-background/50 opacity-30'}`}>
+                    <div className="text-[8px] uppercase font-bold opacity-50 mb-0.5">Up</div>
                     <div className="font-bold truncate">{step.up}</div>
                   </div>
-                  <div className={`border-2 p-1.5 ${!effectiveElbowUp ? 'border-foreground bg-foreground text-background shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]' : 'border-muted opacity-40'}`}>
-                    <div className="text-[8px] uppercase font-bold mb-0.5">Down</div>
+                  <div className={`rounded-xl p-2 ${!effectiveElbowUp ? 'bg-foreground text-background' : 'bg-background/50 opacity-30'}`}>
+                    <div className="text-[8px] uppercase font-bold opacity-50 mb-0.5">Down</div>
                     <div className="font-bold truncate">{step.down}</div>
                   </div>
                 </div>
@@ -182,23 +179,23 @@ export function IKWalkthrough({ target, lengths, angles, unit, elbowUp: initialE
         ))}
       </div>
       
-      <div className="flex items-center justify-between border-t-2 border-foreground pt-3">
+      <div className="flex items-center justify-between pt-4">
         <button
           onClick={() => setActiveStep(Math.max(0, activeStep - 1))}
           disabled={activeStep === 0}
-          className="border-2 border-foreground p-1.5 transition-colors hover:bg-foreground hover:text-background disabled:opacity-30 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+          className="rounded-full bg-secondary p-2 transition-all hover:bg-foreground hover:text-background disabled:opacity-20"
         >
-          <ChevronLeft size={14} />
+          <ChevronLeft size={16} />
         </button>
-        <span className="text-[10px] font-bold text-muted-foreground tracking-widest">
+        <span className="text-[10px] font-black uppercase tracking-widest opacity-40">
           {activeStep + 1} / {steps.length}
         </span>
         <button
           onClick={() => setActiveStep(Math.min(steps.length - 1, activeStep + 1))}
           disabled={activeStep === steps.length - 1}
-          className="border-2 border-foreground p-1.5 transition-colors hover:bg-foreground hover:text-background disabled:opacity-30 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+          className="rounded-full bg-secondary p-2 transition-all hover:bg-foreground hover:text-background disabled:opacity-20"
         >
-          <ChevronRight size={14} />
+          <ChevronRight size={16} />
         </button>
       </div>
     </div>

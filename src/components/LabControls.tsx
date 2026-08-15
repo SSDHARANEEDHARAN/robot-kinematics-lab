@@ -17,7 +17,7 @@ export function Section({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="transition-colors hover:bg-muted/10">
+    <div className="transition-colors hover:bg-muted/5">
       <div 
         className={`flex items-center justify-between px-5 py-3 ${collapsible ? 'cursor-pointer' : ''}`}
         onClick={() => collapsible && setIsOpen(!isOpen)}
@@ -68,7 +68,7 @@ export function SegButton({
           }`}
         >
           {value === o.value && (
-            <div className="absolute inset-0 -z-10 rounded-md bg-primary shadow-lg shadow-primary/20 animate-in fade-in zoom-in-95 duration-300" />
+            <div className="absolute inset-0 -z-10 rounded-md bg-primary shadow-sm animate-in fade-in zoom-in-95 duration-300" />
           )}
           {o.label}
         </button>
@@ -117,7 +117,7 @@ export function SliderRow({
 }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="w-14 shrink-0 text-sm font-medium text-secondary-foreground">{label}</span>
+      <span className="w-14 shrink-0 text-xs font-bold text-muted-foreground uppercase tracking-wider">{label}</span>
       <input
         type="range"
         min={min}
@@ -130,7 +130,7 @@ export function SliderRow({
         type="number"
         value={Math.round(value)}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="lab-input w-20 shrink-0"
+        className="lab-input w-20 shrink-0 text-center text-xs"
       />
     </div>
   );
@@ -141,9 +141,8 @@ export function GhostButton({ children, onClick }: { children: ReactNode; onClic
     <button
       type="button"
       onClick={onClick}
-      className="group relative overflow-hidden rounded-lg bg-background px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-foreground transition-all duration-300 hover:text-primary-foreground hover:shadow-[0_0_20px_rgba(var(--primary),0.3)] active:scale-95"
+      className="group relative overflow-hidden rounded-lg bg-secondary px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-foreground transition-all duration-300 hover:bg-primary hover:text-primary-foreground active:scale-95"
     >
-      <div className="absolute inset-0 -z-10 translate-y-full bg-primary transition-transform duration-300 group-hover:translate-y-0" />
       <span className="relative z-10">{children}</span>
     </button>
   );
@@ -151,11 +150,10 @@ export function GhostButton({ children, onClick }: { children: ReactNode; onClic
 
 export function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="lab-card px-4 py-3 group relative overflow-hidden">
-      <div className="absolute top-0 left-0 h-full w-1 bg-primary opacity-30 transition-all duration-300 group-hover:w-full group-hover:opacity-5" />
+    <div className="px-4 py-3 group relative overflow-hidden bg-secondary/20 rounded-xl">
       <div className="relative z-10">
-        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground group-hover:text-primary transition-colors">{label}</div>
-        <div className="mt-1 text-2xl font-black tabular-nums tracking-tight text-foreground transition-transform duration-300 group-hover:scale-105 group-hover:translate-x-1">{value}</div>
+        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">{label}</div>
+        <div className="mt-1 text-2xl font-black tabular-nums tracking-tight text-foreground transition-transform duration-300 group-hover:scale-105">{value}</div>
       </div>
     </div>
   );
@@ -163,7 +161,7 @@ export function Stat({ label, value }: { label: string; value: string }) {
 
 export function Card({ title, children }: { title?: string; children: ReactNode }) {
   return (
-    <div className="lab-card overflow-hidden group/card transition-all duration-500 hover:shadow-primary/5">
+    <div className="lab-card group/card">
       {title && (
         <div className="bg-secondary/30 px-5 py-3 backdrop-blur-sm">
           <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/70">{title}</h3>
@@ -176,13 +174,13 @@ export function Card({ title, children }: { title?: string; children: ReactNode 
 
 export function Badge({ children, variant = "default" }: { children: ReactNode; variant?: "default" | "success" | "warning" | "danger" }) {
   const styles = {
-    default: "bg-foreground text-background",
-    success: "border-2 border-foreground bg-background text-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]",
-    warning: "bg-foreground text-background border-2 border-foreground",
-    danger: "bg-foreground text-background border-2 border-foreground animate-pulse",
+    default: "bg-muted text-muted-foreground",
+    success: "bg-foreground text-background",
+    warning: "bg-foreground text-background",
+    danger: "bg-foreground text-background animate-pulse",
   };
   return (
-    <span className={`rounded-full px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.15em] transition-all duration-300 hover:scale-110 hover:rotate-1 ${styles[variant]}`}>
+    <span className={`rounded-full px-2.5 py-0.5 text-[9px] font-black uppercase tracking-[0.15em] transition-all duration-300 hover:scale-110 ${styles[variant]}`}>
       {children}
     </span>
   );

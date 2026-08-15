@@ -33,142 +33,69 @@ export function TeachPanel({
   jointCount: number;
   onRunDemo: (type: "pick" | "round" | "dance") => void;
 }) {
-  const jog =
-    "border-2 border-foreground bg-background px-2 py-2 text-sm font-bold text-foreground hover:bg-foreground hover:text-background active:bg-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] transition-all active:translate-x-[1px] active:translate-y-[1px] active:shadow-none";
+  const btn = "rounded-lg border border-border bg-secondary px-3 py-2 text-[10px] font-black uppercase tracking-widest hover:bg-foreground hover:text-background transition-all active:scale-95";
+  const jog = "rounded-lg bg-secondary px-3 py-2 text-[10px] font-bold text-foreground hover:bg-foreground hover:text-background transition-all active:scale-95";
+  
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div>
-        <h4 className="lab-label mb-2">Demo Programs</h4>
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          <button 
-            className="border-2 border-foreground bg-background py-2 text-[10px] font-black uppercase tracking-wider hover:bg-foreground hover:text-background transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
-            onClick={() => onRunDemo("pick")}
-          >
-            Pick & Place
-          </button>
-          <button 
-            className="border-2 border-foreground bg-background py-2 text-[10px] font-black uppercase tracking-wider hover:bg-foreground hover:text-background transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
-            onClick={() => onRunDemo("round")}
-          >
-            Arounding
-          </button>
-          <button 
-            className="border-2 border-foreground bg-background py-2 text-[10px] font-black uppercase tracking-wider hover:bg-foreground hover:text-background transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
-            onClick={() => onRunDemo("dance")}
-          >
-            Dancing
-          </button>
+        <h4 className="lab-label mb-3">Demo Programs</h4>
+        <div className="grid grid-cols-3 gap-2">
+          <button className={btn} onClick={() => onRunDemo("pick")}>Pick & Place</button>
+          <button className={btn} onClick={() => onRunDemo("round")}>Arounding</button>
+          <button className={btn} onClick={() => onRunDemo("dance")}>Dancing</button>
         </div>
       </div>
 
       <div>
-        <h4 className="lab-label mb-2">Joint jog (FK)</h4>
-        <div className="space-y-1.5">
+        <h4 className="lab-label mb-3">Joint jog (FK)</h4>
+        <div className="space-y-2">
           {Array.from({ length: jointCount }).map((_, i) => (
-            <div key={i} className="grid grid-cols-[1fr_auto_auto] items-center gap-2">
-              <span className="text-sm font-semibold">J{i + 1}</span>
-              <button className={jog} onClick={() => onJogJoint(i, -5)}>
-                J{i + 1}−
-              </button>
-              <button className={jog} onClick={() => onJogJoint(i, 5)}>
-                J{i + 1}+
-              </button>
+            <div key={i} className="flex items-center gap-2">
+              <span className="w-8 text-[10px] font-black uppercase">J{i + 1}</span>
+              <button className={`${jog} flex-1`} onClick={() => onJogJoint(i, -5)}>−5°</button>
+              <button className={`${jog} flex-1`} onClick={() => onJogJoint(i, 5)}>+5°</button>
             </div>
           ))}
         </div>
       </div>
 
       <div>
-        <h4 className="lab-label mb-2">Cartesian jog (IK)</h4>
+        <h4 className="lab-label mb-3">Cartesian jog (IK)</h4>
         <div className="grid grid-cols-4 gap-2">
-          <button className={jog} onClick={() => onJogCart("x", -10)}>
-            X−
-          </button>
-          <button className={jog} onClick={() => onJogCart("x", 10)}>
-            X+
-          </button>
-          <button className={jog} onClick={() => onJogCart("y", -10)}>
-            Y−
-          </button>
-          <button className={jog} onClick={() => onJogCart("y", 10)}>
-            Y+
-          </button>
+          <button className={jog} onClick={() => onJogCart("x", -10)}>X−</button>
+          <button className={jog} onClick={() => onJogCart("x", 10)}>X+</button>
+          <button className={jog} onClick={() => onJogCart("y", -10)}>Y−</button>
+          <button className={jog} onClick={() => onJogCart("y", 10)}>Y+</button>
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        <button
-          className="rounded-lg bg-primary px-3 py-2 text-sm font-bold text-primary-foreground"
-          onClick={onTeach}
-        >
+      <div className="flex flex-wrap gap-2 pt-2">
+        <button className="rounded-lg bg-foreground px-4 py-2 text-xs font-black uppercase tracking-widest text-background transition-all hover:opacity-90 active:scale-95" onClick={onTeach}>
           Teach P{waypoints.length + 1}
         </button>
-        <button
-          className="rounded-lg border border-border px-3 py-2 text-sm font-semibold"
-          onClick={playing ? onStop : onPlay}
-        >
-          {playing ? "Stop" : "Play program"}
+        <button className="rounded-lg border border-border px-4 py-2 text-xs font-black uppercase tracking-widest transition-all hover:bg-secondary" onClick={playing ? onStop : onPlay}>
+          {playing ? "Stop" : "Play"}
         </button>
-        <button className="rounded-lg border border-border px-3 py-2 text-sm font-semibold" onClick={onClear}>
+        <button className="rounded-lg border border-border px-4 py-2 text-xs font-black uppercase tracking-widest transition-all hover:bg-secondary" onClick={onClear}>
           Clear
         </button>
       </div>
 
-      <div className="rounded-md bg-secondary p-2 font-mono text-xs">
+      <div className="rounded-xl bg-secondary/30 p-4 font-mono text-[10px] space-y-2">
         {waypoints.length === 0 ? (
-          <p className="text-muted-foreground">No points taught yet.</p>
+          <p className="text-muted-foreground italic">No points taught yet.</p>
         ) : (
           waypoints.map((w, i) => (
-            <div
-              key={w.id}
-              className={`rounded px-1 py-0.5 ${i === activeIndex && playing ? "bg-primary/15" : ""}`}
-            >
-              {String(i + 1).padStart(2, "0")}: {w.move} {w.name} SPD={w.spd}
+            <div key={w.id} className={`flex items-center justify-between p-2 rounded ${i === activeIndex && playing ? "bg-primary/10" : ""}`}>
+              <div className="flex items-center gap-3">
+                <span className="font-bold opacity-50">{String(i + 1).padStart(2, "0")}</span>
+                <button className="font-bold hover:text-primary" onClick={() => onGoto(w.id)}>{w.name}</button>
+              </div>
+              <button className="text-[9px] font-bold text-destructive uppercase" onClick={() => onDelete(w.id)}>del</button>
             </div>
           ))
         )}
-      </div>
-
-      <div className="space-y-2">
-        {waypoints.map((w) => (
-          <div key={w.id} className="rounded-lg border border-border p-2">
-            <div className="flex items-center justify-between">
-              <button className="text-sm font-bold text-primary" onClick={() => onGoto(w.id)}>
-                {w.name}
-              </button>
-              <button className="text-xs font-semibold text-destructive" onClick={() => onDelete(w.id)}>
-                delete
-              </button>
-            </div>
-            <p className="mt-1 font-mono text-[11px] text-muted-foreground">
-              J: {w.angles.map((a) => a.toFixed(1)).join(", ")} | XY: {w.target.x.toFixed(1)},{" "}
-              {w.target.y.toFixed(1)}
-            </p>
-            <div className="mt-2 flex items-center gap-2">
-              {(["MOVJ", "MOVL"] as const).map((m) => (
-                <button
-                  key={m}
-                  onClick={() => onSetMove(w.id, m)}
-                  className={`rounded-md px-2 py-1 text-xs font-bold ${
-                    w.move === m ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
-                  }`}
-                >
-                  {m}
-                </button>
-              ))}
-              <input
-                type="range"
-                min={10}
-                max={100}
-                step={10}
-                value={w.spd}
-                onChange={(e) => onSetSpeed(w.id, Number(e.target.value))}
-                className="min-w-0 flex-1"
-              />
-              <span className="w-8 text-right text-xs font-semibold">{w.spd}</span>
-            </div>
-          </div>
-        ))}
       </div>
     </div>
   );

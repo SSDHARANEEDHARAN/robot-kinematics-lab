@@ -66,7 +66,7 @@ export function FKFormula({
           .join(" + ")}
       </Line>
       <Line label="3" hot={hot}>
-        x = <span className="font-bold text-primary">{n(end.x)}</span>
+        x = <span className="font-bold">{n(end.x)}</span>
       </Line>
       <div className="h-1" />
       <Line label="1">y = Σ Lᵢ·sin(θ₁+…+θᵢ)</Line>
@@ -77,7 +77,7 @@ export function FKFormula({
           .join(" + ")}
       </Line>
       <Line label="3" hot={hot}>
-        y = <span className="font-bold text-primary">{n(end.y)}</span>
+        y = <span className="font-bold">{n(end.y)}</span>
       </Line>
     </div>
   );
@@ -109,11 +109,11 @@ export function IKFormula({
     <div className="space-y-1">
       <Line label="1" hot={hotTarget}>
         D = √(x² + y²) = √({n(target.x)}² + {n(target.y)}²) ={" "}
-        <span className="font-bold text-primary">{n(d)}</span>
+        <span className="font-bold">{n(d)}</span>
       </Line>
       <Line label="2">
         reach: |L₁−L₂| ≤ D ≤ L₁+L₂ → {n(Math.abs(l1 - l2), 0)} ≤ {n(d)} ≤ {n(l1 + l2, 0)}{" "}
-        <span className={reachable ? "font-bold text-link-3" : "font-bold text-destructive"}>
+        <span className={reachable ? "font-bold" : "font-bold text-foreground opacity-50 underline decoration-wavy"}>
           {reachable ? "OK" : "OUT OF REACH"}
         </span>
       </Line>
@@ -121,7 +121,7 @@ export function IKFormula({
         cos(θ₂) = (x²+y²−L₁²−L₂²) / (2·L₁·L₂) = {n(cos2, 4)}
       </Line>
       <Line label="4" hot={hotTarget}>
-        θ₂ = ±acos({n(cos2, 4)}) = <span className="font-bold text-primary">{u(t2)}</span>
+        θ₂ = ±acos({n(cos2, 4)}) = <span className="font-bold">{u(t2)}</span>
       </Line>
       <Line label="5">θ₁ = atan2(y, x) − atan2(L₂·sin θ₂, L₁ + L₂·cos θ₂)</Line>
       <Line label="6" hot={hotTarget}>
@@ -131,7 +131,7 @@ export function IKFormula({
             Math.atan2(l2 * Math.sin(deg2rad(t2)), l1 + l2 * Math.cos(deg2rad(t2))),
           ),
         )}{" "}
-        = <span className="font-bold text-primary">{u(t1)}</span>
+        = <span className="font-bold">{u(t1)}</span>
       </Line>
     </div>
   );
@@ -154,12 +154,12 @@ export function DHFormula({
 
   const renderMatrix = (m: Mat4, label?: string, highlight = false) => (
     <div className={`space-y-1 ${highlight ? "scale-105 transition-transform" : ""}`}>
-      {label && <p className="mb-1 text-[10px] font-bold text-primary">{label}</p>}
-      <div className={`rounded-md ${highlight ? "bg-primary/5 ring-1 ring-primary/20" : "bg-secondary"} p-2 font-mono text-[10px]`}>
+      {label && <p className="mb-1 text-[10px] font-bold opacity-60">{label}</p>}
+      <div className={`rounded-md ${highlight ? "bg-foreground text-background" : "bg-secondary"} p-2 font-mono text-[10px]`}>
         {[0, 1, 2, 3].map((r) => (
           <div key={r} className="flex gap-2 whitespace-nowrap">
             {[0, 1, 2, 3].map((c) => (
-              <span key={c} className={`w-10 text-right ${highlight ? "text-primary" : "text-secondary-foreground"}`}>
+              <span key={c} className={`w-10 text-right ${highlight ? "text-background" : "text-secondary-foreground"}`}>
                 {(m?.[r * 4 + c] ?? 0).toFixed(1)}
               </span>
             ))}
@@ -172,7 +172,7 @@ export function DHFormula({
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-2 overflow-x-auto pb-2">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
           {renderMatrix(prevMatrix, `T${step}`)}
           <span className="text-lg font-bold">×</span>
           {renderMatrix(dhRows[step] ? (dhMatrix(dhRows[step]) as any) : identity(), `A${step + 1}`, true)}
@@ -185,7 +185,7 @@ export function DHFormula({
         <div className="flex items-center gap-2">
           <button
             type="button"
-            className="rounded-md border border-border bg-card px-3 py-1.5 text-[11px] font-bold transition-colors hover:bg-accent"
+            className="rounded-md bg-secondary px-3 py-1.5 text-[11px] font-bold transition-colors hover:bg-foreground hover:text-background"
             onClick={() => onStep(Math.max(0, step - 1))}
             disabled={step === 0}
           >
@@ -193,7 +193,7 @@ export function DHFormula({
           </button>
           <button
             type="button"
-            className="rounded-md border border-border bg-card px-3 py-1.5 text-[11px] font-bold transition-colors hover:bg-accent"
+            className="rounded-md bg-secondary px-3 py-1.5 text-[11px] font-bold transition-colors hover:bg-foreground hover:text-background"
             onClick={() => onStep(Math.min(count - 1, step + 1))}
             disabled={step >= count - 1}
           >
@@ -223,4 +223,3 @@ const dhMatrix = ({ theta, d, a, alpha }: any) => {
 };
 
 const identity = (): Mat4 => [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-
