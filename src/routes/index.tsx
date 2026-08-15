@@ -623,7 +623,7 @@ function KinematicsLab() {
                 <div className="space-y-3">
                    {mode === "FK" && <FKFormula lengths={activeLengths} angles={planarAngles} unit={unit} end={end} />}
                    {mode === "IK" && <IKFormula lengths={activeLengths} target={target} angles={ik.angles} unit={unit} reachable={ik.reachable} />}
-                   {mode === "DH" && <DHFormula frames={frames} step={dhStep} onStep={setDhStep} />}
+                   {mode === "DH" && <DHFormula frames={frames} dhRows={dhRows} step={dhStep} onStep={setDhStep} />}
                 </div>
               )}
               {tab === "teach" && (
