@@ -609,22 +609,35 @@ function KinematicsLab() {
           </div>
 
           <div className="lab-card flex flex-1 flex-col overflow-hidden">
-            <div className="border-b border-border px-3 py-3">
-              <SegButton
-                options={TABS.map((t) => ({ value: t.value, label: t.label }))}
-                value={tab}
-                onChange={(v) => setTab(v as Tab)}
-              />
-            </div>
-            <div className="flex-1 overflow-y-auto px-4 py-4 scrollbar-hide">
-              {tab === "math" && (
+            <div className="flex-1 overflow-y-auto scrollbar-hide">
+              <Section title="Math Formulas" collapsible>
                 <div className="space-y-3">
                    {mode === "FK" && <FKFormula lengths={activeLengths} angles={planarAngles} unit={unit} end={end} />}
                    {mode === "IK" && <IKFormula lengths={activeLengths} target={target} angles={ik.angles} unit={unit} reachable={ik.reachable} />}
                    {mode === "DH" && <DHFormula frames={frames} dhRows={dhRows} step={dhStep} onStep={setDhStep} />}
                 </div>
-              )}
-              {tab === "teach" && (
+              </Section>
+
+              <Section title="IK Step-by-Step" collapsible defaultOpen={mode === "IK"}>
+                <div className="min-h-[400px]">
+                  {mode === "IK" ? (
+                    <IKWalkthrough 
+                      target={target} 
+                      lengths={activeLengths} 
+                      angles={ik.angles} 
+                      unit={unit} 
+                      elbowUp={elbowUp}
+                      onStepSelect={setActiveWalkthroughStep}
+                    />
+                  ) : (
+                    <div className="flex h-32 items-center justify-center text-center p-6 text-muted-foreground text-[10px] uppercase tracking-widest font-bold border rounded-lg border-dashed">
+                      Switch to IK mode for walkthrough
+                    </div>
+                  )}
+                </div>
+              </Section>
+
+              <Section title="Teach Pendant" collapsible defaultOpen={false}>
                 <TeachPanel
                   waypoints={waypoints}
                   playing={playing}
@@ -641,34 +654,26 @@ function KinematicsLab() {
                   onJogJoint={jogJoint}
                   onJogCart={jogCart}
                 />
-              )}
-              {tab === "quiz" && <QuizPanel lengths={activeLengths} angles={planarAngles} onSetTarget={(t) => { setMode("IK"); setTarget(t); }} />}
-              {tab === "lessons" && <LessonPanel state={lessonState} activeId={lessonId} onSelect={selectLesson} completed={completed} />}
-              {tab === "ai" && <AIPanel state={{ mode, target, lengths: activeLengths, angles: planarAngles, reachable: ik.reachable, ikError: ik.error }} />}
-              {tab === "walkthrough" && (
-                <div className="h-full">
-                  {mode === "IK" ? (
-                    <IKWalkthrough 
-                      target={target} 
-                      lengths={activeLengths} 
-                      angles={ik.angles} 
-                      unit={unit} 
-                      elbowUp={elbowUp}
-                      onStepSelect={setActiveWalkthroughStep}
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-center p-6 text-muted-foreground text-xs uppercase tracking-widest font-bold">
-                      Switch to IK mode for step-by-step walkthrough
-                    </div>
-                  )}
-                </div>
-              )}
-              {tab === "progress" && (
+              </Section>
+
+              <Section title="Practice Quiz" collapsible defaultOpen={false}>
+                <QuizPanel lengths={activeLengths} angles={planarAngles} onSetTarget={(t) => { setMode("IK"); setTarget(t); }} />
+              </Section>
+
+              <Section title="Lessons" collapsible defaultOpen={false}>
+                <LessonPanel state={lessonState} activeId={lessonId} onSelect={selectLesson} completed={completed} />
+              </Section>
+
+              <Section title="AI Tutor" collapsible defaultOpen={false}>
+                <AIPanel state={{ mode, target, lengths: activeLengths, angles: planarAngles, reachable: ik.reachable, ikError: ik.error }} />
+              </Section>
+
+              <Section title="Industrial Progress" collapsible defaultOpen={false}>
                 <div className="space-y-4">
                   <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Robotics Mastery</h4>
                   <Stat label="Completed" value={`${Object.keys(completed).length}/${LESSONS.length}`} />
                 </div>
-              )}
+              </Section>
             </div>
           </div>
         </aside>
