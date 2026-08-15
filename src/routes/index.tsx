@@ -811,7 +811,7 @@ function KinematicsLab() {
               <p className="text-sm text-muted-foreground">{headline.sub}</p>
             </div>
           </div>
-          <div className="relative flex-1 overflow-hidden border-t border-border bg-panel">
+          <div className="relative flex-1 overflow-hidden bg-panel">
              {/* Realistic fixed simulation area */}
             <div className="relative h-full w-full">
               {mode === "DH" ? (
