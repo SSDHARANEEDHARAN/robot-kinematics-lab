@@ -693,6 +693,12 @@ function KinematicsLab() {
                         {linkCount > 3 && (
                           <NumberField label="L4" value={lengths[3] ?? 0} onChange={(v) => setLength(3, v)} />
                         )}
+                        {linkCount > 4 && (
+                          <NumberField label="L5" value={lengths[4] ?? 0} onChange={(v) => setLength(4, v)} />
+                        )}
+                        {linkCount > 5 && (
+                          <NumberField label="L6" value={lengths[5] ?? 0} onChange={(v) => setLength(5, v)} />
+                        )}
                       </div>
                     </Section>
                     {mode === "FK" ? (
