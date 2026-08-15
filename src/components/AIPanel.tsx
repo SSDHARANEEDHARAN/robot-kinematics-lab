@@ -100,7 +100,7 @@ export function AIPanel({ state }: Props) {
         <button
           onClick={() => ask()}
           disabled={loading}
-          className="rounded-lg bg-brand px-4 py-2 text-sm font-bold text-white shadow-sm hover:opacity-90 disabled:opacity-50"
+          className="rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow-sm hover:opacity-90 disabled:opacity-50"
         >
           Send
         </button>
