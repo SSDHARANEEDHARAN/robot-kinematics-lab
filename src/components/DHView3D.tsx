@@ -5,7 +5,7 @@ import { GhostButton } from "./LabControls";
 
 type Props = { frames: Mat4[] };
 
-const LINK_COLORS = ["#334155", "#475569", "#64748b", "#94a3b8", "#cbd5e1", "#e2e8f0"];
+const LINK_COLORS = ["oklch(0.3 0.05 250)", "oklch(0.4 0.05 250)", "oklch(0.5 0.05 250)", "oklch(0.6 0.05 250)", "oklch(0.7 0.05 250)", "oklch(0.8 0.05 250)"];
 
 export function DHView3D({ frames }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -88,7 +88,7 @@ export function DHView3D({ frames }: Props) {
     };
 
     // Realistic Floor
-    ctx.fillStyle = "#f1f5f9";
+    ctx.fillStyle = "var(--color-secondary)";
     ctx.beginPath();
     ctx.ellipse(w/2, h/2 + 180, 250 * cam.zoom, 100 * cam.zoom, 0, 0, Math.PI * 2);
     ctx.fill();
@@ -108,8 +108,8 @@ export function DHView3D({ frames }: Props) {
       
       // Housing gradient
       const grad = ctx.createRadialGradient(p.x - r/3, p.y - r/3, 1, p.x, p.y, r);
-      grad.addColorStop(0, "oklch(0.8 0.1 190)");
-      grad.addColorStop(1, "oklch(0.3 0.05 250)");
+      grad.addColorStop(0, "oklch(0.65 0.1 200)");
+      grad.addColorStop(1, "oklch(0.8 0.05 250)");
 
       ctx.beginPath();
       ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
@@ -119,7 +119,7 @@ export function DHView3D({ frames }: Props) {
       // Cap
       ctx.beginPath();
       ctx.arc(p.x, p.y, r * 0.7, 0, Math.PI * 2);
-      ctx.fillStyle = i === frames.length - 1 ? "oklch(0.75 0.22 190)" : "oklch(0.4 0.05 250)";
+      ctx.fillStyle = i === frames.length - 1 ? "oklch(0.55 0.15 200)" : "oklch(0.85 0.05 250)";
       ctx.fill();
     });
 
@@ -128,12 +128,12 @@ export function DHView3D({ frames }: Props) {
       const p = project(originOf(f));
       
       // Joint Label
-      ctx.fillStyle = "oklch(0.75 0.22 190 / 0.1)";
+      ctx.fillStyle = "oklch(0.55 0.15 200 / 0.1)";
       ctx.beginPath();
       ctx.roundRect(p.x - 12, p.y - 30, 24, 14, 3);
       ctx.fill();
       
-      ctx.fillStyle = "oklch(0.75 0.22 190)";
+      ctx.fillStyle = "oklch(0.55 0.15 200)";
       ctx.font = "bold 9px JetBrains Mono";
       ctx.textAlign = "center";
       ctx.fillText(`J${i+1}`, p.x, p.y - 20);
@@ -144,12 +144,13 @@ export function DHView3D({ frames }: Props) {
         const midX = (p.x + nextP.x) / 2;
         const midY = (p.y + nextP.y) / 2;
         
-        ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+        ctx.fillStyle = "var(--color-card)";
         ctx.beginPath();
         ctx.arc(midX, midY, 8, 0, Math.PI * 2);
         ctx.fill();
         
-        ctx.fillStyle = "#475569";
+        ctx.fillStyle = "var(--color-foreground)";
+        ctx.globalAlpha = 0.6;
         ctx.font = "700 8px JetBrains Mono";
         const row = frames[i+1] ? (frames[i+1] as any)._dhRow : null; // We don't have easy access to lengths here without props
         // Instead, just show Euclidean distance for measurement
@@ -159,6 +160,7 @@ export function DHView3D({ frames }: Props) {
           Math.pow(originOf(frames[i+1] as Mat4).z - originOf(frames[i] as Mat4).z, 2)
         );
         ctx.fillText(Math.round(d).toString(), midX, midY + 3);
+        ctx.globalAlpha = 1.0;
       }
     });
 

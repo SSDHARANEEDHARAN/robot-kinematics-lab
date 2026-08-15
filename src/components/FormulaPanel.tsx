@@ -18,7 +18,7 @@ function Line({
         hot ? "bg-primary/10 text-foreground" : "text-secondary-foreground"
       }`}
     >
-      {label && <span className="mr-2 font-sans text-[11px] font-bold text-brand">{label}</span>}
+      {label && <span className="mr-2 font-sans text-[11px] font-bold text-primary">{label}</span>}
       {children}
     </div>
   );
@@ -154,7 +154,7 @@ export function DHFormula({
 
   const renderMatrix = (m: Mat4, label?: string, highlight = false) => (
     <div className={`space-y-1 ${highlight ? "scale-105 transition-transform" : ""}`}>
-      {label && <p className="mb-1 text-[10px] font-bold text-brand">{label}</p>}
+      {label && <p className="mb-1 text-[10px] font-bold text-primary">{label}</p>}
       <div className={`rounded-md ${highlight ? "bg-primary/5 ring-1 ring-primary/20" : "bg-secondary"} p-2 font-mono text-[10px]`}>
         {[0, 1, 2, 3].map((r) => (
           <div key={r} className="flex gap-2 whitespace-nowrap">

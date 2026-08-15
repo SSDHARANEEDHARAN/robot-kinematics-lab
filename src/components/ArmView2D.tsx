@@ -92,12 +92,12 @@ export function ArmView2D({
         {workspace && workspace.length > 0 && (
           <g opacity={0.3}>
             {workspace.map((p, i) => (
-              <circle key={i} cx={r1(p.x)} cy={r1(p.y)} r={3} className="fill-brand" />
+              <circle key={i} cx={r1(p.x)} cy={r1(p.y)} r={3} fill="oklch(0.55 0.15 200)" />
             ))}
           </g>
         )}
         {/* grid */}
-        <g className="stroke-grid" strokeWidth={1} opacity={0.55}>
+        <g stroke="currentColor" className="text-border" strokeWidth={1} opacity={0.3}>
           {grid.map((g) => (
             <line key={`v${g}`} x1={g} y1={-H / 2} x2={g} y2={H / 2} />
           ))}
@@ -106,7 +106,7 @@ export function ArmView2D({
           ))}
         </g>
         {/* axes */}
-        <g className="stroke-muted-foreground" strokeWidth={1.4} opacity={0.7}>
+        <g stroke="currentColor" className="text-muted-foreground" strokeWidth={1.4} opacity={0.4}>
           <line x1={-W / 2} y1={0} x2={W / 2} y2={0} />
           <line x1={0} y1={-H / 2} x2={0} y2={H / 2} />
         </g>
@@ -115,14 +115,16 @@ export function ArmView2D({
           <g>
             <circle
               r={maxReach}
-              className="fill-primary/5 stroke-primary/20"
+              fill="oklch(0.55 0.15 200 / 0.03)"
+              stroke="oklch(0.55 0.15 200 / 0.2)"
               strokeWidth={1.5}
               strokeDasharray="4 4"
             />
             {minReach > 1 && (
               <circle
                 r={minReach}
-                className="fill-background stroke-primary/10"
+                className="fill-background"
+                stroke="oklch(0.55 0.15 200 / 0.1)"
                 strokeWidth={1.2}
                 strokeDasharray="2 2"
               />
@@ -145,14 +147,14 @@ export function ArmView2D({
           <g>
             <polyline
               points={path.map((p) => `${r1(p.x)},${r1(p.y)}`).join(" ")}
-              className="stroke-brand"
+              stroke="oklch(0.55 0.15 200)"
               strokeWidth={2}
               strokeDasharray="7 6"
               fill="none"
             />
             {path.map((p, i) => (
               <g key={i}>
-                <circle cx={r1(p.x)} cy={r1(p.y)} r={6} className="fill-brand" />
+                <circle cx={r1(p.x)} cy={r1(p.y)} r={6} fill="oklch(0.55 0.15 200)" />
                 <g transform={`translate(${r1(p.x) + 10}, ${r1(p.y)}) scale(1,-1)`}>
                   <text className="fill-foreground" fontSize={13} fontWeight={700}>
                     P{i + 1}
@@ -186,7 +188,7 @@ export function ArmView2D({
         )}
 
         {target && (
-          <g className="stroke-primary" strokeWidth={2.5} fill="none">
+          <g stroke="currentColor" className="text-primary" strokeWidth={2.5} fill="none">
             <circle cx={target.x} cy={target.y} r={10} className="fill-primary/10" />
             <line x1={target.x - 18} y1={target.y} x2={target.x + 18} y2={target.y} />
             <line x1={target.x} y1={target.y - 18} x2={target.x} y2={target.y + 18} />
@@ -218,7 +220,7 @@ export function ArmView2D({
           return (
             <g key={`m${i}`} transform={`translate(${r1(mid.x)}, ${r1(mid.y)}) scale(1,-1)`}>
               <rect x={-20} y={-8} width={40} height={16} rx={4} className="fill-secondary/80" />
-              <text textAnchor="middle" dy={4} fontSize={9} fontWeight={900} className="fill-primary drop-shadow-[0_0_5px_oklch(0.75_0.22_190_/_0.3)]">
+              <text textAnchor="middle" dy={4} fontSize={9} fontWeight={900} className="fill-primary">
                 {Math.round(len)}
               </text>
             </g>
@@ -240,7 +242,7 @@ export function ArmView2D({
 
         <circle cx={r1(end.x)} cy={r1(end.y)} r={6} className="fill-primary" />
         <g transform={`translate(${r1(end.x) + 12}, ${r1(end.y) + 12}) scale(1,-1)`}>
-          <rect x={-5} y={-24} width={85} height={32} rx={6} className="fill-primary shadow-[0_0_15px_oklch(0.75_0.22_190_/_0.4)]" />
+          <rect x={-5} y={-24} width={85} height={32} rx={6} className="fill-primary" />
           <text x={4} y={-8} fontSize={9} fontWeight={900} className="fill-primary-foreground">
             EE: {Math.round(end.x)}, {Math.round(end.y)}
           </text>

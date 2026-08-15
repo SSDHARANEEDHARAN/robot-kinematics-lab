@@ -44,7 +44,7 @@ export function AIPanel({ state }: Props) {
 
   return (
     <div className="flex h-full flex-col gap-4">
-      <div className="flex-1 space-y-4 overflow-y-auto pr-2" style={{ maxHeight: "400px" }}>
+      <div className="flex-1 space-y-4 overflow-y-auto pr-2 scrollbar-hide" style={{ maxHeight: "400px" }}>
         {messages.length === 0 && (
           <div className="rounded-xl border border-dashed border-border p-6 text-center">
             <p className="text-sm text-muted-foreground">
@@ -100,7 +100,7 @@ export function AIPanel({ state }: Props) {
         <button
           onClick={() => ask()}
           disabled={loading}
-          className="rounded-lg bg-brand px-4 py-2 text-sm font-bold text-white shadow-sm hover:opacity-90 disabled:opacity-50"
+          className="rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground shadow-sm hover:opacity-90 disabled:opacity-50"
         >
           Send
         </button>

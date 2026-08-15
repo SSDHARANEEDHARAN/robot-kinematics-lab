@@ -95,7 +95,7 @@ function KinematicsLab() {
   const [jointCount, setJointCount] = useState(6);
 
   const [unit, setUnit] = useState<"deg" | "rad">("deg");
-  const [tab, setTab] = useState<Tab>("math");
+  const [tab, setTab] = useState<Tab>("teach");
   const [dhStep, setDhStep] = useState(0);
   const [waypoints, setWaypoints] = useState<Waypoint[]>([]);
   const [playing, setPlaying] = useState(false);
@@ -367,7 +367,7 @@ function KinematicsLab() {
       <header className="mb-5 flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <p className="text-xl font-black uppercase tracking-[0.2em] text-foreground drop-shadow-[0_0_10px_oklch(0.75_0.22_190_/_0.3)]">
+            <p className="text-xl font-black uppercase tracking-[0.2em] text-foreground">
               Kinematics Lab
             </p>
             <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-primary">
@@ -377,16 +377,6 @@ function KinematicsLab() {
           <h1 className="mt-1 text-2xl font-black tracking-tighter text-foreground uppercase opacity-80 md:text-3xl">
             Virtual Lab Environment
           </h1>
-          <div className="mt-2 group relative">
-            <span className="cursor-help text-[10px] text-muted-foreground/40 hover:text-muted-foreground transition-colors">
-              [System Info]
-            </span>
-            <div className="absolute left-0 top-full z-50 mt-2 hidden w-80 rounded-lg border border-border bg-card p-4 text-[10px] leading-relaxed text-muted-foreground shadow-xl group-hover:block">
-              '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
-              {"\n\n"}
-              MODE PERAMETRAS ALL ARE POPUP TYPE IF I POINT IT WILL POPUP AND LIST THE SETTING I CAN SCRROL INSIDE OF POP UP 3D SIMULATION PLACE IS FIXED DONT SCROOL OTHER SIDE IT WILL SHOW ALWASY INSIDE OF THAT IT WILL SCROOLLABLE AND ALSO DOWN OF PRESENT BY THARANEETHARAN SS DOWN OF AND ALSO 6 OR 5 OR 4 OR 3 OR 3 OR 1 THE JI POINT IS FIXXED POSIITION ONLY THER IS NO CHNAGES IN IT AND ALSO SIMULATION PLACE MAKE A RELASTIC ROBOT NOW THIS IS JUST A SKETCH BUT I NEED REALSITC ROBOT BASED DESING
-            </div>
-          </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <SegButton
@@ -399,7 +389,7 @@ function KinematicsLab() {
           />
           <button
             onClick={share}
-            className="rounded-lg bg-primary px-4 py-2 text-xs font-black uppercase tracking-widest text-primary-foreground shadow-[0_0_20px_oklch(0.75_0.22_190_/_0.4)] transition-all hover:scale-105 active:scale-95"
+            className="rounded-lg bg-primary px-4 py-2 text-xs font-black uppercase tracking-widest text-primary-foreground shadow-sm transition-all hover:scale-105 active:scale-95"
           >
             {shareMsg || "Share preset"}
           </button>
@@ -415,12 +405,11 @@ function KinematicsLab() {
       <div className="grid gap-5 xl:grid-cols-[200px_minmax(0,1fr)_340px]">
         {/* ---------- Left: popups ---------- */}
         <aside className="space-y-3">
-          <div className="group relative">
-            <button className="flex w-full items-center justify-between rounded-xl border border-border bg-card/50 px-4 py-3 text-xs font-black uppercase tracking-widest transition-all hover:border-primary hover:text-primary hover:shadow-[0_0_15px_oklch(0.75_0.22_190_/_0.2)]">
-              <span>Robot Settings</span>
-              <span className="text-xs opacity-50">▼</span>
-            </button>
-            <div className="absolute left-full top-0 z-50 ml-2 hidden w-72 max-h-[80vh] overflow-y-auto rounded-xl border border-border bg-card shadow-2xl group-hover:block">
+          <div className="relative">
+            <div className="w-full rounded-xl border border-border bg-card/50 px-4 py-3 text-xs font-black uppercase tracking-widest text-primary">
+              Robot Settings
+            </div>
+            <div className="mt-2 w-full max-h-[60vh] overflow-y-auto rounded-xl border border-border bg-card shadow-lg scrollbar-hide">
               <div className="lab-card border-none shadow-none">
                 <Section title="Mode">
                   <SegButton
@@ -585,10 +574,6 @@ function KinematicsLab() {
                 <div className="flex-1">
                   <DHView3D frames={frames} />
                 </div>
-                <div className="w-[300px] border-l border-border bg-panel p-4 backdrop-blur-xl overflow-y-auto">
-                  <h3 className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-primary">Live Transform Chain</h3>
-                  <DHFormula frames={frames} dhRows={dhRows} step={dhStep} onStep={setDhStep} />
-                </div>
               </div>
             ) : (
               <div className="flex h-full w-full">
@@ -606,11 +591,6 @@ function KinematicsLab() {
                     velocity={velocity}
                     unit={unit}
                   />
-                </div>
-                <div className="w-[300px] border-l border-border bg-panel p-4 backdrop-blur-xl overflow-y-auto">
-                   <h3 className="mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-primary">Live Math Solver</h3>
-                   {mode === "FK" && <FKFormula lengths={activeLengths} angles={planarAngles} unit={unit} end={end} />}
-                   {mode === "IK" && <IKFormula lengths={activeLengths} target={target} angles={ik.angles} unit={unit} reachable={ik.reachable} />}
                 </div>
               </div>
             )}
@@ -635,7 +615,7 @@ function KinematicsLab() {
                 onChange={(v) => setTab(v as Tab)}
               />
             </div>
-            <div className="px-4 py-4 max-h-[500px] overflow-y-auto">
+            <div className="px-4 py-4 max-h-[500px] overflow-y-auto scrollbar-hide">
               {tab === "math" && (
                 <div className="space-y-3">
                    {mode === "FK" && <FKFormula lengths={activeLengths} angles={planarAngles} unit={unit} end={end} />}

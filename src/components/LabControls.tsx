@@ -39,7 +39,7 @@ export function SegButton({
           }`}
         >
           {value === o.value && (
-            <div className="absolute inset-0 -z-10 rounded-md bg-primary shadow-[0_0_15px_oklch(0.75_0.22_190_/_0.4)] animate-in fade-in zoom-in-95 duration-300" />
+            <div className="absolute inset-0 -z-10 rounded-md bg-primary shadow-sm animate-in fade-in zoom-in-95 duration-300" />
           )}
           {o.label}
         </button>
@@ -112,7 +112,7 @@ export function GhostButton({ children, onClick }: { children: ReactNode; onClic
     <button
       type="button"
       onClick={onClick}
-      className="rounded-lg border border-border bg-secondary px-3 py-2 text-xs font-bold uppercase tracking-wider text-foreground transition-all hover:bg-primary hover:text-primary-foreground hover:shadow-[0_0_15px_oklch(0.75_0.22_190_/_0.3)] active:scale-95"
+      className="rounded-lg border border-border bg-secondary px-3 py-2 text-xs font-bold uppercase tracking-wider text-foreground transition-all hover:bg-primary hover:text-primary-foreground active:scale-95"
     >
       {children}
     </button>
@@ -123,7 +123,7 @@ export function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="lab-card px-4 py-3">
       <div className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-muted-foreground">{label}</div>
-      <div className="mt-1 text-2xl font-black tabular-nums tracking-tight text-primary drop-shadow-[0_0_8px_oklch(0.75_0.22_190_/_0.3)]">{value}</div>
+      <div className="mt-1 text-2xl font-black tabular-nums tracking-tight text-primary drop-shadow-none">{value}</div>
     </div>
   );
 }
