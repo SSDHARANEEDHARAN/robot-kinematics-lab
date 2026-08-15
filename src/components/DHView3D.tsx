@@ -169,8 +169,8 @@ export function DHView3D({ frames, activeStep }: Props) {
       ctx.restore();
 
       // --- Joint: frosted gray cylindrical housing over the rod ---
-      const hw = r * 2.5;   // housing half-length along the link axis
-      const hr = r * 1.55;  // housing radius
+      const hw = r * 2.2;   // housing half-length along the link axis
+      const hr = r * 1.6;  // housing radius
       const dx = Math.cos(ang);
       const dy = Math.sin(ang);
       const c1 = { x: pa.x - dx * hw * 0.35, y: pa.y - dy * hw * 0.35 };
@@ -180,11 +180,11 @@ export function DHView3D({ frames, activeStep }: Props) {
         pa.x + nx * hr, pa.y + ny * hr,
         pa.x - nx * hr, pa.y - ny * hr,
       );
-      hGrad.addColorStop(0, "rgba(120,126,132,0.92)");
-      hGrad.addColorStop(0.3, "rgba(196,201,206,0.92)");
-      hGrad.addColorStop(0.5, "rgba(240,242,245,0.92)");
-      hGrad.addColorStop(0.75, "rgba(186,191,197,0.92)");
-      hGrad.addColorStop(1, "rgba(128,134,140,0.92)");
+      hGrad.addColorStop(0, "rgba(80,85,90,0.85)");
+      hGrad.addColorStop(0.3, "rgba(160,165,170,0.85)");
+      hGrad.addColorStop(0.5, "rgba(220,225,230,0.85)");
+      hGrad.addColorStop(0.75, "rgba(150,155,160,0.85)");
+      hGrad.addColorStop(1, "rgba(85,90,95,0.85)");
 
       ctx.save();
       ctx.shadowColor = "rgba(0,0,0,0.22)";
@@ -205,8 +205,8 @@ export function DHView3D({ frames, activeStep }: Props) {
         ctx.translate(cx, cyy);
         ctx.rotate(ang);
         ctx.beginPath();
-        ctx.ellipse(0, 0, hr * 0.32, hr, 0, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(226,230,234,0.75)";
+        ctx.ellipse(0, 0, hr * 0.45, hr, 0, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(60,65,70,0.9)";
         ctx.fill();
         ctx.strokeStyle = "rgba(90,96,102,0.5)";
         ctx.lineWidth = 1.2;
