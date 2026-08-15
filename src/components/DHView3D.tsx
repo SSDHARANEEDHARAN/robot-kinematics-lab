@@ -3,11 +3,11 @@ import { axisOf, originOf, type Mat4, type Vec3, deg2rad, type Vec2, fk2d } from
 import { GhostButton } from "./LabControls";
 
 type Props = { 
-  frames?: Mat4[];
+  frames?: Mat4[] | undefined;
   activeStep?: number | undefined;
   // Planar support
   mode?: string;
-  planarPoints?: Vec2[];
+  planarPoints?: Vec2[] | undefined;
   linkCount?: number;
 };
 
@@ -35,9 +35,19 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
     // In planar mode, J1 is at (0,0), J2 is at planarPoints[1], etc.
     // We treat 2D (x,y) as 3D (x,z) to make the robot stand up
     return planarPoints.map((p, i) => {
-      // Rotation matrix for planar arm standing on XZ plane
-      // Identity for now as we're just mapping coordinates
-      return [1, 0, 0, p.x, 0, 1, 0, 0, 0, 0, 1, p.y, 0, 0, 0, 1];
+      // Create a transformation matrix for each joint in the planar arm
+      // We map 2D (x, y) to 3D (x, 0, z) and handle link rotation for J2 and J3
+      const pPrev = planarPoints[i - 1];
+      const angle = i > 0 && pPrev ? Math.atan2(p.y - pPrev.y, p.x - pPrev.x) : 0;
+      const c = Math.cos(angle);
+      const s = Math.sin(angle);
+      
+      return [
+        c, 0, s, p.x,
+        0, 1, 0, 0,
+        -s, 0, c, p.y,
+        0, 0, 0, 1
+      ];
     });
   }, [mode, frames, planarPoints]);
 
