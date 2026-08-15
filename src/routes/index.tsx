@@ -572,7 +572,7 @@ function KinematicsLab() {
               Robot Settings
             </div>
             <div className="mt-2 flex-1 overflow-y-auto rounded-xl border border-border bg-card shadow-lg scrollbar-hide">
-              <div className="lab-card border-none shadow-none">
+              <div className="lab-card border-none shadow-none divide-y-2 divide-slate-900/5">
                 <Section title="Mode">
                   <SegButton
                     options={[
