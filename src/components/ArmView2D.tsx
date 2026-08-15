@@ -1,7 +1,5 @@
 import { useRef } from "react";
 import type { Vec2 } from "@/lib/kinematics";
-import { fmtAngle } from "@/lib/lab";
-
 
 const LINK_CLASSES = ["stroke-primary", "stroke-accent", "stroke-primary"];
 
@@ -18,8 +16,8 @@ type Props = {
   workspace?: Vec2[] | undefined;
   velocity?: Vec2 | undefined;
   unit?: "deg" | "rad";
+  activeStep?: number;
 };
-
 
 const r1 = (n: number) => Math.round(n * 1000) / 1000;
 
@@ -39,8 +37,8 @@ export function ArmView2D({
   workspace,
   velocity,
   unit = "deg",
+  activeStep,
 }: Props) {
-
   const svgRef = useRef<SVGSVGElement>(null);
   const dragging = useRef(false);
 
@@ -88,14 +86,6 @@ export function ArmView2D({
       onPointerLeave={() => (dragging.current = false)}
     >
       <g transform="scale(1,-1)">
-        {/* workspace sweep */}
-        {workspace && workspace.length > 0 && (
-          <g opacity={0.3}>
-            {workspace.map((p, i) => (
-              <circle key={i} cx={r1(p.x)} cy={r1(p.y)} r={3} fill="oklch(0.55 0.15 200)" />
-            ))}
-          </g>
-        )}
         {/* grid */}
         <g stroke="currentColor" className="text-border" strokeWidth={1} opacity={0.3}>
           {grid.map((g) => (
@@ -132,61 +122,7 @@ export function ArmView2D({
           </g>
         )}
 
-        {/* end-effector trace */}
-        {trace && trace.length > 1 && (
-          <polyline
-            points={trace.map((p) => `${r1(p.x)},${r1(p.y)}`).join(" ")}
-            className="stroke-primary/40"
-            strokeWidth={2}
-            fill="none"
-          />
-        )}
-
-        {/* taught path */}
-        {path && path.length > 0 && (
-          <g>
-            <polyline
-              points={path.map((p) => `${r1(p.x)},${r1(p.y)}`).join(" ")}
-              stroke="oklch(0.55 0.15 200)"
-              strokeWidth={2}
-              strokeDasharray="7 6"
-              fill="none"
-            />
-            {path.map((p, i) => (
-              <g key={i}>
-                <circle cx={r1(p.x)} cy={r1(p.y)} r={6} fill="oklch(0.55 0.15 200)" />
-                <g transform={`translate(${r1(p.x) + 10}, ${r1(p.y)}) scale(1,-1)`}>
-                  <text className="fill-foreground" fontSize={13} fontWeight={700}>
-                    P{i + 1}
-                  </text>
-                </g>
-              </g>
-            ))}
-          </g>
-        )}
-
-        {/* ghost (other IK branch) */}
-        {ghostPoints && ghostPoints.length > 1 && (
-          <g opacity={0.35}>
-            {ghostPoints.slice(0, -1).map((p, i) => {
-              const q = ghostPoints[i + 1] as Vec2;
-              return (
-                <line
-                  key={`g${i}`}
-                  x1={r1(p.x)}
-                  y1={r1(p.y)}
-                  x2={r1(q.x)}
-                  y2={r1(q.y)}
-                  className="stroke-muted-foreground"
-                  strokeWidth={8}
-                  strokeLinecap="round"
-                  strokeDasharray="10 8"
-                />
-              );
-            })}
-          </g>
-        )}
-
+        {/* target */}
         {target && (
           <g stroke="currentColor" className="text-primary" strokeWidth={2.5} fill="none">
             <circle cx={target.x} cy={target.y} r={10} className="fill-primary/10" />
@@ -198,6 +134,11 @@ export function ArmView2D({
         {/* links */}
         {points.slice(0, -1).map((p, i) => {
           const q = points[i + 1] as Vec2;
+          
+          const isLink1Step = activeStep !== undefined && activeStep >= 1 && activeStep <= 4;
+          const isLink2Step = activeStep !== undefined && activeStep >= 2 && activeStep <= 4;
+          const isHighlighted = (i === 0 && isLink1Step) || (i === 1 && isLink2Step);
+
           return (
             <line
               key={i}
@@ -205,76 +146,35 @@ export function ArmView2D({
               y1={r1(p.y)}
               x2={r1(q.x)}
               y2={r1(q.y)}
-              className={LINK_CLASSES[i % 3]}
-              strokeWidth={11}
+              className={isHighlighted ? "stroke-primary" : LINK_CLASSES[i % 3]}
+              strokeWidth={isHighlighted ? 16 : 11}
               strokeLinecap="round"
+              opacity={isHighlighted ? 1 : 0.8}
             />
           );
         })}
-
-        {/* Measurement Overlays (2D) */}
-        {points.slice(0, -1).map((p, i) => {
-          const q = points[i + 1] as Vec2;
-          const mid = { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 };
-          const len = lengths[i] ?? 0;
-          return (
-            <g key={`m${i}`} transform={`translate(${r1(mid.x)}, ${r1(mid.y)}) scale(1,-1)`}>
-              <rect x={-20} y={-8} width={40} height={16} rx={4} className="fill-secondary/80" />
-              <text textAnchor="middle" dy={4} fontSize={9} fontWeight={900} className="fill-primary">
-                {Math.round(len)}
-              </text>
-            </g>
-          );
-        })}
-
 
         {/* joints */}
-        {points.map((p, i) => (
-          <circle
-            key={i}
-            cx={r1(p.x)}
-            cy={r1(p.y)}
-            r={i === 0 ? 8 : 7}
-            className={i === 0 ? "fill-primary stroke-primary" : "fill-card stroke-primary"}
-            strokeWidth={2.5}
-          />
-        ))}
+        {points.map((p, i) => {
+          const isJoint2 = i === 1; 
+          const isJoint1 = i === 0; 
+          const isJoint2Highlighted = activeStep !== undefined && activeStep >= 2 && isJoint2;
+          const isJoint1Highlighted = activeStep !== undefined && activeStep >= 4 && isJoint1;
+          const isHighlighted = isJoint1Highlighted || isJoint2Highlighted;
+
+          return (
+            <circle
+              key={i}
+              cx={r1(p.x)}
+              cy={r1(p.y)}
+              r={isHighlighted ? 10 : (i === 0 ? 8 : 7)}
+              className={isHighlighted ? "fill-primary stroke-primary" : (i === 0 ? "fill-primary stroke-primary" : "fill-card stroke-primary")}
+              strokeWidth={2.5}
+            />
+          );
+        })}
 
         <circle cx={r1(end.x)} cy={r1(end.y)} r={6} className="fill-primary" />
-        <g transform={`translate(${r1(end.x) + 12}, ${r1(end.y) + 12}) scale(1,-1)`}>
-          <rect x={-5} y={-24} width={85} height={32} rx={6} className="fill-primary" />
-          <text x={4} y={-8} fontSize={9} fontWeight={900} className="fill-primary-foreground">
-            EE: {Math.round(end.x)}, {Math.round(end.y)}
-          </text>
-        </g>
-
-
-        {/* velocity vector */}
-        {velocity && (
-          <g>
-            <line
-              x1={r1(end.x)}
-              y1={r1(end.y)}
-              x2={r1(end.x + velocity.x * 20)}
-              y2={r1(end.y + velocity.y * 20)}
-              className="stroke-link-2"
-              strokeWidth={3}
-              markerEnd="url(#arrowhead)"
-            />
-            <defs>
-              <marker
-                id="arrowhead"
-                markerWidth="10"
-                markerHeight="7"
-                refX="0"
-                refY="3.5"
-                orient="auto"
-              >
-                <polygon points="0 0, 10 3.5, 0 7" className="fill-link-2" />
-              </marker>
-            </defs>
-          </g>
-        )}
       </g>
     </svg>
   );
