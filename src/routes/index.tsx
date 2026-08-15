@@ -1040,7 +1040,6 @@ function KinematicsLab() {
               <Section title="AI Tutor" collapsible defaultOpen={false}>
                 <AIPanel state={{ mode, target, lengths: activeLengths, angles: planarAngles, reachable: ik.reachable, ikError: ik.error }} />
               </Section>
-              </Section>
 
               <Section title="Industrial Progress" collapsible defaultOpen={false}>
                 <div className="space-y-4">
