@@ -645,6 +645,17 @@ function KinematicsLab() {
               {tab === "quiz" && <QuizPanel lengths={activeLengths} angles={planarAngles} onSetTarget={(t) => { setMode("IK"); setTarget(t); }} />}
               {tab === "lessons" && <LessonPanel state={lessonState} activeId={lessonId} onSelect={selectLesson} completed={completed} />}
               {tab === "ai" && <div className="h-[400px]"><AIPanel state={{ mode, target, lengths: activeLengths, angles: planarAngles, reachable: ik.reachable, ikError: ik.error }} /></div>}
+              {tab === "walkthrough" && (
+                <div className="h-[500px]">
+                  {mode === "IK" ? (
+                    <IKWalkthrough target={target} lengths={activeLengths} angles={ik.angles} unit={unit} />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-center p-6 text-muted-foreground text-xs uppercase tracking-widest font-bold">
+                      Switch to IK mode for step-by-step walkthrough
+                    </div>
+                  )}
+                </div>
+              )}
               {tab === "progress" && (
                 <div className="space-y-4">
                   <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Robotics Mastery</h4>
