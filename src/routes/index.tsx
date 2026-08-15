@@ -450,19 +450,18 @@ function KinematicsLab() {
           };
 
   return (
-    <main className="min-h-screen px-4 pb-16 pt-6 md:px-8 max-w-[1920px] mx-auto select-none">
-      <header className="mb-5 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <div className="flex flex-col gap-1">
-            <p className="text-[10px] leading-relaxed font-bold text-muted-foreground whitespace-pre-line">
-              {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''`}
-            </p>
-            <p className="text-lg font-black uppercase tracking-widest text-primary">
-              KEEP 2D STYLE FOR 2 NAD 3
-            </p>
-          </div>
+    <main className="min-h-screen px-4 pb-8 pt-0 md:px-8 max-w-[1920px] mx-auto select-none flex flex-col">
+      <header className="py-4 mb-2 flex items-center justify-between border-b border-border">
+        <div className="flex flex-col gap-0.5">
+          <p className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+            Industrial Kinematics
+          </p>
+          <p className="text-xs font-black uppercase tracking-widest text-primary">
+            Virtual Lab Environment
+          </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        
+        <div className="flex items-center gap-4">
           <SegButton
             options={[
               { value: "deg", label: "deg" },
@@ -471,14 +470,15 @@ function KinematicsLab() {
             value={unit}
             onChange={(v) => setUnit(v as "deg" | "rad")}
           />
-          <div className="lab-card flex items-center gap-2 px-4 py-3">
-            <span className="h-2.5 w-2.5 rounded-full bg-link-3" />
-            <span className="text-sm font-semibold text-foreground">
-              {mode === "IK" && !ik.reachable ? "Out of reach" : playing ? "Running" : "Ready"}
+          <div className="flex items-center gap-2 rounded-full border border-border bg-card/50 px-3 py-1.5">
+            <span className={`h-2 w-2 rounded-full ${mode === "IK" && !ik.reachable ? "bg-destructive animate-pulse" : "bg-link-3"}`} />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-foreground">
+              {mode === "IK" && !ik.reachable ? "Out of reach" : playing ? "Running" : "System Ready"}
             </span>
           </div>
         </div>
       </header>
+
 
       <div className="grid gap-5 xl:grid-cols-[280px_minmax(0,1fr)_340px] xl:h-[750px]">
         {/* ---------- Left: popups ---------- */}
@@ -712,10 +712,11 @@ function KinematicsLab() {
                       onStepSelect={setActiveWalkthroughStep}
                     />
                   ) : (
-                    <div className="flex h-32 items-center justify-center text-center p-6 text-muted-foreground text-[10px] uppercase tracking-widest font-bold border rounded-lg border-dashed">
+                    <div className="flex h-32 items-center justify-center text-center p-6 text-muted-foreground text-[10px] uppercase tracking-widest font-bold">
                       Switch to IK mode for walkthrough
                     </div>
                   )}
+
                 </div>
               </Section>
 
@@ -761,6 +762,16 @@ function KinematicsLab() {
           </div>
         </aside>
       </div>
+
+      <footer className="mt-5 flex items-center justify-between border-t border-border pt-4 text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+        <div>&copy; 2026 Robotics Lab</div>
+        <div className="flex items-center gap-4">
+          <span>Present by Tharaneetharan SS</span>
+          <span className="h-1 w-1 rounded-full bg-border" />
+          <span>Industrial Automation Series</span>
+        </div>
+      </footer>
     </main>
   );
 }
+
