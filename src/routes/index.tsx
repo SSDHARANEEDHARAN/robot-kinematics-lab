@@ -1039,6 +1039,26 @@ function KinematicsLab() {
           </div>
 
 
+          {isSingular && mode === "IK" && (
+            <div className="animate-pulse rounded-xl bg-red-500/10 p-3 text-red-500">
+              <div className="flex items-center gap-2 font-extrabold uppercase tracking-widest">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+                Singularity Warning
+              </div>
+              <p className="mt-1 text-[10px] font-medium leading-tight">
+                Robot is near a singular configuration. One or more degrees of freedom are lost.
+                Math may become unstable.
+              </p>
+            </div>
+          )}
+
           <div className="lab-card px-4 py-3">
             <h3 className="mb-2 text-base font-extrabold text-foreground">Joint Output</h3>
             <dl className="divide-y divide-border">
