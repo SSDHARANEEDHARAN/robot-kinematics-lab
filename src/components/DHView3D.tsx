@@ -9,6 +9,8 @@ type Props = {
   planarPoints?: Vec2[] | undefined;
   linkCount?: number;
   showAxes?: boolean;
+  showGrid?: boolean;
+  showAxesOverlay?: boolean;
 };
 
 // Colors based on a premium industrial design: Slate and Bright Orange
@@ -21,7 +23,16 @@ const LINK_COLORS = [
   "#e67e22", // Orange
 ];
 
-export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = [], linkCount = 2, showAxes = true }: Props) {
+export function DHView3D({ 
+  frames = [], 
+  activeStep, 
+  mode = "DH", 
+  planarPoints = [], 
+  linkCount = 2, 
+  showAxes = true,
+  showGrid = true,
+  showAxesOverlay = true,
+}: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [cam, setCam] = useState({ yaw: -0.9, pitch: 0.5, zoom: 1.2 });
   const [baseScale, setBaseScale] = useState(1);
@@ -126,15 +137,22 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
     };
 
     // Grid Floor: Light Technical Grid
-    ctx.strokeStyle = "rgba(0,0,0,0.05)";
-    ctx.lineWidth = 1;
-    for(let i = -10; i <= 10; i++) {
-        const p1 = project({x: i*60, y: -600, z: 0});
-        const p2 = project({x: i*60, y: 600, z: 0});
-        ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
-        const p3 = project({x: -600, y: i*60, z: 0});
-        const p4 = project({x: 600, y: i*60, z: 0});
-        ctx.beginPath(); ctx.moveTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y); ctx.stroke();
+    if (showGrid) {
+      ctx.strokeStyle = "rgba(0,0,0,0.05)";
+      ctx.lineWidth = 1;
+      for(let i = -10; i <= 10; i++) {
+          const p1 = project({x: i*60, y: -600, z: 0});
+          const p2 = project({x: i*60, y: 600, z: 0});
+          ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+          const p3 = project({x: -600, y: i*60, z: 0});
+          const p4 = project({x: 600, y: i*60, z: 0});
+          ctx.beginPath(); ctx.moveTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y); ctx.stroke();
+      }
+    }
+
+    // Origin Axes Overlay
+    if (showAxesOverlay) {
+      drawAxes({x: 0, y: 0, z: 0}, [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1], 60);
     }
 
     // Links and Joints
@@ -255,7 +273,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       if (showAxes) drawAxes(eePos, eeFrame as Mat4, 50);
     }
 
-  }, [effectiveFrames, cam, activeStep, showAxes, baseScale]);
+  }, [effectiveFrames, cam, activeStep, showAxes, showGrid, showAxesOverlay, baseScale]);
 
   return (
     <div className="relative h-full w-full bg-background">
