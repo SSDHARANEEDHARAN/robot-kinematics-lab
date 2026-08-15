@@ -678,9 +678,10 @@ function KinematicsLab() {
                 </div>
               )}
 
-
+            </div>
           </div>
         </section>
+
 
         {/* ---------- Right: readouts + tools ---------- */}
         <aside className="flex h-full flex-col gap-4 overflow-hidden">
