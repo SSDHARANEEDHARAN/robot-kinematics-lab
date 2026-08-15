@@ -146,10 +146,10 @@ export function ArmView2D({
               y1={r1(p.y)}
               x2={r1(q.x)}
               y2={r1(q.y)}
-              className={isHighlighted ? "stroke-primary" : LINK_CLASSES[i % 3]}
-              strokeWidth={isHighlighted ? 16 : 11}
-              strokeLinecap="round"
-              opacity={isHighlighted ? 1 : 0.8}
+              stroke="#1A252F" // Dark navy/black to match 3D links
+              strokeWidth={isHighlighted ? 18 : 12}
+              strokeLinecap="butt" // Flat ends to match industrial style
+              opacity={isHighlighted ? 1 : 0.9}
             />
           );
         })}
@@ -181,6 +181,16 @@ export function ArmView2D({
 
           return (
             <g key={i}>
+              {/* Transparent Joint Housing - matching reference style */}
+              <circle
+                cx={r1(p.x)}
+                cy={r1(p.y)}
+                r={i === 0 ? 15 : 12}
+                fill="rgba(0,0,0,0.05)"
+                stroke="rgba(0,0,0,0.1)"
+                strokeWidth={1}
+              />
+              
               {/* Angle Indicator Arrow */}
               <line 
                 x1={p.x} y1={p.y} x2={arrowX} y2={arrowY}
@@ -189,20 +199,21 @@ export function ArmView2D({
                 strokeDasharray="2 2"
               />
               <path 
-                d={`M ${arrowX} ${arrowY} l -5 -2 l 0 4 z`}
+                d={`M ${arrowX} ${arrowY} l -8 -4 l 0 8 z`}
                 transform={`rotate(${(angle * 180) / Math.PI}, ${arrowX}, ${arrowY})`}
                 className={isHighlighted ? "fill-primary" : "fill-muted-foreground/30"}
               />
 
+              {/* Core joint circle */}
               <circle
                 cx={r1(p.x)}
                 cy={r1(p.y)}
-                r={isHighlighted ? 10 : (i === 0 ? 8 : 7)}
+                r={isHighlighted ? 8 : (i === 0 ? 7 : 6)}
                 className={isHighlighted ? "fill-primary stroke-primary" : (i === 0 ? "fill-primary stroke-primary" : "fill-card stroke-primary")}
-                strokeWidth={2.5}
+                strokeWidth={2}
               />
               {i === 0 && (
-                <text x={p.x + 15} y={p.y - 15} className="fill-primary text-[8px] font-black uppercase tracking-tighter" transform="scale(1,-1)">FIXED J1</text>
+                <text x={p.x + 18} y={p.y - 18} className="fill-primary text-[10px] font-black uppercase tracking-widest" transform="scale(1,-1)">FIXED J1</text>
               )}
             </g>
           );

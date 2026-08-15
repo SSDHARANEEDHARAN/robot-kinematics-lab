@@ -63,7 +63,7 @@ export function DHView3D({ frames, activeStep }: Props) {
       };
     };
 
-    const drawAxes = (pos: Vec3, frame: Mat4, size = 30) => {
+    const drawAxes = (pos: Vec3, frame: Mat4, size = 30, isBase = false) => {
       const p = project(pos);
       const xAxis = axisOf(frame, 0);
       const yAxis = axisOf(frame, 1);
@@ -73,18 +73,35 @@ export function DHView3D({ frames, activeStep }: Props) {
       const py = project({ x: pos.x + yAxis.x * size, y: pos.y + yAxis.y * size, z: pos.z + yAxis.z * size });
       const pz = project({ x: pos.x + zAxis.x * size, y: pos.y + zAxis.y * size, z: pos.z + zAxis.z * size });
 
-      // X - Red
-      ctx.strokeStyle = "#FF0000";
-      ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(px.x, px.y); ctx.stroke();
-      
-      // Y - Green
-      ctx.strokeStyle = "#00FF00";
-      ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(py.x, py.y); ctx.stroke();
-      
-      // Z - Blue
-      ctx.strokeStyle = "#0000FF";
-      ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(pz.x, pz.y); ctx.stroke();
+      const drawArrow = (from: {x: number, y: number}, to: {x: number, y: number}, color: string) => {
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath(); 
+        ctx.moveTo(from.x, from.y); 
+        ctx.lineTo(to.x, to.y); 
+        ctx.stroke();
+
+        // Arrow head
+        const angle = Math.atan2(to.y - from.y, to.x - from.x);
+        ctx.beginPath();
+        ctx.moveTo(to.x, to.y);
+        ctx.lineTo(to.x - 8 * Math.cos(angle - Math.PI/6), to.y - 8 * Math.sin(angle - Math.PI/6));
+        ctx.lineTo(to.x - 8 * Math.cos(angle + Math.PI/6), to.y - 8 * Math.sin(angle + Math.PI/6));
+        ctx.closePath();
+        ctx.fill();
+      };
+
+      if (isBase) {
+        drawArrow(p, px, "#FF0000"); // X - Red
+        drawArrow(p, pz, "#0000FF"); // Z - Blue
+      } else {
+        // Just lines for internal axes to keep it clean
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "#FF0000"; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(px.x, px.y); ctx.stroke();
+        ctx.strokeStyle = "#00FF00"; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(py.x, py.y); ctx.stroke();
+        ctx.strokeStyle = "#0000FF"; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(pz.x, pz.y); ctx.stroke();
+      }
     };
 
     // Realistic Floor/Base Grid - matching the reference
@@ -99,8 +116,8 @@ export function DHView3D({ frames, activeStep }: Props) {
         ctx.beginPath(); ctx.moveTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y); ctx.stroke();
     }
 
-    // Draw origin axes at base
-    drawAxes({x: 0, y: 0, z: 0}, [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1], 50);
+    // Draw origin axes at base with arrows - matching reference
+    drawAxes({x: 0, y: 0, z: 0}, [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1], 60, true);
 
     // Links and Joints
     for (let i = 0; i < frames.length - 1; i++) {
@@ -109,22 +126,42 @@ export function DHView3D({ frames, activeStep }: Props) {
       const pa = project(a);
       const pb = project(b);
       
+      // Fixed link color from reference: dark navy/black
+      const color = "#1A252F"; 
       const isHighlighted = activeStep !== undefined && i < activeStep;
-      const color = isHighlighted ? "oklch(0.55 0.15 200)" : (LINK_COLORS[i % LINK_COLORS.length] || "#475569");
       
-      // Joint Housing (Cylinder/Sphere) - matching reference
+      // Joint Housing (Transparent Cylinder-like) - matching user-uploads://file-6
       const r = (12 - i * 1);
+      
+      // Draw joint housing (cylinder effect)
+      ctx.fillStyle = "rgba(189, 195, 199, 0.4)"; // Semitransparent grey
+      ctx.strokeStyle = "rgba(0,0,0,0.3)";
+      ctx.lineWidth = 1;
+
+      // Bottom circle
       ctx.beginPath();
-      ctx.arc(pa.x, pa.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = "#BDC3C7"; // Light grey for joints
+      ctx.arc(pa.x, pa.y + 4, r + 2, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = "rgba(0,0,0,0.2)";
+      ctx.stroke();
+
+      // Top circle (offset slightly to give 3D cylinder feel)
+      ctx.beginPath();
+      ctx.arc(pa.x, pa.y - 4, r + 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Connecting lines for cylinder sides
+      ctx.beginPath();
+      ctx.moveTo(pa.x - (r + 2), pa.y - 4);
+      ctx.lineTo(pa.x - (r + 2), pa.y + 4);
+      ctx.moveTo(pa.x + (r + 2), pa.y - 4);
+      ctx.lineTo(pa.x + (r + 2), pa.y + 4);
       ctx.stroke();
 
       // Link Body
       ctx.strokeStyle = color;
-      ctx.lineWidth = r * 1.5;
-      ctx.lineCap = "round";
+      ctx.lineWidth = r * 1.8; // Slightly thicker
+      ctx.lineCap = "butt"; // Flat ends to fit inside joint housing
       ctx.beginPath();
       ctx.moveTo(pa.x, pa.y);
       ctx.lineTo(pb.x, pb.y);
