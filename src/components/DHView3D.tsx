@@ -281,7 +281,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
     drawAxes(eePos, frames[frames.length - 1] as Mat4, 35);
 
 
-  }, [effectiveFrames, cam, activeStep, baseScale]);
+  }, [effectiveFrames, cam, activeStep]);
 
   return (
     <div className="relative h-full w-full">
