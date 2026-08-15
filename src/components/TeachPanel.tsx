@@ -41,19 +41,19 @@ export function TeachPanel({
         <h4 className="lab-label mb-2">Demo Programs</h4>
         <div className="grid grid-cols-3 gap-2 mb-4">
           <button 
-            className="rounded-lg border border-border bg-secondary/50 py-2 text-[10px] font-black uppercase tracking-wider hover:bg-primary hover:text-primary-foreground transition-colors"
+            className="border-2 border-foreground bg-background py-2 text-[10px] font-black uppercase tracking-wider hover:bg-foreground hover:text-background transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
             onClick={() => onRunDemo("pick")}
           >
             Pick & Place
           </button>
           <button 
-            className="rounded-lg border border-border bg-secondary/50 py-2 text-[10px] font-black uppercase tracking-wider hover:bg-primary hover:text-primary-foreground transition-colors"
+            className="border-2 border-foreground bg-background py-2 text-[10px] font-black uppercase tracking-wider hover:bg-foreground hover:text-background transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
             onClick={() => onRunDemo("round")}
           >
             Arounding
           </button>
           <button 
-            className="rounded-lg border border-border bg-secondary/50 py-2 text-[10px] font-black uppercase tracking-wider hover:bg-primary hover:text-primary-foreground transition-colors"
+            className="border-2 border-foreground bg-background py-2 text-[10px] font-black uppercase tracking-wider hover:bg-foreground hover:text-background transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
             onClick={() => onRunDemo("dance")}
           >
             Dancing
