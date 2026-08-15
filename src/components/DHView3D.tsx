@@ -15,13 +15,14 @@ type Props = {
 
 // Colors based on the uploaded reference image
 const LINK_COLORS = [
-  "#2C3E50", // Dark grey/black for base/first link
-  "#E74C3C", // Red for second link
-  "#9B59B6", // Purple for third link
-  "#3498DB", // Blue for fourth link
-  "#E67E22", // Orange for fifth link
-  "#2ECC71", // Green (if needed)
+  "#2C3E50", // J1: Dark grey/black base link
+  "#C0392B", // J2: Red rod link
+  "#2C3E50", // J3: Dark grey rod link
+  "#8E44AD", // J4: Purple (optional)
+  "#2980B9", // J5: Blue (optional)
+  "#27AE60", // J6: Green (optional)
 ];
+
 
 export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = [], linkCount = 2, showAxes = true }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
