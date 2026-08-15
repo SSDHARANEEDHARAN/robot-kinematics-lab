@@ -63,8 +63,12 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
     
     // Base scale adjusted by viewport size and user zoom
     const currentBaseScale = Math.min(w, h) / 480;
-    setBaseScale(currentBaseScale);
-    const scale = currentBaseScale * cam.zoom;
+    // We update state inside useEffect, but we need the local value for this render cycle's drawing
+    const drawScale = currentBaseScale * cam.zoom;
+    
+    if (baseScale !== currentBaseScale) {
+       setBaseScale(currentBaseScale);
+    }
 
     const j1Pos = effectiveFrames.length > 0 ? originOf(effectiveFrames[0] as Mat4) : { x: 0, y: 0, z: 0 };
     const ctr = { x: j1Pos.x, y: j1Pos.y, z: j1Pos.z };
