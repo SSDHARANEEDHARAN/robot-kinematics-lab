@@ -101,3 +101,45 @@ export const axisOf = (m: Mat4, i: 0 | 1 | 2): Vec3 => ({
   y: m[4 + i] ?? 0,
   z: m[8 + i] ?? 0,
 });
+
+/** 2x2 Jacobian for a planar 2R robot arm.
+ *  J = [ -L1*s1 - L2*s12, -L2*s12 ]
+ *      [  L1*c1 + L2*c12,  L2*c12 ]
+ */
+export function jacobian2d(lengths: number[], anglesDeg: number[]): number[][] {
+  const l1 = lengths[0] ?? 0;
+  const l2 = lengths[1] ?? 0;
+  const a1 = deg2rad(anglesDeg[0] ?? 0);
+  const a12 = a1 + deg2rad(anglesDeg[1] ?? 0);
+
+  const s1 = Math.sin(a1);
+  const c1 = Math.cos(a1);
+  const s12 = Math.sin(a12);
+  const c12 = Math.cos(a12);
+
+  return [
+    [-l1 * s1 - l2 * s12, -l2 * s12],
+    [l1 * c1 + l2 * c12, l2 * c12],
+  ];
+}
+
+/** Determinant of a 2x2 matrix */
+export const det2x2 = (m: number[][]) => (m[0]?.[0] ?? 0) * (m[1]?.[1] ?? 0) - (m[0]?.[1] ?? 0) * (m[1]?.[0] ?? 0);
+
+/** Forward workspace sweep: returns points and density for an annulus. */
+export function workspaceSweep(lengths: number[], steps = 40): Vec2[] {
+  const l1 = lengths[0] ?? 0;
+  const l2 = lengths[1] ?? 0;
+  const pts: Vec2[] = [];
+  // For a 2R robot, the workspace is an annulus between |L1-L2| and L1+L2
+  const min = Math.abs(l1 - l2);
+  const max = l1 + l2;
+
+  for (let r = min; r <= max; r += (max - min) / 5) {
+    for (let a = 0; a < 360; a += 10) {
+      const rad = deg2rad(a);
+      pts.push({ x: r * Math.cos(rad), y: r * Math.sin(rad) });
+    }
+  }
+  return pts;
+}

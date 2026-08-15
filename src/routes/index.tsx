@@ -3,7 +3,10 @@ import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { ArmView2D } from "@/components/ArmView2D";
 import { DHView3D } from "@/components/DHView3D";
 import { DHFormula, FKFormula, IKFormula } from "@/components/FormulaPanel";
+import { AIPanel } from "@/components/AIPanel";
 import {
+  Badge,
+  Card,
   GhostButton,
   NumberField,
   Section,
@@ -14,7 +17,18 @@ import {
 import { LESSONS, LessonPanel, type Lesson } from "@/components/LessonPanel";
 import { QuizPanel } from "@/components/QuizPanel";
 import { TeachPanel } from "@/components/TeachPanel";
-import { dhChain, fk2d, ik2d, originOf, type DHRow, type Mat4, type Vec2 } from "@/lib/kinematics";
+import {
+  det2x2,
+  dhChain,
+  fk2d,
+  ik2d,
+  jacobian2d,
+  originOf,
+  workspaceSweep,
+  type DHRow,
+  type Mat4,
+  type Vec2,
+} from "@/lib/kinematics";
 import {
   fmtAngle,
   readPresetFromLocation,
@@ -47,8 +61,8 @@ export const Route = createFileRoute("/")({
   component: KinematicsLab,
 });
 
-type Mode = "IK" | "FK" | "DH";
-type Tab = "math" | "teach" | "quiz" | "lessons";
+type Mode = "IK" | "FK" | "DH" | "EXPERIMENT";
+type Tab = "math" | "teach" | "quiz" | "lessons" | "ai" | "industrial" | "progress";
 
 const DEFAULT_DH: DHRow[] = [
   { theta: 0, d: 80, a: 0, alpha: -90 },
@@ -60,10 +74,13 @@ const DEFAULT_DH: DHRow[] = [
 ];
 
 const TABS: { value: Tab; label: string }[] = [
-  { value: "math", label: "Live math" },
+  { value: "math", label: "Math" },
   { value: "teach", label: "Teach" },
   { value: "quiz", label: "Quiz" },
+  { value: "ai", label: "AI Tutor" },
   { value: "lessons", label: "Lessons" },
+  { value: "industrial", label: "Industrial" },
+  { value: "progress", label: "Stats" },
 ];
 
 function KinematicsLab() {
@@ -90,6 +107,8 @@ function KinematicsLab() {
   const [shareMsg, setShareMsg] = useState("");
   const [lessonId, setLessonId] = useState(LESSONS[0]!.id);
   const [completed, setCompleted] = useState<Record<string, boolean>>({});
+  const [showWorkspace, setShowWorkspace] = useState(false);
+  const [showVelocity, setShowVelocity] = useState(false);
 
   const activeLengths = lengths.slice(0, linkCount);
 
@@ -155,6 +174,31 @@ function KinematicsLab() {
   const dhRows = dh.slice(0, jointCount);
   const frames = useMemo(() => dhChain(dhRows), [JSON.stringify(dhRows)]);
   const dhEnd = originOf(frames[frames.length - 1] as Mat4);
+
+  const jacobian = useMemo(
+    () => jacobian2d(activeLengths, planarAngles),
+    [activeLengths.join(), planarAngles.join()],
+  );
+  const manipulability = Math.abs(det2x2(jacobian));
+  const isSingular = manipulability < 5000;
+
+  const workspace = useMemo(
+    () => (showWorkspace ? workspaceSweep(activeLengths) : []),
+    [activeLengths.join(), showWorkspace],
+  );
+
+  const velocity = useMemo(() => {
+    if (!showVelocity || mode === "DH") return undefined;
+    // Example: unit joint velocities [1, 1]
+    const J = jacobian;
+    const j0 = J[0];
+    const j1 = J[1];
+    if (!j0 || !j1) return undefined;
+    return {
+      x: (j0[0] ?? 0) + (j0[1] ?? 0),
+      y: (j1[0] ?? 0) + (j1[1] ?? 0),
+    };
+  }, [jacobian, showVelocity, mode]);
 
   const end = points[points.length - 1] ?? { x: 0, y: 0 };
   const maxReach = activeLengths.reduce((a, b) => a + b, 0);
@@ -509,6 +553,30 @@ function KinematicsLab() {
                 </Section>
               )}
 
+              <Section title="Experiment Tools">
+                <div className="space-y-3">
+                  <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <input
+                      type="checkbox"
+                      checked={showWorkspace}
+                      onChange={(e) => setShowWorkspace(e.target.checked)}
+                      className="h-4 w-4 accent-[var(--color-primary)]"
+                    />
+                    Workspace Sweep
+                  </label>
+                  <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <input
+                      type="checkbox"
+                      checked={showVelocity}
+                      onChange={(e) => setShowVelocity(e.target.checked)}
+                      className="h-4 w-4 accent-[var(--color-primary)]"
+                    />
+                    Velocity Vectors
+                  </label>
+                </div>
+              </Section>
+
+
               <Section title="Presets">
                 <div className="grid grid-cols-2 gap-2">
                   <GhostButton
@@ -618,6 +686,8 @@ function KinematicsLab() {
                 ghostPoints={mode === "IK" && showGhost ? ghostPoints : undefined}
                 trace={showTrace ? trace : undefined}
                 path={waypoints.map((w) => w.target)}
+                workspace={workspace}
+                velocity={velocity}
                 onPathPoint={
                   pathMode && !playing
                     ? (p) =>
@@ -770,8 +840,214 @@ function KinematicsLab() {
                   completed={completed}
                 />
               )}
+
+              {tab === "ai" && (
+                <div className="h-[450px]">
+                  <AIPanel
+                    state={{
+                      mode,
+                      target,
+                      lengths: activeLengths,
+                      angles: planarAngles,
+                      reachable: ik.reachable,
+                      ikError: ik.error,
+                    }}
+                  />
+                </div>
+              )}
+
+              {tab === "progress" && (
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-extrabold uppercase tracking-widest text-brand">
+                      Robotics Skill Level
+                    </h4>
+                    <div className="space-y-3">
+                      {[
+                        { label: "FK", value: 80, color: "bg-link-1" },
+                        { label: "IK", value: 60, color: "bg-link-2" },
+                        { label: "DH", value: 40, color: "bg-link-3" },
+                        { label: "Teaching", value: 50, color: "bg-brand" },
+                      ].map((s) => (
+                        <div key={s.label} className="space-y-1">
+                          <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider">
+                            <span>{s.label}</span>
+                            <span>{s.value}%</span>
+                          </div>
+                          <div className="h-2 w-full rounded-full bg-secondary overflow-hidden">
+                            <div
+                              className={`h-full ${s.color} transition-all duration-1000`}
+                              style={{ width: `${s.value}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Card title="Activity Log">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="h-2 w-2 rounded-full bg-link-3" />
+                        <div className="flex-1">
+                          <p className="text-xs font-bold">Lesson 1 Completed</p>
+                          <p className="text-[10px] text-muted-foreground">2 minutes ago</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="h-2 w-2 rounded-full bg-link-2" />
+                        <div className="flex-1">
+                          <p className="text-xs font-bold">Quiz Score: 93%</p>
+                          <p className="text-[10px] text-muted-foreground">1 hour ago</p>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              )}
+
+              {tab === "industrial" && (
+                <div className="space-y-4">
+                  <h3 className="text-base font-extrabold text-foreground">Industrial Scenarios</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Apply your kinematics knowledge to real-world industrial tasks.
+                  </p>
+                  <div className="grid grid-cols-1 gap-3">
+                    <button
+                      className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:bg-secondary/50"
+                      onClick={() => {
+                        setMode("IK");
+                        setWaypoints([
+                          {
+                            id: "p1",
+                            name: "Pick",
+                            target: { x: 100, y: 50 },
+                            angles: [0, 0],
+                            move: "MOVJ",
+                            spd: 50,
+                          },
+                          {
+                            id: "p2",
+                            name: "Lift",
+                            target: { x: 150, y: 50 },
+                            angles: [0, 0],
+                            move: "MOVL",
+                            spd: 50,
+                          },
+                          {
+                            id: "p3",
+                            name: "Drop",
+                            target: { x: 150, y: 0 },
+                            angles: [0, 0],
+                            move: "MOVL",
+                            spd: 50,
+                          },
+                          {
+                            id: "p4",
+                            name: "Return",
+                            target: { x: 100, y: 0 },
+                            angles: [0, 0],
+                            move: "MOVL",
+                            spd: 50,
+                          },
+                        ]);
+                        setTab("teach");
+                      }}
+                    >
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-link-1/10 text-link-1">
+                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="text-sm font-bold">Palletizing Cycle</div>
+                        <div className="text-[10px] text-muted-foreground">
+                          Box pick & place simulation using MOVL
+                        </div>
+                      </div>
+                    </button>
+
+                    <button
+                      className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 text-left transition-colors hover:bg-secondary/50"
+                      onClick={() => {
+                        setMode("IK");
+                        setWaypoints([
+                          {
+                            id: "w1",
+                            name: "Approach",
+                            target: { x: 80, y: 40 },
+                            angles: [0, 0],
+                            move: "MOVJ",
+                            spd: 30,
+                          },
+                          {
+                            id: "w2",
+                            name: "Weld Start",
+                            target: { x: 120, y: 60 },
+                            angles: [0, 0],
+                            move: "MOVL",
+                            spd: 20,
+                          },
+                          {
+                            id: "w3",
+                            name: "Weld End",
+                            target: { x: 160, y: 40 },
+                            angles: [0, 0],
+                            move: "MOVL",
+                            spd: 20,
+                          },
+                        ]);
+                        setTab("teach");
+                      }}
+                    >
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-link-2/10 text-link-2">
+                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13 10V3L4 14h7v7l9-11h-7z"
+                          />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="text-sm font-bold">Arc Welding</div>
+                        <div className="text-[10px] text-muted-foreground">
+                          Continuous path tracking with precision speed
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
+
+
+          {isSingular && mode === "IK" && (
+            <div className="animate-pulse rounded-xl bg-red-500/10 p-3 text-red-500">
+              <div className="flex items-center gap-2 font-extrabold uppercase tracking-widest">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={3}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+                Singularity Warning
+              </div>
+              <p className="mt-1 text-[10px] font-medium leading-tight">
+                Robot is near a singular configuration. One or more degrees of freedom are lost.
+                Math may become unstable.
+              </p>
+            </div>
+          )}
 
           <div className="lab-card px-4 py-3">
             <h3 className="mb-2 text-base font-extrabold text-foreground">Joint Output</h3>

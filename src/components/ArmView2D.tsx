@@ -13,6 +13,8 @@ type Props = {
   trace?: Vec2[] | undefined;
   path?: Vec2[] | undefined;
   onPathPoint?: ((p: Vec2) => void) | undefined;
+  workspace?: Vec2[] | undefined;
+  velocity?: Vec2 | undefined;
 };
 
 const r1 = (n: number) => Math.round(n * 1000) / 1000;
@@ -30,6 +32,8 @@ export function ArmView2D({
   trace,
   path,
   onPathPoint,
+  workspace,
+  velocity,
 }: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
   const dragging = useRef(false);
@@ -78,6 +82,14 @@ export function ArmView2D({
       onPointerLeave={() => (dragging.current = false)}
     >
       <g transform="scale(1,-1)">
+        {/* workspace sweep */}
+        {workspace && workspace.length > 0 && (
+          <g opacity={0.15}>
+            {workspace.map((p, i) => (
+              <circle key={i} cx={r1(p.x)} cy={r1(p.y)} r={3} className="fill-brand" />
+            ))}
+          </g>
+        )}
         {/* grid */}
         <g className="stroke-grid" strokeWidth={1} opacity={0.55}>
           {grid.map((g) => (
@@ -205,6 +217,33 @@ export function ArmView2D({
         ))}
 
         <circle cx={r1(end.x)} cy={r1(end.y)} r={6} className="fill-primary" />
+
+        {/* velocity vector */}
+        {velocity && (
+          <g>
+            <line
+              x1={r1(end.x)}
+              y1={r1(end.y)}
+              x2={r1(end.x + velocity.x * 20)}
+              y2={r1(end.y + velocity.y * 20)}
+              className="stroke-link-2"
+              strokeWidth={3}
+              markerEnd="url(#arrowhead)"
+            />
+            <defs>
+              <marker
+                id="arrowhead"
+                markerWidth="10"
+                markerHeight="7"
+                refX="0"
+                refY="3.5"
+                orient="auto"
+              >
+                <polygon points="0 0, 10 3.5, 0 7" className="fill-link-2" />
+              </marker>
+            </defs>
+          </g>
+        )}
       </g>
     </svg>
   );
