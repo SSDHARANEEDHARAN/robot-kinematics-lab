@@ -1,5 +1,7 @@
 import { useRef } from "react";
 import type { Vec2 } from "@/lib/kinematics";
+import { fmtAngle } from "@/lib/lab";
+
 
 const LINK_CLASSES = ["stroke-link-1", "stroke-link-2", "stroke-link-3"];
 
@@ -15,7 +17,9 @@ type Props = {
   onPathPoint?: ((p: Vec2) => void) | undefined;
   workspace?: Vec2[] | undefined;
   velocity?: Vec2 | undefined;
+  unit?: "deg" | "rad";
 };
+
 
 const r1 = (n: number) => Math.round(n * 1000) / 1000;
 
@@ -34,7 +38,9 @@ export function ArmView2D({
   onPathPoint,
   workspace,
   velocity,
+  unit = "deg",
 }: Props) {
+
   const svgRef = useRef<SVGSVGElement>(null);
   const dragging = useRef(false);
 
@@ -204,6 +210,22 @@ export function ArmView2D({
           );
         })}
 
+        {/* Measurement Overlays (2D) */}
+        {points.slice(0, -1).map((p, i) => {
+          const q = points[i + 1] as Vec2;
+          const mid = { x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 };
+          const len = lengths[i] ?? 0;
+          return (
+            <g key={`m${i}`} transform={`translate(${r1(mid.x)}, ${r1(mid.y)}) scale(1,-1)`}>
+              <rect x={-20} y={-8} width={40} height={16} rx={4} className="fill-card shadow-sm" opacity={0.8} />
+              <text textAnchor="middle" dy={4} fontSize={10} fontWeight={700} className="fill-foreground">
+                {Math.round(len)}
+              </text>
+            </g>
+          );
+        })}
+
+
         {/* joints */}
         {points.map((p, i) => (
           <circle
@@ -217,6 +239,13 @@ export function ArmView2D({
         ))}
 
         <circle cx={r1(end.x)} cy={r1(end.y)} r={6} className="fill-primary" />
+        <g transform={`translate(${r1(end.x) + 12}, ${r1(end.y) + 12}) scale(1,-1)`}>
+          <rect x={-5} y={-24} width={75} height={32} rx={4} className="fill-primary/90" />
+          <text x={4} y={-10} fontSize={9} fontWeight={800} className="fill-primary-foreground">
+            EE: {Math.round(end.x)}, {Math.round(end.y)}
+          </text>
+        </g>
+
 
         {/* velocity vector */}
         {velocity && (

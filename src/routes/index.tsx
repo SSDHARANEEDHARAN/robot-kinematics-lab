@@ -114,18 +114,55 @@ function KinematicsLab() {
 
   /* ---------- shared preset link ---------- */
   useEffect(() => {
+    // 1. Try URL preset
     const p = readPresetFromLocation();
-    if (!p) return;
-    if (p.mode) setMode(p.mode as Mode);
-    if (p.linkCount) setLinkCount(p.linkCount);
-    if (p.lengths) setLengths(p.lengths);
-    if (p.angles) setAngles(p.angles);
-    if (p.target) setTarget(p.target);
-    if (typeof p.elbowUp === "boolean") setElbowUp(p.elbowUp);
-    if (p.dh) setDh(p.dh);
-    if (p.jointCount) setJointCount(p.jointCount);
-    if (p.waypoints) setWaypoints(p.waypoints);
+    if (p) {
+      if (p.mode) setMode(p.mode as Mode);
+      if (p.linkCount) setLinkCount(p.linkCount);
+      if (p.lengths) setLengths(p.lengths);
+      if (p.angles) setAngles(p.angles);
+      if (p.target) setTarget(p.target);
+      if (typeof p.elbowUp === "boolean") setElbowUp(p.elbowUp);
+      if (p.dh) setDh(p.dh);
+      if (p.jointCount) setJointCount(p.jointCount);
+      if (p.waypoints) setWaypoints(p.waypoints);
+      return;
+    }
+
+    // 2. Fallback to Local Storage
+    const saved = localStorage.getItem("lab-settings");
+    if (saved) {
+      try {
+        const s = JSON.parse(saved);
+        if (s.mode) setMode(s.mode);
+        if (s.linkCount) setLinkCount(s.linkCount);
+        if (s.lengths) setLengths(s.lengths);
+        if (s.angles) setAngles(s.angles);
+        if (s.target) setTarget(s.target);
+        if (typeof s.elbowUp === "boolean") setElbowUp(s.elbowUp);
+        if (s.dh) setDh(s.dh);
+        if (s.jointCount) setJointCount(s.jointCount);
+      } catch (e) {
+        console.error("Failed to load settings", e);
+      }
+    }
   }, []);
+
+  // Persist settings
+  useEffect(() => {
+    const settings = {
+      mode,
+      linkCount,
+      lengths,
+      angles,
+      target,
+      elbowUp,
+      dh,
+      jointCount,
+    };
+    localStorage.setItem("lab-settings", JSON.stringify(settings));
+  }, [mode, linkCount, lengths, angles, target, elbowUp, dh, jointCount]);
+
 
   const preset: Preset = {
     mode,
@@ -557,7 +594,9 @@ function KinematicsLab() {
                 path={waypoints.map((w) => w.target)}
                 workspace={workspace}
                 velocity={velocity}
+                unit={unit}
               />
+
             )}
           </div>
         </section>

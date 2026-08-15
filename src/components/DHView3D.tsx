@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { axisOf, originOf, type Mat4, type Vec3 } from "@/lib/kinematics";
+import { GhostButton } from "./LabControls";
+
 
 type Props = { frames: Mat4[] };
 
@@ -121,33 +123,90 @@ export function DHView3D({ frames }: Props) {
       ctx.fill();
     });
 
+    // Measurement Overlays (3D)
+    frames.forEach((f, i) => {
+      const p = project(originOf(f));
+      
+      // Joint Label
+      ctx.fillStyle = "rgba(15, 23, 42, 0.8)";
+      ctx.beginPath();
+      ctx.roundRect(p.x - 12, p.y - 30, 24, 14, 3);
+      ctx.fill();
+      
+      ctx.fillStyle = "#fff";
+      ctx.font = "bold 9px JetBrains Mono";
+      ctx.textAlign = "center";
+      ctx.fillText(`J${i+1}`, p.x, p.y - 20);
+
+      // Link length indicator
+      if (i < frames.length - 1) {
+        const nextP = project(originOf(frames[i+1] as Mat4));
+        const midX = (p.x + nextP.x) / 2;
+        const midY = (p.y + nextP.y) / 2;
+        
+        ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+        ctx.beginPath();
+        ctx.arc(midX, midY, 8, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.fillStyle = "#475569";
+        ctx.font = "700 8px JetBrains Mono";
+        const row = frames[i+1] ? (frames[i+1] as any)._dhRow : null; // We don't have easy access to lengths here without props
+        // Instead, just show Euclidean distance for measurement
+        const d = Math.sqrt(
+          Math.pow(originOf(frames[i+1] as Mat4).x - originOf(frames[i] as Mat4).x, 2) +
+          Math.pow(originOf(frames[i+1] as Mat4).y - originOf(frames[i] as Mat4).y, 2) +
+          Math.pow(originOf(frames[i+1] as Mat4).z - originOf(frames[i] as Mat4).z, 2)
+        );
+        ctx.fillText(Math.round(d).toString(), midX, midY + 3);
+      }
+    });
+
   }, [frames, cam]);
 
+
   return (
-    <canvas
-      ref={canvasRef}
-      className="h-full w-full cursor-grab touch-none active:cursor-grabbing"
-      onPointerDown={(e) => {
-        drag.current = { x: e.clientX, y: e.clientY };
-        (e.target as Element).setPointerCapture?.(e.pointerId);
-      }}
-      onPointerMove={(e) => {
-        if (!drag.current) return;
-        const dx = e.clientX - drag.current.x;
-        const dy = e.clientY - drag.current.y;
-        drag.current = { x: e.clientX, y: e.clientY };
-        setCam((c) => ({
-          ...c,
-          yaw: c.yaw + dx * 0.01,
-          pitch: Math.max(-1.4, Math.min(1.4, c.pitch + dy * 0.01)),
-        }));
-      }}
-      onPointerUp={() => (drag.current = null)}
-      onPointerLeave={() => (drag.current = null)}
-      onWheel={(e) => {
-        // Internal scroll for zoom
-        setCam((c) => ({ ...c, zoom: Math.max(0.3, Math.min(3, c.zoom - e.deltaY * 0.001)) }));
-      }}
-    />
+    <div className="relative h-full w-full">
+      <canvas
+        ref={canvasRef}
+        className="h-full w-full cursor-grab touch-none active:cursor-grabbing"
+        onPointerDown={(e) => {
+          drag.current = { x: e.clientX, y: e.clientY };
+          (e.target as Element).setPointerCapture?.(e.pointerId);
+        }}
+        onPointerMove={(e) => {
+          if (!drag.current) return;
+          const dx = e.clientX - drag.current.x;
+          const dy = e.clientY - drag.current.y;
+          drag.current = { x: e.clientX, y: e.clientY };
+          setCam((c) => ({
+            ...c,
+            yaw: c.yaw + dx * 0.01,
+            pitch: Math.max(-1.4, Math.min(1.4, c.pitch + dy * 0.01)),
+          }));
+        }}
+        onPointerUp={() => (drag.current = null)}
+        onPointerLeave={() => (drag.current = null)}
+        onWheel={(e) => {
+          // Internal scroll for zoom
+          setCam((c) => ({ ...c, zoom: Math.max(0.3, Math.min(3, c.zoom - e.deltaY * 0.001)) }));
+          e.preventDefault();
+        }}
+      />
+      <div className="absolute bottom-4 right-4 flex gap-2">
+        <GhostButton onClick={() => setCam({ yaw: -0.9, pitch: 0.5, zoom: 1.2 })}>
+          Reset View
+        </GhostButton>
+      </div>
+      <div className="absolute top-4 right-4 rounded-lg bg-card/80 p-2 text-[10px] font-bold shadow-sm backdrop-blur-sm">
+        <div className="text-muted-foreground uppercase tracking-widest mb-1">End Effector</div>
+        <div className="text-foreground">
+          X: {originOf(frames[frames.length - 1] as Mat4).x.toFixed(1)}<br/>
+          Y: {originOf(frames[frames.length - 1] as Mat4).y.toFixed(1)}<br/>
+          Z: {originOf(frames[frames.length - 1] as Mat4).z.toFixed(1)}
+        </div>
+      </div>
+    </div>
   );
 }
+
