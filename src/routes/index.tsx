@@ -600,7 +600,7 @@ function KinematicsLab() {
         </section>
 
         {/* ---------- Right: readouts + tools ---------- */}
-        <aside className="space-y-4">
+        <aside className="flex h-full flex-col gap-4 overflow-hidden">
           <div className="grid grid-cols-2 gap-3">
             <Stat label="End X" value={(mode === "DH" ? dhEnd.x : end.x).toFixed(1)} />
             <Stat label="End Y" value={(mode === "DH" ? dhEnd.y : end.y).toFixed(1)} />
@@ -608,7 +608,7 @@ function KinematicsLab() {
             <Stat label="Error" value={(mode === "IK" ? ik.error : 0).toFixed(1)} />
           </div>
 
-          <div className="lab-card flex flex-col h-[600px] overflow-hidden">
+          <div className="lab-card flex flex-1 flex-col overflow-hidden">
             <div className="border-b border-border px-3 py-3">
               <SegButton
                 options={TABS.map((t) => ({ value: t.value, label: t.label }))}
