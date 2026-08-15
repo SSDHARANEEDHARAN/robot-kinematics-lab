@@ -737,7 +737,7 @@ function KinematicsLab() {
                     
                     <Section title="Joint Limits" collapsible defaultOpen={false}>
                       <div className="flex flex-col gap-4">
-                        {[0, 1, 2, 3].slice(0, linkCount).map(i => (
+                        {[0, 1, 2, 3, 4, 5].slice(0, linkCount).map(i => (
                           <div key={i} className="space-y-2">
                             <div className="text-[10px] font-bold uppercase text-muted-foreground">Joint J{i+1} Limits</div>
                             <SliderRow 
