@@ -84,6 +84,6 @@ export const LESSONS: Lesson[] = [
       s.mode === "IK" && 
       Math.abs(s.target.x - 120) < 5 && 
       Math.abs(s.target.y - 80) < 5 &&
-      Math.abs(s.lengths[0] - 120) < 5,
+      Math.abs((s.lengths[0] ?? 0) - 120) < 5,
   },
 ];
