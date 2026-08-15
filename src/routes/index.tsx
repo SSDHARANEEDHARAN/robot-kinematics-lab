@@ -108,6 +108,7 @@ function KinematicsLab() {
   const [showGhost, setShowGhost] = useState(true);
   const [shareMsg, setShareMsg] = useState("");
   const [lessonId, setLessonId] = useState(LESSONS[0]!.id);
+  const [activeWalkthroughStep, setActiveWalkthroughStep] = useState(0);
   const [completed, setCompleted] = useState<Record<string, boolean>>({});
   const [showWorkspace, setShowWorkspace] = useState(false);
   const [showVelocity, setShowVelocity] = useState(false);
@@ -592,6 +593,7 @@ function KinematicsLab() {
                     workspace={workspace}
                     velocity={velocity}
                     unit={unit}
+                    activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
                   />
                 </div>
               </div>
@@ -649,7 +651,14 @@ function KinematicsLab() {
               {tab === "walkthrough" && (
                 <div className="h-[500px]">
                   {mode === "IK" ? (
-                    <IKWalkthrough target={target} lengths={activeLengths} angles={ik.angles} unit={unit} />
+                    <IKWalkthrough 
+                      target={target} 
+                      lengths={activeLengths} 
+                      angles={ik.angles} 
+                      unit={unit} 
+                      elbowUp={elbowUp}
+                      onStepSelect={setActiveWalkthroughStep}
+                    />
                   ) : (
                     <div className="flex h-full items-center justify-center text-center p-6 text-muted-foreground text-xs uppercase tracking-widest font-bold">
                       Switch to IK mode for step-by-step walkthrough
