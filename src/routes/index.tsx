@@ -190,9 +190,12 @@ function KinematicsLab() {
     if (!showVelocity || mode === "DH") return undefined;
     // Example: unit joint velocities [1, 1]
     const J = jacobian;
+    const j0 = J[0];
+    const j1 = J[1];
+    if (!j0 || !j1) return undefined;
     return {
-      x: J[0][0] + J[0][1],
-      y: J[1][0] + J[1][1],
+      x: (j0[0] ?? 0) + (j0[1] ?? 0),
+      y: (j1[0] ?? 0) + (j1[1] ?? 0),
     };
   }, [jacobian, showVelocity, mode]);
 
@@ -549,6 +552,40 @@ function KinematicsLab() {
                 </Section>
               )}
 
+              <Section title="Experiment Tools">
+                <div className="space-y-3">
+                  <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <input
+                      type="checkbox"
+                      checked={showWorkspace}
+                      onChange={(e) => setShowWorkspace(e.target.checked)}
+                      className="h-4 w-4 accent-[var(--color-primary)]"
+                    />
+                    Workspace Sweep
+                  </label>
+                  <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <input
+                      type="checkbox"
+                      checked={showVelocity}
+                      onChange={(e) => setShowVelocity(e.target.checked)}
+                      className="h-4 w-4 accent-[var(--color-primary)]"
+                    />
+                    Velocity Vectors
+                  </label>
+                </div>
+              </Section>
+
+              {isSingular && (
+                <div className="mx-5 my-2 animate-pulse rounded-lg bg-link-2/10 p-3 text-center border border-link-2/30">
+                  <div className="flex items-center justify-center gap-2 text-link-2 font-bold text-xs uppercase tracking-widest">
+                    <span>⚠ Singularity Warning</span>
+                  </div>
+                  <p className="mt-1 text-[10px] text-link-2/80 font-medium">
+                    Manipulability low. Robot is losing degrees of freedom.
+                  </p>
+                </div>
+              )}
+
               <Section title="Presets">
                 <div className="grid grid-cols-2 gap-2">
                   <GhostButton
@@ -658,6 +695,8 @@ function KinematicsLab() {
                 ghostPoints={mode === "IK" && showGhost ? ghostPoints : undefined}
                 trace={showTrace ? trace : undefined}
                 path={waypoints.map((w) => w.target)}
+                workspace={workspace}
+                velocity={velocity}
                 onPathPoint={
                   pathMode && !playing
                     ? (p) =>
@@ -708,8 +747,73 @@ function KinematicsLab() {
                 {waypoints.length} point{waypoints.length === 1 ? "" : "s"} · MOVJ curves, MOVL runs
                 straight
               </span>
-            </div>
-          )}
+                </div>
+              )}
+
+              {tab === "ai" && (
+                <div className="h-[400px]">
+                  <AIPanel
+                    state={{
+                      mode,
+                      target,
+                      lengths: activeLengths,
+                      angles: planarAngles,
+                      reachable: ik.reachable,
+                      ikError: ik.error,
+                    }}
+                  />
+                </div>
+              )}
+
+              {tab === "progress" && (
+                <div className="space-y-6">
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-extrabold uppercase tracking-widest text-brand">
+                      Robotics Skill Level
+                    </h4>
+                    <div className="space-y-3">
+                      {[
+                        { label: "FK", value: 80, color: "bg-link-1" },
+                        { label: "IK", value: 60, color: "bg-link-2" },
+                        { label: "DH", value: 40, color: "bg-link-3" },
+                        { label: "Teaching", value: 50, color: "bg-brand" },
+                      ].map((s) => (
+                        <div key={s.label} className="space-y-1">
+                          <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider">
+                            <span>{s.label}</span>
+                            <span>{s.value}%</span>
+                          </div>
+                          <div className="h-2 w-full rounded-full bg-secondary overflow-hidden">
+                            <div
+                              className={`h-full ${s.color} transition-all duration-1000`}
+                              style={{ width: `${s.value}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Card title="Activity Log">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="h-2 w-2 rounded-full bg-link-3" />
+                        <div className="flex-1">
+                          <p className="text-xs font-bold">Lesson 1 Completed</p>
+                          <p className="text-[10px] text-muted-foreground">2 minutes ago</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="h-2 w-2 rounded-full bg-link-2" />
+                        <div className="flex-1">
+                          <p className="text-xs font-bold">Quiz Score: 93%</p>
+                          <p className="text-[10px] text-muted-foreground">1 hour ago</p>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
+              )}
         </section>
 
         {/* ---------- Right: readouts + tools ---------- */}
