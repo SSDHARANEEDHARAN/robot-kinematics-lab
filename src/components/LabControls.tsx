@@ -1,5 +1,11 @@
 import { useState, type ReactNode } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function Section({ 
   title, 
@@ -122,6 +128,7 @@ export function SliderRow({
   max,
   onChange,
   ariaLabel,
+  tooltip,
 }: {
   label: string;
   value: number;
@@ -129,8 +136,9 @@ export function SliderRow({
   max: number;
   onChange: (v: number) => void;
   ariaLabel?: string;
+  tooltip?: string;
 }) {
-  return (
+  const input = (
     <div className="flex items-center gap-3">
       <span className="w-14 shrink-0 text-xs font-bold text-muted-foreground uppercase tracking-wider" id={`slider-label-${label}`}>
         {label}
@@ -154,10 +162,25 @@ export function SliderRow({
       />
     </div>
   );
+
+  if (!tooltip) return input;
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>{input}</div>
+        </TooltipTrigger>
+        <TooltipContent side="right">
+          <p>{tooltip}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
 }
 
-export function GhostButton({ children, onClick }: { children: ReactNode; onClick: () => void }) {
-  return (
+export function GhostButton({ children, onClick, tooltip }: { children: ReactNode; onClick: () => void; tooltip?: string }) {
+  const button = (
     <button
       type="button"
       onClick={onClick}
@@ -165,6 +188,21 @@ export function GhostButton({ children, onClick }: { children: ReactNode; onClic
     >
       <span className="relative z-10">{children}</span>
     </button>
+  );
+
+  if (!tooltip) return button;
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          {button}
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{tooltip}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 
