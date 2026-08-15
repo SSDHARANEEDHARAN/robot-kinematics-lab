@@ -173,9 +173,9 @@ export function Card({ title, children }: { title?: string; children: ReactNode 
 export function Badge({ children, variant = "default" }: { children: ReactNode; variant?: "default" | "success" | "warning" | "danger" }) {
   const styles = {
     default: "bg-foreground text-background",
-    success: "border border-foreground text-foreground",
-    warning: "bg-foreground text-background",
-    danger: "bg-foreground text-background animate-pulse",
+    success: "border-2 border-foreground bg-background text-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]",
+    warning: "bg-foreground text-background border-2 border-foreground",
+    danger: "bg-foreground text-background border-2 border-foreground animate-pulse",
   };
   return (
     <span className={`px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${styles[variant]}`}>
