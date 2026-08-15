@@ -747,6 +747,63 @@ function KinematicsLab() {
                 {waypoints.length} point{waypoints.length === 1 ? "" : "s"} · MOVJ curves, MOVL runs
                 straight
               </span>
+            </div>
+          )}
+        </section>
+
+        {/* ---------- Right: readouts + tools ---------- */}
+        <aside className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <Stat label="End X" value={(mode === "DH" ? dhEnd.x : end.x).toFixed(1)} />
+            <Stat label="End Y" value={(mode === "DH" ? dhEnd.y : end.y).toFixed(1)} />
+            {mode === "DH" && <Stat label="End Z" value={dhEnd.z.toFixed(1)} />}
+            <Stat label="Error" value={(mode === "IK" ? ik.error : 0).toFixed(1)} />
+            <Stat
+              label="Reach"
+              value={
+                mode === "DH" ? `0-${dhReach}` : `${Math.round(minReach)}-${Math.round(maxReach)}`
+              }
+            />
+          </div>
+
+          <div className="lab-card overflow-hidden">
+            <div className="border-b border-border px-3 py-3">
+              <SegButton
+                options={TABS.map((t) => ({ value: t.value, label: t.label }))}
+                value={tab}
+                onChange={(v) => setTab(v as Tab)}
+              />
+            </div>
+            <div className="px-4 py-4">
+              {tab === "math" && (
+                <div className="space-y-3">
+                  <h3 className="text-base font-extrabold text-foreground">
+                    {mode === "IK"
+                      ? "IK solve, step by step"
+                      : mode === "FK"
+                        ? "FK equations, live"
+                        : "DH matrix chain"}
+                  </h3>
+                  {mode === "FK" && (
+                    <FKFormula
+                      lengths={activeLengths}
+                      angles={planarAngles}
+                      unit={unit}
+                      end={end}
+                    />
+                  )}
+                  {mode === "IK" && (
+                    <IKFormula
+                      lengths={activeLengths}
+                      target={target}
+                      angles={ik.angles}
+                      unit={unit}
+                      reachable={ik.reachable}
+                    />
+                  )}
+                  {mode === "DH" && (
+                    <DHFormula frames={frames} step={dhStep} onStep={setDhStep} />
+                  )}
                 </div>
               )}
 
