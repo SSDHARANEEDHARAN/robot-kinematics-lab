@@ -90,7 +90,7 @@ export function ArmView2D({
       <g transform="scale(1,-1)">
         {/* workspace sweep */}
         {workspace && workspace.length > 0 && (
-          <g opacity={0.15}>
+          <g opacity={0.3}>
             {workspace.map((p, i) => (
               <circle key={i} cx={r1(p.x)} cy={r1(p.y)} r={3} className="fill-brand" />
             ))}
