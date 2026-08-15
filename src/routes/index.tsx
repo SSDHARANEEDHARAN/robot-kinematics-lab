@@ -409,7 +409,7 @@ function KinematicsLab() {
             <div className="w-full rounded-xl border border-border bg-card/50 px-4 py-3 text-xs font-black uppercase tracking-widest text-primary">
               Robot Settings
             </div>
-            <div className="mt-2 w-full max-h-[60vh] overflow-y-auto rounded-xl border border-border bg-card shadow-lg scrollbar-hide">
+            <div className="mt-2 w-full max-h-[75vh] overflow-y-auto rounded-xl border border-border bg-card shadow-lg scrollbar-hide">
               <div className="lab-card border-none shadow-none">
                 <Section title="Mode">
                   <SegButton
@@ -615,7 +615,7 @@ function KinematicsLab() {
                 onChange={(v) => setTab(v as Tab)}
               />
             </div>
-            <div className="px-4 py-4 max-h-[500px] overflow-y-auto scrollbar-hide">
+            <div className="px-4 py-4 max-h-[600px] overflow-y-auto scrollbar-hide">
               {tab === "math" && (
                 <div className="space-y-3">
                    {mode === "FK" && <FKFormula lengths={activeLengths} angles={planarAngles} unit={unit} end={end} />}
