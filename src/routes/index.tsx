@@ -669,6 +669,48 @@ function KinematicsLab() {
                         <GhostButton onClick={() => setAngles([0,0,0])}>Reset</GhostButton>
                       </div>
                     </Section>
+
+                    <Section title="Display Settings" collapsible>
+                      <div className="flex flex-col gap-3">
+                        <label className="flex items-center gap-2">
+                          <input type="checkbox" checked={showAxes} onChange={e => setShowAxes(e.target.checked)} />
+                          <span className="text-xs">Show Joint Axes</span>
+                        </label>
+                        <label className="flex items-center gap-2">
+                          <input type="checkbox" checked={showHeatmap} onChange={e => setShowHeatmap(e.target.checked)} />
+                          <span className="text-xs">Show Reach Heatmap</span>
+                        </label>
+                        <GhostButton onClick={() => exportPresetReport(preset, { error: ik.error, reachable: ik.reachable })}>
+                          Export PDF Report
+                        </GhostButton>
+                      </div>
+                    </Section>
+
+                    <Section title="Joint Limits" collapsible>
+                      <div className="flex flex-col gap-4">
+                        {[0, 1, 2].slice(0, linkCount).map(i => (
+                          <div key={i} className="space-y-2">
+                            <div className="text-[10px] font-bold uppercase text-muted-foreground">Joint J{i+1} Limits</div>
+                            <SliderRow 
+                              label="Min" 
+                              min={-180} max={0} 
+                              value={jointLimits[i]?.min ?? -180} 
+                              onChange={v => setJointLimits(prev => prev.map((l, k) => k === i ? { ...l, min: v } : l))} 
+                            />
+                            <SliderRow 
+                              label="Max" 
+                              min={0} max={180} 
+                              value={jointLimits[i]?.max ?? 180} 
+                              onChange={v => setJointLimits(prev => prev.map((l, k) => k === i ? { ...l, max: v } : l))} 
+                            />
+                            {isLimitViolated(planarAngles[i] ?? 0, jointLimits[i]!) && (
+                              <div className="text-[9px] font-bold text-destructive animate-pulse uppercase">Limit Violated!</div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </Section>
+
                   </>
                 )}
               </div>
