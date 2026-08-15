@@ -17,18 +17,18 @@ export function Section({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="border-b-2 border-foreground last:border-b-0">
+    <div className="border-b border-border/50 last:border-b-0 transition-colors hover:bg-muted/10">
       <div 
-        className={`flex items-center justify-between px-5 py-4 ${collapsible ? 'cursor-pointer hover:bg-muted/30' : ''}`}
+        className={`flex items-center justify-between px-5 py-3 ${collapsible ? 'cursor-pointer' : ''}`}
         onClick={() => collapsible && setIsOpen(!isOpen)}
       >
         <div className="flex items-center gap-2">
           {collapsible && (
-            <span className="text-muted-foreground">
-              {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+            <span className="text-muted-foreground transition-transform duration-200">
+              {isOpen ? <ChevronDown size={14} className="rotate-0" /> : <ChevronRight size={14} className="-rotate-90" />}
             </span>
           )}
-          <h3 className="lab-label">{title}</h3>
+          <h3 className="lab-label text-[10px] text-foreground/70">{title}</h3>
         </div>
         {aside ? <span className="text-xs font-medium text-muted-foreground">{aside}</span> : null}
       </div>
