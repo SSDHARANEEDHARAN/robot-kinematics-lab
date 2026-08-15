@@ -80,7 +80,7 @@
   --accent-foreground: #ffffff;
   --destructive: #000000;
   --destructive-foreground: #ffffff;
-  --border: transparent;
+  --border: rgba(0, 0, 0, 0.05);
   --input: #f4f4f5;
   --ring: #000000;
   --brand: #000000;
@@ -124,7 +124,7 @@
   --accent-foreground: #000000;
   --destructive: #ffffff;
   --destructive-foreground: #000000;
-  --border: transparent;
+  --border: rgba(255, 255, 255, 0.05);
   --input: #18181b;
   --ring: #ffffff;
   --brand: #ffffff;
@@ -170,26 +170,24 @@
   transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--border);
 }
 
 .dark @utility glass-card {
-  border: 1px solid rgba(255, 255, 255, 0.03);
   box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.5);
 }
 
 @utility lab-card {
   @apply glass-card;
-  border: none;
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08);
+    transform: translateY(-6px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
   }
 }
 
 .dark @utility lab-card {
   &:hover {
-    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
   }
 }
 
