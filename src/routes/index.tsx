@@ -399,14 +399,14 @@ function KinematicsLab() {
         </div>
       </header>
 
-      <div className="grid gap-5 xl:grid-cols-[280px_minmax(0,1fr)_340px]">
+      <div className="grid gap-5 xl:grid-cols-[280px_minmax(0,1fr)_340px] xl:h-[750px]">
         {/* ---------- Left: popups ---------- */}
-        <aside className="space-y-3">
-          <div className="relative">
+        <aside className="flex h-full flex-col gap-3 overflow-hidden">
+          <div className="flex flex-1 flex-col overflow-hidden">
             <div className="w-full rounded-xl border border-border bg-card/50 px-4 py-3 text-xs font-black uppercase tracking-widest text-primary">
               Robot Settings
             </div>
-            <div className="mt-2 w-full max-h-[75vh] overflow-y-auto rounded-xl border border-border bg-card shadow-lg scrollbar-hide">
+            <div className="mt-2 flex-1 overflow-y-auto rounded-xl border border-border bg-card shadow-lg scrollbar-hide">
               <div className="lab-card border-none shadow-none">
                 <Section title="Mode">
                   <SegButton
