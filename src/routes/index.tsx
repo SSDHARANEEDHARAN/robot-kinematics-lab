@@ -1031,12 +1031,15 @@ function KinematicsLab() {
                 <QuizPanel lengths={activeLengths} angles={planarAngles} onSetTarget={(t) => { setMode("IK"); setTarget(t); }} />
               </Section>
 
-              <Section title="Interactive Learning" collapsible defaultOpen={true}>
-                <LessonPanel state={lessonState} activeId={lessonId} onSelect={selectLesson} completed={completed} />
+              <Section title="Interactive Learning" collapsible defaultOpen={false}>
+                <div className="min-h-[400px]">
+                  <LessonPanel state={lessonState} activeId={lessonId} onSelect={selectLesson} completed={completed} />
+                </div>
               </Section>
 
               <Section title="AI Tutor" collapsible defaultOpen={false}>
                 <AIPanel state={{ mode, target, lengths: activeLengths, angles: planarAngles, reachable: ik.reachable, ikError: ik.error }} />
+              </Section>
               </Section>
 
               <Section title="Industrial Progress" collapsible defaultOpen={false}>
