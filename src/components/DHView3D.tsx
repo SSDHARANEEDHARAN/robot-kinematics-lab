@@ -96,12 +96,11 @@ export function DHView3D({ frames, activeStep }: Props) {
         drawArrow(p, px, "#FF0000"); // X - Red
         drawArrow(p, pz, "#0000FF"); // Z - Blue
       } else {
-        // Just lines for internal axes to keep it clean
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = "#FF0000"; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(px.x, px.y); ctx.stroke();
-        ctx.strokeStyle = "#00FF00"; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(py.x, py.y); ctx.stroke();
-        ctx.strokeStyle = "#0000FF"; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(pz.x, pz.y); ctx.stroke();
+        drawArrow(p, px, "#E51400"); // X - Red arrow
+        drawArrow(p, py, "#1DB954"); // Y - Green arrow
+        drawArrow(p, pz, "#1436D6"); // Z - Blue arrow
       }
+
     };
 
     // Realistic Floor/Base Grid - matching the reference
@@ -125,58 +124,121 @@ export function DHView3D({ frames, activeStep }: Props) {
       const b = originOf(frames[i + 1] as Mat4);
       const pa = project(a);
       const pb = project(b);
-      
-      // Fixed link color from reference: dark navy/black
-      const color = "#1A252F"; 
+
       const isHighlighted = activeStep !== undefined && i < activeStep;
-      
-      // Joint Housing (Transparent Cylinder-like) - matching user-uploads://file-6
-      const r = (12 - i * 1);
-      
-      // Draw joint housing (cylinder effect)
-      ctx.fillStyle = "rgba(189, 195, 199, 0.4)"; // Semitransparent grey
-      ctx.strokeStyle = "rgba(0,0,0,0.3)";
-      ctx.lineWidth = 1;
+      const r = 13 - i * 1.2;
 
-      // Bottom circle
-      ctx.beginPath();
-      ctx.arc(pa.x, pa.y + 4, r + 2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
+      // --- Link body: glossy orange rod with cylindrical shading ---
+      const ang = Math.atan2(pb.y - pa.y, pb.x - pa.x);
+      const nx = Math.cos(ang + Math.PI / 2);
+      const ny = Math.sin(ang + Math.PI / 2);
+      const lw = r * 2;
+      const grad = ctx.createLinearGradient(
+        pa.x + nx * lw * 0.5, pa.y + ny * lw * 0.5,
+        pa.x - nx * lw * 0.5, pa.y - ny * lw * 0.5,
+      );
+      grad.addColorStop(0, "#8a3505");
+      grad.addColorStop(0.28, "#e4620d");
+      grad.addColorStop(0.48, "#ff9a3c");
+      grad.addColorStop(0.62, "#ffd7ac");
+      grad.addColorStop(0.85, "#e0650f");
+      grad.addColorStop(1, "#a03e06");
 
-      // Top circle (offset slightly to give 3D cylinder feel)
-      ctx.beginPath();
-      ctx.arc(pa.x, pa.y - 4, r + 2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-
-      // Connecting lines for cylinder sides
-      ctx.beginPath();
-      ctx.moveTo(pa.x - (r + 2), pa.y - 4);
-      ctx.lineTo(pa.x - (r + 2), pa.y + 4);
-      ctx.moveTo(pa.x + (r + 2), pa.y - 4);
-      ctx.lineTo(pa.x + (r + 2), pa.y + 4);
-      ctx.stroke();
-
-      // Link Body
-      ctx.strokeStyle = color;
-      ctx.lineWidth = r * 1.8; // Slightly thicker
-      ctx.lineCap = "butt"; // Flat ends to fit inside joint housing
+      ctx.save();
+      ctx.shadowColor = "rgba(0,0,0,0.28)";
+      ctx.shadowBlur = 12;
+      ctx.shadowOffsetY = 5;
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = lw;
+      ctx.lineCap = "butt";
       ctx.beginPath();
       ctx.moveTo(pa.x, pa.y);
       ctx.lineTo(pb.x, pb.y);
       ctx.stroke();
-      
-      // Link Highlight
-      ctx.strokeStyle = "rgba(255,255,255,0.2)";
-      ctx.lineWidth = r * 0.5;
+      ctx.restore();
+
+      // specular streak along the rod
+      ctx.save();
+      ctx.globalAlpha = 0.5;
+      ctx.strokeStyle = "#fff6ea";
+      ctx.lineWidth = Math.max(1.5, r * 0.28);
       ctx.beginPath();
-      ctx.moveTo(pa.x, pa.y);
-      ctx.lineTo(pb.x, pb.y);
+      ctx.moveTo(pa.x + nx * r * 0.45, pa.y + ny * r * 0.45);
+      ctx.lineTo(pb.x + nx * r * 0.45, pb.y + ny * r * 0.45);
       ctx.stroke();
+      ctx.restore();
+
+      // --- Joint: frosted gray cylindrical housing over the rod ---
+      const hw = r * 2.5;   // housing half-length along the link axis
+      const hr = r * 1.55;  // housing radius
+      const dx = Math.cos(ang);
+      const dy = Math.sin(ang);
+      const c1 = { x: pa.x - dx * hw * 0.35, y: pa.y - dy * hw * 0.35 };
+      const c2 = { x: pa.x + dx * hw * 0.75, y: pa.y + dy * hw * 0.75 };
+
+      const hGrad = ctx.createLinearGradient(
+        pa.x + nx * hr, pa.y + ny * hr,
+        pa.x - nx * hr, pa.y - ny * hr,
+      );
+      hGrad.addColorStop(0, "rgba(120,126,132,0.92)");
+      hGrad.addColorStop(0.3, "rgba(196,201,206,0.92)");
+      hGrad.addColorStop(0.5, "rgba(240,242,245,0.92)");
+      hGrad.addColorStop(0.75, "rgba(186,191,197,0.92)");
+      hGrad.addColorStop(1, "rgba(128,134,140,0.92)");
+
+      ctx.save();
+      ctx.shadowColor = "rgba(0,0,0,0.22)";
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetY = 4;
+      ctx.strokeStyle = hGrad;
+      ctx.lineWidth = hr * 2;
+      ctx.lineCap = "butt";
+      ctx.beginPath();
+      ctx.moveTo(c1.x, c1.y);
+      ctx.lineTo(c2.x, c2.y);
+      ctx.stroke();
+      ctx.restore();
+
+      // housing end caps (elliptical rims)
+      const capRim = (cx: number, cyy: number) => {
+        ctx.save();
+        ctx.translate(cx, cyy);
+        ctx.rotate(ang);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, hr * 0.32, hr, 0, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(226,230,234,0.75)";
+        ctx.fill();
+        ctx.strokeStyle = "rgba(90,96,102,0.5)";
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+        ctx.restore();
+      };
+      capRim(c1.x, c1.y);
+      capRim(c2.x, c2.y);
+
+      // frosted highlight band
+      ctx.save();
+      ctx.globalAlpha = 0.55;
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = hr * 0.35;
+      ctx.beginPath();
+      ctx.moveTo(c1.x + nx * hr * 0.5, c1.y + ny * hr * 0.5);
+      ctx.lineTo(c2.x + nx * hr * 0.5, c2.y + ny * hr * 0.5);
+      ctx.stroke();
+      ctx.restore();
+
+      if (isHighlighted) {
+        ctx.save();
+        ctx.strokeStyle = "rgba(20,20,20,0.85)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(pa.x, pa.y, hr + 4, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
 
       // Frame axes at each joint
-      drawAxes(a, frames[i] as Mat4, 25);
+      drawAxes(a, frames[i] as Mat4, 34);
     }
 
     // End Effector (Blue Sphere in reference)
@@ -189,6 +251,7 @@ export function DHView3D({ frames, activeStep }: Props) {
     ctx.strokeStyle = "rgba(0,0,0,0.3)";
     ctx.stroke();
     drawAxes(eePos, frames[frames.length - 1] as Mat4, 35);
+
 
   }, [frames, cam, activeStep]);
 
