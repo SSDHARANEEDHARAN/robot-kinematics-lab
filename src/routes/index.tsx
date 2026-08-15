@@ -450,7 +450,7 @@ function KinematicsLab() {
           };
 
   return (
-    <main className="min-h-screen px-4 pb-16 pt-6 md:px-8 max-w-[1920px] mx-auto">
+    <main className="min-h-screen px-4 pb-16 pt-6 md:px-8 max-w-[1920px] mx-auto select-none">
       <header className="mb-5 flex flex-wrap items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
@@ -647,37 +647,39 @@ function KinematicsLab() {
           </div>
           <div className="relative flex-1 overflow-hidden border-t border-border bg-panel">
              {/* Realistic fixed simulation area */}
-            {mode === "DH" ? (
-              <div className="flex h-full w-full">
-                <div className="flex-1">
-                  <DHView3D 
-                    frames={frames} 
-                    activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
-                  />
+            <div className="relative h-full w-full">
+              <DHView3D 
+                mode={mode}
+                frames={frames}
+                planarPoints={points}
+                linkCount={linkCount}
+                activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
+              />
+              
+              {mode !== "DH" && (
+                <div className="absolute inset-0 pointer-events-none">
+                  {/* Invisible interactive layer for target dragging */}
+                  <div className="absolute inset-0 pointer-events-auto">
+                    <ArmView2D
+                      points={points}
+                      lengths={activeLengths}
+                      showZone={showZone}
+                      target={mode === "IK" ? target : null}
+                      onTargetChange={mode === "IK" && !pathMode && !playing ? setTarget : undefined}
+                      ghostPoints={mode === "IK" && showGhost ? ghostPoints : undefined}
+                      trace={showTrace ? trace : undefined}
+                      path={waypoints.map((w) => w.target)}
+                      workspace={workspace}
+                      velocity={velocity}
+                      unit={unit}
+                      activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
+                      limits={[{ min: -150, max: 150 }, { min: -150, max: 150 }, { min: -180, max: 180 }]}
+                      angles={planarAngles}
+                    />
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <div className="flex h-full w-full">
-                <div className="flex-1">
-                  <ArmView2D
-                    points={points}
-                    lengths={activeLengths}
-                    showZone={showZone}
-                    target={mode === "IK" ? target : null}
-                    onTargetChange={mode === "IK" && !pathMode && !playing ? setTarget : undefined}
-                    ghostPoints={mode === "IK" && showGhost ? ghostPoints : undefined}
-                    trace={showTrace ? trace : undefined}
-                    path={waypoints.map((w) => w.target)}
-                    workspace={workspace}
-                    velocity={velocity}
-                    unit={unit}
-                    activeStep={tab === "walkthrough" ? activeWalkthroughStep : undefined}
-                    limits={[{ min: -150, max: 150 }, { min: -150, max: 150 }, { min: -180, max: 180 }]}
-                    angles={planarAngles}
-                  />
-                </div>
-              </div>
-            )}
+              )}
+            </div>
 
           </div>
         </section>

@@ -1,10 +1,14 @@
-import { useEffect, useRef, useState } from "react";
-import { axisOf, originOf, type Mat4, type Vec3, deg2rad } from "@/lib/kinematics";
+import { useEffect, useRef, useState, useMemo } from "react";
+import { axisOf, originOf, type Mat4, type Vec3, deg2rad, type Vec2, fk2d } from "@/lib/kinematics";
 import { GhostButton } from "./LabControls";
 
 type Props = { 
-  frames: Mat4[];
+  frames?: Mat4[];
   activeStep?: number | undefined;
+  // Planar support
+  mode?: string;
+  planarPoints?: Vec2[];
+  linkCount?: number;
 };
 
 // Colors based on the uploaded reference image
@@ -17,10 +21,25 @@ const LINK_COLORS = [
   "#2ECC71", // Green (if needed)
 ];
 
-export function DHView3D({ frames, activeStep }: Props) {
+export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = [], linkCount = 2 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [cam, setCam] = useState({ yaw: -0.9, pitch: 0.5, zoom: 1.2 });
+  const [baseScale, setBaseScale] = useState(1);
   const drag = useRef<{ x: number; y: number } | null>(null);
+
+  // Convert 2D points to 3D frames for consistent rendering if in IK/FK mode
+  const effectiveFrames = useMemo(() => {
+    if (mode === "DH") return frames;
+    
+    // Create Mat4 frames from 2D points
+    // In planar mode, J1 is at (0,0), J2 is at planarPoints[1], etc.
+    // We treat 2D (x,y) as 3D (x,z) to make the robot stand up
+    return planarPoints.map((p, i) => {
+      // Rotation matrix for planar arm standing on XZ plane
+      // Identity for now as we're just mapping coordinates
+      return [1, 0, 0, p.x, 0, 1, 0, 0, 0, 0, 1, p.y, 0, 0, 0, 1];
+    });
+  }, [mode, frames, planarPoints]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -43,10 +62,15 @@ export function DHView3D({ frames, activeStep }: Props) {
     const sp = Math.sin(cam.pitch);
     
     // Base scale adjusted by viewport size and user zoom
-    const baseScale = Math.min(w, h) / 480;
-    const scale = baseScale * cam.zoom;
+    const currentBaseScale = Math.min(w, h) / 480;
+    // We update state inside useEffect, but we need the local value for this render cycle's drawing
+    const drawScale = currentBaseScale * cam.zoom;
+    
+    if (baseScale !== currentBaseScale) {
+       setBaseScale(currentBaseScale);
+    }
 
-    const j1Pos = originOf(frames[0] as Mat4);
+    const j1Pos = effectiveFrames.length > 0 ? originOf(effectiveFrames[0] as Mat4) : { x: 0, y: 0, z: 0 };
     const ctr = { x: j1Pos.x, y: j1Pos.y, z: j1Pos.z };
 
     const project = (p0: Vec3) => {
@@ -59,8 +83,8 @@ export function DHView3D({ frames, activeStep }: Props) {
       const depth = 1200;
       const persp = depth / (depth + y2 * 0.8);
       return {
-        x: w / 2 + x1 * scale * persp,
-        y: h / 2 + 120 - z2 * scale * persp,
+        x: w / 2 + x1 * drawScale * persp,
+        y: h / 2 + 120 - z2 * drawScale * persp,
         z2: z2, // for sorting if needed
         y2: y2
       };
@@ -68,7 +92,7 @@ export function DHView3D({ frames, activeStep }: Props) {
 
     const drawAxes = (pos: Vec3, frame: Mat4, size = 30, isBase = false) => {
       const p = project(pos);
-      const axisSize = size * baseScale;
+      const axisSize = size * currentBaseScale;
       const xAxis = axisOf(frame, 0);
       const yAxis = axisOf(frame, 1);
       const zAxis = axisOf(frame, 2);
@@ -123,14 +147,14 @@ export function DHView3D({ frames, activeStep }: Props) {
     drawAxes({x: 0, y: 0, z: 0}, [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1], 60, true);
 
     // Links and Joints
-    for (let i = 0; i < frames.length - 1; i++) {
-      const a = originOf(frames[i] as Mat4);
-      const b = originOf(frames[i + 1] as Mat4);
+    for (let i = 0; i < effectiveFrames.length - 1; i++) {
+      const a = originOf(effectiveFrames[i] as Mat4);
+      const b = originOf(effectiveFrames[i + 1] as Mat4);
       const pa = project(a);
       const pb = project(b);
 
       const isHighlighted = activeStep !== undefined && i < activeStep;
-      const r = (13 - i * 1.2) * baseScale;
+      const r = (13 - i * 1.2) * currentBaseScale;
 
       // --- Link body: glossy orange rod with cylindrical shading ---
       const ang = Math.atan2(pb.y - pa.y, pb.x - pa.x);
@@ -249,7 +273,7 @@ export function DHView3D({ frames, activeStep }: Props) {
     const eePos = originOf(frames[frames.length - 1] as Mat4);
     const pee = project(eePos);
     ctx.beginPath();
-    ctx.arc(pee.x, pee.y, 10 * baseScale, 0, Math.PI * 2);
+    ctx.arc(pee.x, pee.y, 10 * currentBaseScale, 0, Math.PI * 2);
     ctx.fillStyle = "#3498DB";
     ctx.fill();
     ctx.strokeStyle = "rgba(0,0,0,0.3)";
@@ -257,7 +281,7 @@ export function DHView3D({ frames, activeStep }: Props) {
     drawAxes(eePos, frames[frames.length - 1] as Mat4, 35);
 
 
-  }, [frames, cam, activeStep]);
+  }, [effectiveFrames, cam, activeStep]);
 
   return (
     <div className="relative h-full w-full">
@@ -294,9 +318,16 @@ export function DHView3D({ frames, activeStep }: Props) {
       <div className="absolute top-4 right-4 rounded-xl border border-border bg-card/80 p-3 text-[10px] font-bold shadow-xl backdrop-blur-md">
         <div className="text-primary uppercase tracking-[0.2em] mb-2 font-black">Industrial Kinematics</div>
         <div className="text-foreground/70 space-y-1">
-          <div>X: {originOf(frames[frames.length - 1] as Mat4).x.toFixed(1)}</div>
-          <div>Y: {originOf(frames[frames.length - 1] as Mat4).y.toFixed(1)}</div>
-          <div>Z: {originOf(frames[frames.length - 1] as Mat4).z.toFixed(1)}</div>
+          {effectiveFrames.length > 0 && (
+            <>
+              <div>X: {originOf(effectiveFrames[effectiveFrames.length - 1] as Mat4).x.toFixed(1)}</div>
+              <div>Y: {originOf(effectiveFrames[effectiveFrames.length - 1] as Mat4).y.toFixed(1)}</div>
+              <div>Z: {originOf(effectiveFrames[effectiveFrames.length - 1] as Mat4).z.toFixed(1)}</div>
+            </>
+          )}
+          <div className="mt-2 border-t border-border pt-1 text-[8px] opacity-60">
+            Scale: {baseScale.toFixed(3)}x | Zoom: {cam.zoom.toFixed(2)}x
+          </div>
         </div>
       </div>
     </div>
