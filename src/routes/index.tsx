@@ -374,8 +374,8 @@ function KinematicsLab() {
               PRESENT BY THARANEETHARAN SS
             </p>
           </div>
-          <h1 className="mt-1 text-4xl font-extrabold tracking-tight text-foreground md:text-5xl">
-            Robot Kinematics Virtual Lab
+          <h1 className="mt-1 text-2xl font-black tracking-tighter text-foreground uppercase opacity-80 md:text-3xl">
+            Virtual Lab Environment
           </h1>
           <div className="mt-2 group relative">
             <span className="cursor-help text-[10px] text-muted-foreground/40 hover:text-muted-foreground transition-colors">
