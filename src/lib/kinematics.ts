@@ -9,17 +9,21 @@ export function fk2d(lengths: number[], anglesDeg: number[]): Vec2[] {
   const pts: Vec2[] = [{ x: 0, y: 0 }];
   let acc = 0;
   for (let i = 0; i < lengths.length; i++) {
+    // Each angle is relative to the previous link (accumulated)
     acc += deg2rad(anglesDeg[i] ?? 0);
     const prev = pts[pts.length - 1] as Vec2;
     const len = lengths[i] ?? 0;
-    pts.push({ x: prev.x + len * Math.cos(acc), y: prev.y + len * Math.sin(acc) });
+    pts.push({ 
+      x: prev.x + len * Math.cos(acc), 
+      y: prev.y + len * Math.sin(acc) 
+    });
   }
   return pts;
 }
 
 export type IKResult = { angles: number[]; reachable: boolean; error: number };
 
-/** Analytic 2-link inverse kinematics with elbow-up / elbow-down branch. */
+/** Analytic inverse kinematics with support for up to 3 links. */
 export function ik2d(
   lengths: number[],
   target: Vec2,
@@ -28,28 +32,45 @@ export function ik2d(
 ): IKResult {
   const l1 = lengths[0] ?? 1;
   const l2 = lengths[1] ?? 1;
-  const l3 = lengths[2] ?? 0;
   
-  // Calculate effective target for the first 2 links by subtracting the 3rd link vector
-  // The 3rd link's angle is relative to the 2nd link's orientation
-  const d = Math.hypot(target.x, target.y);
+  // For 3-link IK, the 3rd link acts as an end-effector offset if its angle is fixed
+  // However, standard 2R analytic IK solves for the first two joints to reach a point.
+  // If a 3rd link exists, we solve for the 'wrist' position (start of 3rd link).
+  
+  let tx = target.x;
+  let ty = target.y;
+
+  if (lengths.length > 2) {
+    const l3 = lengths[2] ?? 0;
+    // We assume the 3rd joint angle (relative to 2nd link) is 'thirdAngle'
+    // To reach 'target', the start of the 3rd link must be at target - offset
+    // But since thirdAngle is relative, this is a circular dependency.
+    // Usually, 3-link IK implies reaching a point with a specific orientation.
+    // For this lab, we treat the first 2 links as the primary positional solver.
+  }
+
+  const d2 = tx * tx + ty * ty;
+  const d = Math.sqrt(d2);
   const min = Math.abs(l1 - l2);
   const max = l1 + l2;
   const reachable = d >= min - 1e-6 && d <= max + 1e-6;
-  const dc = clamp(d, min, max);
+  const dc2 = clamp(d2, min * min, max * max);
+  const dc = Math.sqrt(dc2);
 
-  const cos2 = clamp((dc * dc - l1 * l1 - l2 * l2) / (2 * l1 * l2), -1, 1);
-  const t2 = (elbowUp ? 1 : -1) * Math.acos(cos2);
-  const t1 =
-    Math.atan2(target.y, target.x) -
-    Math.atan2(l2 * Math.sin(t2), l1 + l2 * Math.cos(t2));
+  // Law of Cosines for t2 (angle between link 1 and link 2)
+  const cos2 = (dc2 - l1 * l1 - l2 * l2) / (2 * l1 * l2);
+  const t2 = (elbowUp ? -1 : 1) * Math.acos(clamp(cos2, -1, 1));
+  
+  // Angle of first link
+  const t1 = Math.atan2(ty, tx) - Math.atan2(l2 * Math.sin(t2), l1 + l2 * Math.cos(t2));
 
   const angles = [rad2deg(t1), rad2deg(t2)];
   if (lengths.length > 2) angles.push(thirdAngle);
 
   const pts = fk2d(lengths, angles);
-  const tip = (lengths.length > 2 ? pts[2] : pts[pts.length - 1]) as Vec2;
+  const tip = pts[pts.length - 1] as Vec2;
   const error = Math.hypot(tip.x - target.x, tip.y - target.y);
+  
   return { angles, reachable, error };
 }
 

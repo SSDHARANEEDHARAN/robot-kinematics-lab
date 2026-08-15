@@ -231,6 +231,19 @@ function KinematicsLab() {
   );
 
   const planarAngles = mode === "IK" ? ik.angles : angles.slice(0, linkCount);
+  
+  // Update joint angles if in IK mode so FK controls stay in sync
+  useEffect(() => {
+    if (mode === "IK") {
+      setAngles(prev => {
+        const next = [...prev];
+        ik.angles.forEach((a, i) => {
+          next[i] = a;
+        });
+        return next;
+      });
+    }
+  }, [ik.angles, mode]);
   const points = useMemo(
     () => fk2d(activeLengths, planarAngles),
     [activeLengths.join(), planarAngles.join()],
