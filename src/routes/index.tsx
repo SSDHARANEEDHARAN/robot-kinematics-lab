@@ -377,11 +377,6 @@ function KinematicsLab() {
               PRESENT BY THARANEETHARAN SS
             </p>
           </div>
-          <div className="mt-2 max-w-md rounded-lg border border-primary/20 bg-primary/5 p-3 text-[10px] font-medium leading-relaxed text-primary/80">
-            '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
-            <br /><br />
-            I NEED SAME STYLE OF ROBOT DESIGN
-          </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <SegButton
