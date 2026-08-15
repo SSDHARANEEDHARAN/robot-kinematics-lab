@@ -181,7 +181,7 @@ export function Stat({ label, value }: { label: string; value: string }) {
 
 export function Card({ title, children }: { title?: string; children: ReactNode }) {
   return (
-    <div className="lab-card group/card shadow-xl">
+    <div className="lab-card group/card shadow-none border-none">
       {title && (
         <div className="bg-secondary/10 px-6 py-4 backdrop-blur-sm border-b border-border/50">
           <h3 className="text-[10px] font-black uppercase tracking-[0.25em] text-foreground/80">{title}</h3>
