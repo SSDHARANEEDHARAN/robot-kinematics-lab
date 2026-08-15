@@ -378,7 +378,7 @@ function KinematicsLab() {
             </p>
           </div>
           <h1 className="mt-1 text-2xl font-black tracking-tighter text-foreground uppercase opacity-80 md:text-3xl">
-            Virtual Lab Environment
+            &nbsp;
           </h1>
         </div>
         <div className="flex flex-wrap items-center gap-2">
