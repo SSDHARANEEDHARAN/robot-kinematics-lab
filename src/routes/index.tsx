@@ -435,7 +435,8 @@ function KinematicsLab() {
         if (mode === "DH") {
            anglesForPose = new Array(jointCount).fill(0).map((_, j) => (j === 1 ? -30 : j === 2 ? 60 : 0));
         } else {
-           anglesForPose = ik2d(activeLengths, p, false).angles;
+           const ikRes = ik2d(activeLengths, p, false);
+           anglesForPose = ikRes.angles;
         }
         return {
           id: uid(),
