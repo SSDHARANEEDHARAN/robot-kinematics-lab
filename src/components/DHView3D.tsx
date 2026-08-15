@@ -7,7 +7,15 @@ type Props = {
   activeStep?: number | undefined;
 };
 
-const LINK_COLORS = ["oklch(0.3 0.05 250)", "oklch(0.4 0.05 250)", "oklch(0.5 0.05 250)", "oklch(0.6 0.05 250)", "oklch(0.7 0.05 250)", "oklch(0.8 0.05 250)"];
+// Colors based on the uploaded reference image
+const LINK_COLORS = [
+  "#2C3E50", // Dark grey/black for base/first link
+  "#E74C3C", // Red for second link
+  "#9B59B6", // Purple for third link
+  "#3498DB", // Blue for fourth link
+  "#E67E22", // Orange for fifth link
+  "#2ECC71", // Green (if needed)
+];
 
 export function DHView3D({ frames, activeStep }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -35,7 +43,6 @@ export function DHView3D({ frames, activeStep }: Props) {
     const sp = Math.sin(cam.pitch);
     const scale = (Math.min(w, h) / 480) * cam.zoom;
 
-    // Fixed J1 location means we don't center the whole robot, we keep J1 near bottom
     const j1Pos = originOf(frames[0] as Mat4);
     const ctr = { x: j1Pos.x, y: j1Pos.y, z: j1Pos.z };
 
@@ -51,123 +58,100 @@ export function DHView3D({ frames, activeStep }: Props) {
       return {
         x: w / 2 + x1 * scale * persp,
         y: h / 2 + 120 - z2 * scale * persp,
-        d: y2,
+        z2: z2, // for sorting if needed
+        y2: y2
       };
     };
 
-    const drawJointIndicator = (p: { x: number, y: number }, angle: number, label: string, isHighlighted: boolean) => {
-      const r = 30 * cam.zoom;
-      ctx.beginPath();
-      ctx.strokeStyle = isHighlighted ? "oklch(0.55 0.15 200)" : "oklch(0.5 0.05 250 / 0.3)";
-      ctx.setLineDash([2, 2]);
-      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.setLineDash([]);
+    const drawAxes = (pos: Vec3, frame: Mat4, size = 30) => {
+      const p = project(pos);
+      const xAxis = axisOf(frame, 0);
+      const yAxis = axisOf(frame, 1);
+      const zAxis = axisOf(frame, 2);
 
-      // Arrow showing angle
-      const rad = deg2rad(angle);
-      const ax = p.x + Math.cos(rad) * r;
-      const ay = p.y + Math.sin(rad) * r;
+      const px = project({ x: pos.x + xAxis.x * size, y: pos.y + xAxis.y * size, z: pos.z + xAxis.z * size });
+      const py = project({ x: pos.x + yAxis.x * size, y: pos.y + yAxis.y * size, z: pos.z + yAxis.z * size });
+      const pz = project({ x: pos.x + zAxis.x * size, y: pos.y + zAxis.y * size, z: pos.z + zAxis.z * size });
+
+      // X - Red
+      ctx.strokeStyle = "#FF0000";
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(px.x, px.y); ctx.stroke();
       
-      ctx.beginPath();
-      ctx.moveTo(p.x, p.y);
-      ctx.lineTo(ax, ay);
-      ctx.strokeStyle = isHighlighted ? "oklch(0.55 0.15 200)" : "oklch(0.5 0.05 250 / 0.5)";
-      ctx.stroke();
-
-      // Arrow head
-      ctx.save();
-      ctx.translate(ax, ay);
-      ctx.rotate(rad);
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(-6, -3);
-      ctx.lineTo(-6, 3);
-      ctx.closePath();
-      ctx.fillStyle = isHighlighted ? "oklch(0.55 0.15 200)" : "oklch(0.5 0.05 250 / 0.5)";
-      ctx.fill();
-      ctx.restore();
+      // Y - Green
+      ctx.strokeStyle = "#00FF00";
+      ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(py.x, py.y); ctx.stroke();
+      
+      // Z - Blue
+      ctx.strokeStyle = "#0000FF";
+      ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(pz.x, pz.y); ctx.stroke();
     };
 
-    const drawCylinder = (a: Vec3, b: Vec3, radius: number, color: string) => {
+    // Realistic Floor/Base Grid - matching the reference
+    ctx.strokeStyle = "rgba(0,0,0,0.05)";
+    ctx.lineWidth = 1;
+    for(let i = -10; i <= 10; i++) {
+        const p1 = project({x: i*40, y: -400, z: 0});
+        const p2 = project({x: i*40, y: 400, z: 0});
+        ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+        const p3 = project({x: -400, y: i*40, z: 0});
+        const p4 = project({x: 400, y: i*40, z: 0});
+        ctx.beginPath(); ctx.moveTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y); ctx.stroke();
+    }
+
+    // Draw origin axes at base
+    drawAxes({x: 0, y: 0, z: 0}, [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1], 50);
+
+    // Links and Joints
+    for (let i = 0; i < frames.length - 1; i++) {
+      const a = originOf(frames[i] as Mat4);
+      const b = originOf(frames[i + 1] as Mat4);
       const pa = project(a);
       const pb = project(b);
       
-      // Industrial link body
+      const isHighlighted = activeStep !== undefined && i < activeStep;
+      const color = isHighlighted ? "oklch(0.55 0.15 200)" : (LINK_COLORS[i % LINK_COLORS.length] || "#475569");
+      
+      // Joint Housing (Cylinder/Sphere) - matching reference
+      const r = (12 - i * 1);
+      ctx.beginPath();
+      ctx.arc(pa.x, pa.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = "#BDC3C7"; // Light grey for joints
+      ctx.fill();
+      ctx.strokeStyle = "rgba(0,0,0,0.2)";
+      ctx.stroke();
+
+      // Link Body
       ctx.strokeStyle = color;
-      ctx.lineWidth = radius * 2;
+      ctx.lineWidth = r * 1.5;
       ctx.lineCap = "round";
       ctx.beginPath();
       ctx.moveTo(pa.x, pa.y);
       ctx.lineTo(pb.x, pb.y);
       ctx.stroke();
-
-      // Metallic highlight
-      ctx.strokeStyle = "rgba(255,255,255,0.15)";
-      ctx.lineWidth = radius * 0.8;
+      
+      // Link Highlight
+      ctx.strokeStyle = "rgba(255,255,255,0.2)";
+      ctx.lineWidth = r * 0.5;
       ctx.beginPath();
-      ctx.moveTo(pa.x - radius/3, pa.y - radius/3);
-      ctx.lineTo(pb.x - radius/3, pb.y - radius/3);
+      ctx.moveTo(pa.x, pa.y);
+      ctx.lineTo(pb.x, pb.y);
       ctx.stroke();
-    };
 
-    // Realistic Floor/Base Grid
-    ctx.strokeStyle = "oklch(0.5 0.05 250 / 0.1)";
-    ctx.lineWidth = 1;
-    for(let i = -5; i <= 5; i++) {
-        const p1 = project({x: i*50, y: -250, z: 0});
-        const p2 = project({x: i*50, y: 250, z: 0});
-        ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
-        const p3 = project({x: -250, y: i*50, z: 0});
-        const p4 = project({x: 250, y: i*50, z: 0});
-        ctx.beginPath(); ctx.moveTo(p3.x, p3.y); ctx.lineTo(p4.x, p4.y); ctx.stroke();
+      // Frame axes at each joint
+      drawAxes(a, frames[i] as Mat4, 25);
     }
 
-    // Links (Realistic Robot Body)
-    for (let i = 0; i < frames.length - 1; i++) {
-      const a = originOf(frames[i] as Mat4);
-      const b = originOf(frames[i + 1] as Mat4);
-      
-      const isHighlighted = activeStep !== undefined && i < activeStep;
-      const color = isHighlighted ? "oklch(0.55 0.15 200)" : (LINK_COLORS[i % LINK_COLORS.length] || "#475569");
-      
-      // Realistic joint housings
-      const pa = project(a);
-      const r = (18 - i * 1.8) * (isHighlighted ? 1.1 : 1);
-      ctx.beginPath();
-      ctx.arc(pa.x, pa.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = "oklch(0.2 0.05 250)";
-      ctx.fill();
-
-      drawCylinder(a, b, (12 - i * 1.5) * (isHighlighted ? 1.2 : 1), color);
-    }
-
-    // Annotations & Angle Arrows
-    frames.forEach((f, i) => {
-      const p = project(originOf(f));
-      const row = (f as any)._dhRow; // Attempt to get row for angle
-      // Use index based highlight
-      const isHighlighted = activeStep === i;
-      
-      // J1 fixed location highlight
-      if (i === 0) {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
-        ctx.fillStyle = "oklch(0.55 0.15 200)";
-        ctx.fill();
-        ctx.font = "bold 10px JetBrains Mono";
-        ctx.fillText("FIXED J1 BASE", p.x + 10, p.y + 20);
-      }
-
-      // Draw angle arrow indicator
-      const angle = (f as any).theta ?? 0;
-      drawJointIndicator(p, angle, `J${i+1}`, isHighlighted);
-      
-      ctx.fillStyle = isHighlighted ? "oklch(0.55 0.15 200)" : "oklch(0.5 0.05 250)";
-      ctx.font = "bold 9px JetBrains Mono";
-      ctx.textAlign = "center";
-      ctx.fillText(`J${i+1}`, p.x, p.y - 45);
-    });
+    // End Effector (Blue Sphere in reference)
+    const eePos = originOf(frames[frames.length - 1] as Mat4);
+    const pee = project(eePos);
+    ctx.beginPath();
+    ctx.arc(pee.x, pee.y, 10, 0, Math.PI * 2);
+    ctx.fillStyle = "#3498DB";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(0,0,0,0.3)";
+    ctx.stroke();
+    drawAxes(eePos, frames[frames.length - 1] as Mat4, 35);
 
   }, [frames, cam, activeStep]);
 
