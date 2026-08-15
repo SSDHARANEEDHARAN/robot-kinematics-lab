@@ -112,13 +112,32 @@ export function DHView3D({ frames, activeStep }: Props) {
       const isHighlighted = activeStep !== undefined && i < activeStep;
       const color = isHighlighted ? "oklch(0.55 0.15 200)" : (LINK_COLORS[i % LINK_COLORS.length] || "#475569");
       
-      // Joint Housing (Cylinder/Sphere) - matching reference
+      // Joint Housing (Transparent Cylinder-like) - matching user-uploads://file-6
       const r = (12 - i * 1);
+      
+      // Draw joint housing (cylinder effect)
+      ctx.fillStyle = "rgba(189, 195, 199, 0.4)"; // Semitransparent grey
+      ctx.strokeStyle = "rgba(0,0,0,0.3)";
+      ctx.lineWidth = 1;
+
+      // Bottom circle
       ctx.beginPath();
-      ctx.arc(pa.x, pa.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = "#BDC3C7"; // Light grey for joints
+      ctx.arc(pa.x, pa.y + 4, r + 2, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = "rgba(0,0,0,0.2)";
+      ctx.stroke();
+
+      // Top circle (offset slightly to give 3D cylinder feel)
+      ctx.beginPath();
+      ctx.arc(pa.x, pa.y - 4, r + 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Connecting lines for cylinder sides
+      ctx.beginPath();
+      ctx.moveTo(pa.x - (r + 2), pa.y - 4);
+      ctx.lineTo(pa.x - (r + 2), pa.y + 4);
+      ctx.moveTo(pa.x + (r + 2), pa.y - 4);
+      ctx.lineTo(pa.x + (r + 2), pa.y + 4);
       ctx.stroke();
 
       // Link Body
