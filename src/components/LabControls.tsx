@@ -17,7 +17,7 @@ export function Section({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="border-b border-border/50 last:border-b-0 transition-colors hover:bg-muted/10">
+    <div className="transition-colors hover:bg-muted/10">
       <div 
         className={`flex items-center justify-between px-5 py-3 ${collapsible ? 'cursor-pointer' : ''}`}
         onClick={() => collapsible && setIsOpen(!isOpen)}
@@ -54,7 +54,7 @@ export function SegButton({
 }) {
   return (
     <div
-      className={`gap-1 rounded-lg border border-border bg-secondary/50 p-1 backdrop-blur-md ${stacked ? "grid grid-cols-1" : "grid grid-flow-col auto-cols-fr"}`}
+      className={`gap-1 rounded-lg bg-secondary/50 p-1 backdrop-blur-md ${stacked ? "grid grid-cols-1" : "grid grid-flow-col auto-cols-fr"}`}
     >
       {options.map((o) => (
         <button
@@ -141,7 +141,7 @@ export function GhostButton({ children, onClick }: { children: ReactNode; onClic
     <button
       type="button"
       onClick={onClick}
-      className="group relative overflow-hidden rounded-lg border border-primary/30 bg-background px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-foreground transition-all duration-300 hover:border-primary hover:text-primary-foreground hover:shadow-[0_0_20px_rgba(var(--primary),0.3)] active:scale-95"
+      className="group relative overflow-hidden rounded-lg bg-background px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-foreground transition-all duration-300 hover:text-primary-foreground hover:shadow-[0_0_20px_rgba(var(--primary),0.3)] active:scale-95"
     >
       <div className="absolute inset-0 -z-10 translate-y-full bg-primary transition-transform duration-300 group-hover:translate-y-0" />
       <span className="relative z-10">{children}</span>
@@ -165,7 +165,7 @@ export function Card({ title, children }: { title?: string; children: ReactNode 
   return (
     <div className="lab-card overflow-hidden group/card transition-all duration-500 hover:shadow-primary/5">
       {title && (
-        <div className="border-b border-border/50 bg-secondary/30 px-5 py-3 backdrop-blur-sm">
+        <div className="bg-secondary/30 px-5 py-3 backdrop-blur-sm">
           <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/70">{title}</h3>
         </div>
       )}
