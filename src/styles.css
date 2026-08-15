@@ -1,7 +1,8 @@
 @import "tailwindcss";
-@source "../src";
 @import "tw-animate-css";
 @import "./styles/loading.css";
+
+@source "../src";
 
 /*
  * Design system definition.
