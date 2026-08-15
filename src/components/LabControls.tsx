@@ -178,7 +178,7 @@ export function Badge({ children, variant = "default" }: { children: ReactNode; 
     danger: "bg-foreground text-background animate-pulse",
   };
   return (
-    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${styles[variant]}`}>
+    <span className={`px-2 py-0.5 text-[10px] font-black uppercase tracking-wider ${styles[variant]}`}>
       {children}
     </span>
   );
