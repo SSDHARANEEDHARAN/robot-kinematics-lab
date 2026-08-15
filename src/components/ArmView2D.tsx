@@ -21,6 +21,7 @@ type Props = {
   angles?: number[];
   interactive?: boolean;
   heatmap?: { x: number; y: number; reachable: boolean }[];
+  collisions?: { colliding: boolean, pairs: [number, number][], points: Vec2[] };
 };
 
 
