@@ -3,6 +3,12 @@ const n = (v: number, d = 2) => v.toFixed(d);
 import { deg2rad, rad2deg, ik2d as solveIK } from "@/lib/kinematics";
 import type { Vec2 } from "@/lib/kinematics";
 import { Play, Pause, ChevronRight, ChevronLeft, Info } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface WalkthroughProps {
   target: Vec2;
@@ -135,49 +141,57 @@ export function IKWalkthrough({ target, lengths, angles, unit, elbowUp: initialE
         </div>
       </div>
 
-      <div className="flex-1 space-y-3 overflow-y-auto scrollbar-hide">
-        {steps.map((step, i) => (
-          <div
-            key={i}
-            onClick={() => setActiveStep(i)}
-            className={`cursor-pointer rounded-2xl p-4 transition-all ${
-              activeStep === i 
-                ? "bg-secondary" 
-                : "hover:bg-secondary/40"
-            }`}
-          >
-            <div className="flex items-start justify-between">
-              <h4 className={`text-[10px] font-black uppercase tracking-widest ${activeStep === i ? "text-foreground" : "text-muted-foreground"}`}>
-                {step.title}
-              </h4>
-              <Info size={10} className="text-muted-foreground opacity-40" />
-            </div>
-            
-            <p className="mt-1 text-[10px] leading-relaxed text-muted-foreground">
-              {step.description}
-            </p>
-            
-            <div className="mt-3 space-y-2 font-mono text-[10px]">
-              <div className="text-muted-foreground/50">{step.formula}</div>
-              {step.calculation && (
-                <div className="font-bold">{step.calculation}</div>
-              )}
-              {(step.up || step.down) && (
-                <div className="grid grid-cols-2 gap-2">
-                  <div className={`rounded-xl p-2 ${effectiveElbowUp ? 'bg-foreground text-background' : 'bg-background/50 opacity-30'}`}>
-                    <div className="text-[8px] uppercase font-bold opacity-50 mb-0.5">Up</div>
-                    <div className="font-bold truncate">{step.up}</div>
+      <TooltipProvider>
+        <div className="flex-1 space-y-3 overflow-y-auto scrollbar-hide px-0.5">
+          {steps.map((step, i) => (
+            <Tooltip key={i}>
+              <TooltipTrigger asChild>
+                <div
+                  onClick={() => setActiveStep(i)}
+                  className={`cursor-pointer rounded-2xl p-4 transition-all ${
+                    activeStep === i 
+                      ? "bg-secondary" 
+                      : "hover:bg-secondary/40"
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <h4 className={`text-[10px] font-black uppercase tracking-widest ${activeStep === i ? "text-foreground" : "text-muted-foreground"}`}>
+                      {step.title}
+                    </h4>
+                    <Info size={10} className="text-muted-foreground opacity-40" />
                   </div>
-                  <div className={`rounded-xl p-2 ${!effectiveElbowUp ? 'bg-foreground text-background' : 'bg-background/50 opacity-30'}`}>
-                    <div className="text-[8px] uppercase font-bold opacity-50 mb-0.5">Down</div>
-                    <div className="font-bold truncate">{step.down}</div>
+                  
+                  <p className="mt-1 text-[10px] leading-relaxed text-muted-foreground">
+                    {step.description}
+                  </p>
+                  
+                  <div className="mt-3 space-y-2 font-mono text-[10px]">
+                    <div className="text-muted-foreground/50">{step.formula}</div>
+                    {step.calculation && (
+                      <div className="font-bold">{step.calculation}</div>
+                    )}
+                    {(step.up || step.down) && (
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className={`rounded-xl p-2 ${effectiveElbowUp ? 'bg-foreground text-background' : 'bg-background/50 opacity-30'}`}>
+                          <div className="text-[8px] uppercase font-bold opacity-50 mb-0.5">Up</div>
+                          <div className="font-bold truncate">{step.up}</div>
+                        </div>
+                        <div className={`rounded-xl p-2 ${!effectiveElbowUp ? 'bg-foreground text-background' : 'bg-background/50 opacity-30'}`}>
+                          <div className="text-[8px] uppercase font-bold opacity-50 mb-0.5">Down</div>
+                          <div className="font-bold truncate">{step.down}</div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
+              </TooltipTrigger>
+              <TooltipContent side="left" className="max-w-[200px]">
+                <p>{step.tooltip}</p>
+              </TooltipContent>
+            </Tooltip>
+          ))}
+        </div>
+      </TooltipProvider>
       
       <div className="flex items-center justify-between pt-4">
         <button
