@@ -7,6 +7,9 @@ type Props = {
   points: Vec2[];
   lengths: number[];
   showZone: boolean;
+  showGrid?: boolean;
+  showAxesOverlay?: boolean;
+  showJointAxes?: boolean;
   target?: Vec2 | null | undefined;
   onTargetChange?: ((p: Vec2) => void) | undefined;
   ghostPoints?: Vec2[] | undefined;
@@ -49,6 +52,9 @@ export function ArmView2D({
   interactive: forceInteractive,
   heatmap = [],
   collisions,
+  showGrid = true,
+  showAxesOverlay = true,
+  showJointAxes = true,
 }: Props) {
 
   const svgRef = useRef<SVGSVGElement>(null);
@@ -110,20 +116,23 @@ export function ArmView2D({
           />
         ))}
         {/* grid */}
-
-        <g stroke="rgba(0,0,0,0.05)" strokeWidth={1}>
-          {grid.map((g) => (
-            <line key={`v${g}`} x1={g} y1={-H / 2} x2={g} y2={H / 2} />
-          ))}
-          {gridY.map((g) => (
-            <line key={`h${g}`} x1={-W / 2} y1={g} x2={W / 2} y2={g} />
-          ))}
-        </g>
+        {showGrid && (
+          <g stroke="rgba(0,0,0,0.05)" strokeWidth={1}>
+            {grid.map((g) => (
+              <line key={`v${g}`} x1={g} y1={-H / 2} x2={g} y2={H / 2} />
+            ))}
+            {gridY.map((g) => (
+              <line key={`h${g}`} x1={-W / 2} y1={g} x2={W / 2} y2={g} />
+            ))}
+          </g>
+        )}
         {/* axes */}
-        <g stroke="rgba(0,0,0,0.1)" strokeWidth={1}>
-          <line x1={-W / 2} y1={0} x2={W / 2} y2={0} />
-          <line x1={0} y1={-H / 2} x2={0} y2={H / 2} />
-        </g>
+        {showAxesOverlay && (
+          <g stroke="rgba(0,0,0,0.1)" strokeWidth={1}>
+            <line x1={-W / 2} y1={0} x2={W / 2} y2={0} />
+            <line x1={0} y1={-H / 2} x2={0} y2={H / 2} />
+          </g>
+        )}
 
         {showZone && (
           <g className="opacity-20 transition-opacity duration-700 hover:opacity-40">
@@ -289,17 +298,21 @@ export function ArmView2D({
                 />
               
               {/* Angle Indicator Arrow */}
-              <line 
-                x1={p.x} y1={p.y} x2={arrowX} y2={arrowY}
-                className={isHighlighted ? "stroke-foreground" : "stroke-muted-foreground/30"}
-                strokeWidth={2}
-                strokeDasharray="2 2"
-              />
-              <path 
-                d={`M ${arrowX} ${arrowY} l -8 -4 l 0 8 z`}
-                transform={`rotate(${(angle * 180) / Math.PI}, ${arrowX}, ${arrowY})`}
-                className={isHighlighted ? "fill-foreground" : "fill-muted-foreground/30"}
-              />
+              {showJointAxes && (
+                <>
+                  <line 
+                    x1={p.x} y1={p.y} x2={arrowX} y2={arrowY}
+                    className={isHighlighted ? "stroke-foreground" : "stroke-muted-foreground/30"}
+                    strokeWidth={2}
+                    strokeDasharray="2 2"
+                  />
+                  <path 
+                    d={`M ${arrowX} ${arrowY} l -8 -4 l 0 8 z`}
+                    transform={`rotate(${(angle * 180) / Math.PI}, ${arrowX}, ${arrowY})`}
+                    className={isHighlighted ? "fill-foreground" : "fill-muted-foreground/30"}
+                  />
+                </>
+              )}
 
               {/* Core joint circle */}
               <circle
