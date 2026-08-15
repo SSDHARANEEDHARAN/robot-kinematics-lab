@@ -290,7 +290,8 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
     }
 
     // End Effector (Blue Sphere in reference)
-    const eePos = originOf(frames[frames.length - 1] as Mat4);
+    const eeFrame = effectiveFrames[effectiveFrames.length - 1];
+    const eePos = eeFrame ? originOf(eeFrame as Mat4) : { x: 0, y: 0, z: 0 };
     const pee = project(eePos);
     ctx.beginPath();
     ctx.arc(pee.x, pee.y, 10 * currentBaseScale, 0, Math.PI * 2);
