@@ -1,21 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { LoadingScreen } from "@/components/LoadingScreen";
 import { ArmView2D } from "@/components/ArmView2D";
-import { DHView3D } from "@/components/DHView3D";
-import { DHFormula, FKFormula, IKFormula } from "@/components/FormulaPanel";
-import { AIPanel } from "@/components/AIPanel";
-import {
-  Badge,
-  Card,
-  GhostButton,
-  NumberField,
-  Section,
-  SegButton,
-  SliderRow,
-  Stat,
-} from "@/components/LabControls";
-import { LESSONS, LessonPanel, type Lesson } from "@/components/LessonPanel";
-import { QuizPanel } from "@/components/QuizPanel";
+...
 import { TeachPanel } from "@/components/TeachPanel";
 import { IKWalkthrough } from "@/components/IKWalkthrough";
 import {
@@ -90,6 +77,7 @@ const TABS: { value: Tab; label: string }[] = [
 ];
 
 function KinematicsLab() {
+  const [loading, setLoading] = useState(true);
   const [mode, setMode] = useState<Mode>("IK");
   const [linkCount, setLinkCount] = useState(2);
   const [lengths, setLengths] = useState([120, 100, 80, 60, 50, 40]);
@@ -532,12 +520,16 @@ function KinematicsLab() {
             sub: `${jointCount}-joint DH chain — Drag to rotate, scroll to zoom`,
           };
 
+  if (loading) {
+    return <LoadingScreen onComplete={() => setLoading(false)} />;
+  }
+
   return (
     <main className="min-h-screen px-4 pb-8 pt-0 md:px-8 max-w-[1920px] mx-auto select-none flex flex-col bg-background text-foreground">
-      <header className="mb-8 flex items-center justify-between border-b border-border/50 py-6">
+      <header className="mb-8 flex items-center justify-between py-6">
         <div className="flex flex-col gap-0.5 group cursor-default">
           <p className="text-[9px] font-black uppercase tracking-[0.4em] text-primary transition-all group-hover:tracking-[0.6em]">
-            Industrial Kinematics
+            Kinematics.SelfStudy
           </p>
           <p className="text-xl font-black uppercase tracking-tighter text-foreground">
             Precision Lab V3
@@ -557,7 +549,7 @@ function KinematicsLab() {
             />
           </div>
 
-          <div className="flex items-center gap-2 rounded-full border border-border/50 bg-secondary/50 px-4 py-2 backdrop-blur-md transition-all hover:border-primary/50 shadow-lg shadow-black/5">
+          <div className="flex items-center gap-2 rounded-full bg-secondary/50 px-4 py-2 backdrop-blur-md transition-all shadow-lg shadow-black/5">
             <span className={`h-2 w-2 rounded-full shadow-[0_0_8px] ${mode === "IK" && !ik.reachable ? "bg-destructive shadow-destructive/50 animate-pulse" : "bg-primary shadow-primary/50"}`} />
             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/80">
               {mode === "IK" && !ik.reachable ? "Out of reach" : playing ? "Executing" : "Active"}
