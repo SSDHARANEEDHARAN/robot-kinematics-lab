@@ -146,10 +146,10 @@ export function ArmView2D({
               y1={r1(p.y)}
               x2={r1(q.x)}
               y2={r1(q.y)}
-              className={isHighlighted ? "stroke-primary" : LINK_CLASSES[i % 3]}
-              strokeWidth={isHighlighted ? 16 : 11}
-              strokeLinecap="round"
-              opacity={isHighlighted ? 1 : 0.8}
+              stroke="#1A252F" // Dark navy/black to match 3D links
+              strokeWidth={isHighlighted ? 18 : 12}
+              strokeLinecap="butt" // Flat ends to match industrial style
+              opacity={isHighlighted ? 1 : 0.9}
             />
           );
         })}
