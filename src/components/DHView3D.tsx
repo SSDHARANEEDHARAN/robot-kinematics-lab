@@ -32,7 +32,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
 
   // Convert 2D points to 3D frames for consistent rendering if in IK/FK mode
   const effectiveFrames = useMemo(() => {
-    if (mode === "DH") return frames;
+    if (mode === "DH" || !planarPoints || planarPoints.length === 0) return frames || [];
     
     // Create Mat4 frames from 2D points
     // In planar mode, J1 is at (0,0), J2 is at planarPoints[1], etc.
@@ -50,7 +50,7 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
         0, 1, 0, 0,
         -s, 0, c, p.y,
         0, 0, 0, 1
-      ];
+      ] as Mat4;
     });
   }, [mode, frames, planarPoints]);
 
@@ -284,13 +284,14 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
 
 
       // Frame axes at each joint
-      if (showAxes) {
-        drawAxes(a, frames[i] as Mat4, 34);
+      if (showAxes && effectiveFrames[i]) {
+        drawAxes(a, effectiveFrames[i] as Mat4, 34);
       }
     }
 
     // End Effector (Blue Sphere in reference)
-    const eePos = originOf(frames[frames.length - 1] as Mat4);
+    const eeFrame = effectiveFrames[effectiveFrames.length - 1];
+    const eePos = eeFrame ? originOf(eeFrame as Mat4) : { x: 0, y: 0, z: 0 };
     const pee = project(eePos);
     ctx.beginPath();
     ctx.arc(pee.x, pee.y, 10 * currentBaseScale, 0, Math.PI * 2);
@@ -298,8 +299,8 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
     ctx.fill();
     ctx.strokeStyle = "rgba(0,0,0,0.3)";
     ctx.stroke();
-    if (showAxes) {
-      drawAxes(eePos, frames[frames.length - 1] as Mat4, 35);
+    if (showAxes && effectiveFrames.length > 0) {
+      drawAxes(eePos, effectiveFrames[effectiveFrames.length - 1] as Mat4, 35);
     }
 
 
