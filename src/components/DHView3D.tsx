@@ -63,7 +63,7 @@ export function DHView3D({ frames, activeStep }: Props) {
       };
     };
 
-    const drawAxes = (pos: Vec3, frame: Mat4, size = 30) => {
+    const drawAxes = (pos: Vec3, frame: Mat4, size = 30, isBase = false) => {
       const p = project(pos);
       const xAxis = axisOf(frame, 0);
       const yAxis = axisOf(frame, 1);
@@ -73,18 +73,35 @@ export function DHView3D({ frames, activeStep }: Props) {
       const py = project({ x: pos.x + yAxis.x * size, y: pos.y + yAxis.y * size, z: pos.z + yAxis.z * size });
       const pz = project({ x: pos.x + zAxis.x * size, y: pos.y + zAxis.y * size, z: pos.z + zAxis.z * size });
 
-      // X - Red
-      ctx.strokeStyle = "#FF0000";
-      ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(px.x, px.y); ctx.stroke();
-      
-      // Y - Green
-      ctx.strokeStyle = "#00FF00";
-      ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(py.x, py.y); ctx.stroke();
-      
-      // Z - Blue
-      ctx.strokeStyle = "#0000FF";
-      ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(pz.x, pz.y); ctx.stroke();
+      const drawArrow = (from: {x: number, y: number}, to: {x: number, y: number}, color: string) => {
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath(); 
+        ctx.moveTo(from.x, from.y); 
+        ctx.lineTo(to.x, to.y); 
+        ctx.stroke();
+
+        // Arrow head
+        const angle = Math.atan2(to.y - from.y, to.x - from.x);
+        ctx.beginPath();
+        ctx.moveTo(to.x, to.y);
+        ctx.lineTo(to.x - 8 * Math.cos(angle - Math.PI/6), to.y - 8 * Math.sin(angle - Math.PI/6));
+        ctx.lineTo(to.x - 8 * Math.cos(angle + Math.PI/6), to.y - 8 * Math.sin(angle + Math.PI/6));
+        ctx.closePath();
+        ctx.fill();
+      };
+
+      if (isBase) {
+        drawArrow(p, px, "#FF0000"); // X - Red
+        drawArrow(p, pz, "#0000FF"); // Z - Blue
+      } else {
+        // Just lines for internal axes to keep it clean
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "#FF0000"; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(px.x, px.y); ctx.stroke();
+        ctx.strokeStyle = "#00FF00"; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(py.x, py.y); ctx.stroke();
+        ctx.strokeStyle = "#0000FF"; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(pz.x, pz.y); ctx.stroke();
+      }
     };
 
     // Realistic Floor/Base Grid - matching the reference
