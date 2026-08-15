@@ -207,83 +207,45 @@ export function DHView3D({ frames = [], activeStep, mode = "DH", planarPoints = 
       ctx.lineTo(pb.x, pb.y);
       ctx.stroke();
       
-      // Top specular highlight (white streak)
-      ctx.strokeStyle = "rgba(255,255,255,0.25)";
-      ctx.lineWidth = lw * 0.15;
-      ctx.beginPath();
-      ctx.moveTo(pa.x + nx * lw * 0.25, pa.y + ny * lw * 0.25);
-      ctx.lineTo(pb.x + nx * lw * 0.25, pb.y + ny * lw * 0.25);
-      ctx.stroke();
-      ctx.restore();
+      drawComplexJoint(pa.x, pa.y, jointAngle, i);
 
-      // --- Joint: Complex Industrial Housing ---
-      const hr = r * 2.2;  // Increased joint radius for "proper style"
-      const hw = r * 2.8;  // Increased joint width
+      // --- Joint: Semi-transparent mechanical housing ---
+      const hr = r * 2.5;  
+      const hw = r * 2.0;  
       
-      const drawComplexJoint = (cx: number, cyy: number, angle: number, index: number) => {
+      const drawSchematicJoint = (cx: number, cyy: number, angle: number) => {
         ctx.save();
         ctx.translate(cx, cyy);
         ctx.rotate(angle);
         
-        // 1. Main outer housing (Cylindrical base)
-        const jGrad = ctx.createLinearGradient(0, -hr, 0, hr);
-        jGrad.addColorStop(0, "#E5E7E9");
-        jGrad.addColorStop(0.4, "#BDC3C7");
-        jGrad.addColorStop(0.6, "#95A5A6");
-        jGrad.addColorStop(1, "#7F8C8D");
+        // Semi-transparent housing
+        ctx.fillStyle = "rgba(220, 220, 230, 0.6)";
+        ctx.strokeStyle = "rgba(100, 100, 120, 0.4)";
+        ctx.lineWidth = 1;
         
-        ctx.fillStyle = jGrad;
         ctx.beginPath();
-        // Rounded housing
         ctx.roundRect(-hw/2, -hr, hw, hr * 2, hr * 0.2);
         ctx.fill();
-        
-        // Subtly outline
-        ctx.strokeStyle = "rgba(0,0,0,0.15)";
-        ctx.lineWidth = 1;
         ctx.stroke();
 
-        // 2. Middle "Power Band" or "Actuator Hub"
-        const bandWidth = hw * 0.4;
-        const bandColor = index % 2 === 0 ? "#2C3E50" : "#C0392B";
-        ctx.fillStyle = bandColor;
-        ctx.fillRect(-bandWidth/2, -hr * 1.05, bandWidth, hr * 2.1);
-        
-        // 3. Bolts/Rivets around the hub (Simulated)
-        ctx.fillStyle = "rgba(0,0,0,0.3)";
-        for(let j = -1; j <= 1; j+=2) {
-          for(let k = -1; k <= 1; k+=0.5) {
-            ctx.beginPath();
-            ctx.arc((bandWidth/2 + 2) * j, hr * 0.7 * k, 1.5, 0, Math.PI*2);
-            ctx.fill();
-          }
-        }
-
-        // 4. End Caps with depth
-        // Left Cap
-        ctx.beginPath();
-        ctx.ellipse(-hw/2, 0, hr * 0.2, hr, 0, 0, Math.PI * 2);
-        ctx.fillStyle = "#AAB7B8";
-        ctx.fill();
-        ctx.stroke();
-        
-        // Right Cap (Interactive side)
-        ctx.beginPath();
-        ctx.ellipse(hw/2, 0, hr * 0.2, hr, 0, 0, Math.PI * 2);
-        ctx.fillStyle = "#D5DBDB";
-        ctx.fill();
-        ctx.stroke();
-
-        // 5. Specular highlight on the outer shell
-        ctx.strokeStyle = "rgba(255,255,255,0.4)";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(-hw/2 + 5, -hr * 0.6);
-        ctx.lineTo(hw/2 - 5, -hr * 0.6);
-        ctx.stroke();
+        // Internal "axle" detail
+        ctx.fillStyle = "rgba(44, 62, 80, 0.8)";
+        ctx.fillRect(-hw * 0.1, -hr * 0.8, hw * 0.2, hr * 1.6);
         
         ctx.restore();
       };
+      
+      // We already have drawComplexJoint defined above in the previous edit, 
+      // but let's replace the actual drawing call to match the "schematic" request.
+      // I'll update the loop to use this new style for DH 4-6.
+      
+      // Note: The user asked for this specifically for DH 4, 5, 6.
+      // We'll apply this logic inside the loop.
+      
+      ctx.save();
+      ctx.restore(); // Clearing previous link/joint logic for schematic replacement if needed
+      // Actually, I'll just refine the existing drawComplexJoint call.
+
       
       // Draw joint at start of link
       // Use the Z-axis of the frame to orient the joint cylinder
